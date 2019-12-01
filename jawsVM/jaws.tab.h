@@ -51,24 +51,13 @@ extern int yydebug;
   {
     SPACE = 258,
     TAB = 259,
-    NEWLINE = 260
+    LF = 260
   };
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-union YYSTYPE
-{
-#line 22 "jaws.y"
-
-  int ival;
-  float fval;
-  char *sval;
-
-#line 69 "jaws.tab.h"
-
-};
-typedef union YYSTYPE YYSTYPE;
+typedef int YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

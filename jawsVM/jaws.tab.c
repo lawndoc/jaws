@@ -76,7 +76,7 @@
   extern int yylex();
   extern int yyparse();
   extern FILE *yyin;
- 
+
   void yyerror(const char *s);
 
 #line 83 "jaws.tab.c"
@@ -120,24 +120,13 @@ extern int yydebug;
   {
     SPACE = 258,
     TAB = 259,
-    NEWLINE = 260
+    LF = 260
   };
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-union YYSTYPE
-{
-#line 22 "jaws.y"
-
-  int ival;
-  float fval;
-  char *sval;
-
-#line 138 "jaws.tab.c"
-
-};
-typedef union YYSTYPE YYSTYPE;
+typedef int YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -382,18 +371,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  8
+#define YYFINAL  30
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   6
+#define YYLAST   77
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  6
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  2
+#define YYNNTS  49
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  7
+#define YYNRULES  76
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  9
+#define YYNSTATES  117
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   260
@@ -440,7 +429,14 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    39,    39,    42,    45,    48,    51,    54
+       0,    24,    24,    36,    39,    40,    43,    44,    45,    46,
+      47,    48,    53,    56,    59,    62,    65,    68,    73,    74,
+      75,    76,    79,    80,    81,    82,    83,    86,    87,    90,
+      91,    92,    93,    94,    95,    96,    99,   100,   101,   102,
+     105,   106,   107,   113,   117,   121,   125,   130,   134,   138,
+     142,   146,   151,   155,   160,   164,   168,   172,   176,   180,
+     184,   189,   193,   197,   201,   207,   211,   215,   220,   224,
+     228,   229,   232,   233,   236,   240,   243
 };
 #endif
 
@@ -449,8 +445,18 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "SPACE", "TAB", "NEWLINE", "$accept",
-  "jaws", YY_NULLPTR
+  "$end", "error", "$undefined", "SPACE", "TAB", "LF", "$accept", "jaws",
+  "body_section", "body_instructions", "body_instruction",
+  "stack_manipulation", "arithmetic", "heap_access", "flow_control",
+  "io_action", "io_control", "stack_command", "arith_command",
+  "heap_command", "flow_command", "io_action_command",
+  "io_control_command", "stack_push", "stack_duplicate", "stack_swap",
+  "stack_discard", "addition", "subtraction", "multiplication",
+  "integer_division", "modulo", "heap_store", "heap_retrieve", "new_label",
+  "call_subroutine", "uncond_jump", "jump_if_zero", "jump_if_neg",
+  "end_subroutine", "end_program", "output_char", "output_int",
+  "read_char", "read_int", "stream_file", "stream_net", "stream_stdio",
+  "number", "label", "bits", "bit", "ip", "octet", "port", YY_NULLPTR
 };
 #endif
 
@@ -463,10 +469,10 @@ static const yytype_uint16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF -4
+#define YYPACT_NINF -101
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-4)))
+  (!!((Yystate) == (-101)))
 
 #define YYTABLE_NINF -1
 
@@ -477,7 +483,18 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -3,    -3,    -3,    -3,     6,    -4,    -4,    -4,    -4
+      16,     5,    19,    38,     3,  -101,    16,  -101,  -101,  -101,
+    -101,  -101,  -101,  -101,     1,    13,    59,    61,    63,    41,
+      44,    23,  -101,  -101,  -101,  -101,  -101,  -101,  -101,  -101,
+    -101,  -101,    65,    47,  -101,  -101,  -101,  -101,  -101,    50,
+      67,  -101,  -101,  -101,  -101,  -101,  -101,    69,    28,  -101,
+    -101,  -101,  -101,  -101,  -101,  -101,  -101,  -101,    71,    73,
+    -101,  -101,  -101,  -101,  -101,    65,    65,    65,    65,    65,
+    -101,  -101,  -101,  -101,  -101,    53,  -101,  -101,  -101,  -101,
+    -101,  -101,  -101,  -101,  -101,  -101,    65,  -101,  -101,  -101,
+    -101,  -101,  -101,    56,  -101,  -101,  -101,  -101,  -101,  -101,
+      65,    65,    65,  -101,    65,    65,  -101,    65,    65,  -101,
+      65,    65,  -101,    65,    65,    65,  -101
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -485,19 +502,38 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     5,     6,     7,     0,     2,     3,     4,     1
+       0,     0,     0,     0,     0,     2,     3,     5,     6,     7,
+       8,     9,    10,    11,     0,     0,     0,     0,     0,     0,
+       0,     0,    15,    29,    30,    31,    32,    33,    34,    35,
+       1,     4,     0,     0,    12,    18,    19,    20,    21,     0,
+       0,    13,    22,    23,    24,    25,    26,     0,     0,    17,
+      40,    41,    42,    52,    53,    14,    27,    28,     0,     0,
+      16,    36,    37,    38,    39,     0,     0,     0,     0,     0,
+      59,    60,    72,    73,    43,     0,    71,    44,    45,    46,
+      47,    48,    49,    50,    51,    65,     0,    67,    61,    62,
+      63,    64,    54,     0,    55,    56,    57,    58,    68,    70,
+       0,     0,     0,    69,     0,     0,    66,     0,     0,    76,
+       0,     0,    74,     0,     0,     0,    75
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -4,     2
+    -101,  -101,  -101,  -101,    31,  -101,  -101,  -101,  -101,  -101,
+    -101,  -101,  -101,  -101,  -101,  -101,  -101,  -101,  -101,  -101,
+    -101,  -101,  -101,  -101,  -101,  -101,  -101,  -101,  -101,  -101,
+    -101,  -101,  -101,  -101,  -101,  -101,  -101,  -101,  -101,  -101,
+    -101,  -101,  -101,   -54,     2,   -75,  -101,  -100,  -101
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     4
+      -1,     4,     5,     6,     7,     8,     9,    10,    11,    12,
+      13,    34,    41,    55,    22,    60,    49,    35,    36,    37,
+      38,    42,    43,    44,    45,    46,    56,    57,    23,    24,
+      25,    26,    27,    28,    29,    61,    62,    63,    64,    50,
+      51,    52,    74,    92,    93,    76,   101,   102,   106
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -505,31 +541,70 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-       1,     2,     3,     5,     6,     7,     8
+      99,   105,   107,    30,    32,   109,    33,   110,    14,    15,
+     112,   100,    94,    95,    96,    97,    39,    40,    99,     1,
+       2,     3,    16,    17,    18,   104,   100,   100,    71,   108,
+     100,    87,   100,   111,    75,   100,   113,    31,   114,   115,
+     116,    19,    20,    21,    65,    66,    67,    68,    69,    70,
+      77,    78,    79,    80,    81,    82,    72,    73,    98,    72,
+      73,   103,    47,    48,    53,    54,    58,    59,    72,    73,
+      83,    84,    85,    86,    88,    89,    90,    91
 };
 
 static const yytype_uint8 yycheck[] =
 {
-       3,     4,     5,     1,     2,     3,     0
+      75,   101,   102,     0,     3,   105,     5,   107,     3,     4,
+     110,    86,    66,    67,    68,    69,     3,     4,    93,     3,
+       4,     5,     3,     4,     5,   100,   101,   102,     5,   104,
+     105,     3,   107,   108,    32,   110,   111,     6,   113,   114,
+     115,     3,     4,     5,     3,     4,     5,     3,     4,     5,
+       3,     4,     5,     3,     4,     5,     3,     4,     5,     3,
+       4,     5,     3,     4,     3,     4,     3,     4,     3,     4,
+       3,     4,     3,     4,     3,     4,     3,     4
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     3,     4,     5,     7,     7,     7,     7,     0
+       0,     3,     4,     5,     7,     8,     9,    10,    11,    12,
+      13,    14,    15,    16,     3,     4,     3,     4,     5,     3,
+       4,     5,    20,    34,    35,    36,    37,    38,    39,    40,
+       0,    10,     3,     5,    17,    23,    24,    25,    26,     3,
+       4,    18,    27,    28,    29,    30,    31,     3,     4,    22,
+      45,    46,    47,     3,     4,    19,    32,    33,     3,     4,
+      21,    41,    42,    43,    44,     3,     4,     5,     3,     4,
+       5,     5,     3,     4,    48,    50,    51,     3,     4,     5,
+       3,     4,     5,     3,     4,     3,     4,     3,     3,     4,
+       3,     4,    49,    50,    49,    49,    49,    49,     5,    51,
+      51,    52,    53,     5,    51,    53,    54,    53,    51,    53,
+      53,    51,    53,    51,    51,    51,    51
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,     6,     7,     7,     7,     7,     7,     7
+       0,     6,     7,     8,     9,     9,    10,    10,    10,    10,
+      10,    10,    11,    12,    13,    14,    15,    16,    17,    17,
+      17,    17,    18,    18,    18,    18,    18,    19,    19,    20,
+      20,    20,    20,    20,    20,    20,    21,    21,    21,    21,
+      22,    22,    22,    23,    24,    25,    26,    27,    28,    29,
+      30,    31,    32,    33,    34,    35,    36,    37,    38,    39,
+      40,    41,    42,    43,    44,    45,    46,    47,    48,    49,
+      50,    50,    51,    51,    52,    53,    54
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     2,     2,     2,     1,     1,     1
+       0,     2,     1,     1,     2,     1,     1,     1,     1,     1,
+       1,     1,     3,     3,     3,     2,     3,     3,     1,     1,
+       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+       1,     1,     1,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     1,     1,     3,     3,     3,     3,     3,     2,
+       2,     2,     2,     2,     2,     2,     4,     2,     2,     2,
+       2,     1,     1,     1,     4,     8,     2
 };
 
 
@@ -1216,55 +1291,239 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 39 "jaws.y"
-    {
-      cout << "bison found a SPACE" << endl;
-    }
-#line 1224 "jaws.tab.c"
+#line 24 "jaws.y"
+    {  // alternate line w/o header & footer
+    cout << "done with a jaws file!" << endl;
+  }
+#line 1299 "jaws.tab.c"
     break;
 
-  case 3:
-#line 42 "jaws.y"
+  case 43:
+#line 113 "jaws.y"
     {
-      cout << "bison found a TAB" << endl;
-    }
-#line 1232 "jaws.tab.c"
+    cout << "push data on top of the stack" << endl;
+  }
+#line 1307 "jaws.tab.c"
     break;
 
-  case 4:
-#line 45 "jaws.y"
+  case 44:
+#line 117 "jaws.y"
     {
-      cout << "bison found a NEWLINE" << endl;
-    }
-#line 1240 "jaws.tab.c"
+    cout << "duplicate item on top of the stack" << endl;
+  }
+#line 1315 "jaws.tab.c"
     break;
 
-  case 5:
-#line 48 "jaws.y"
+  case 45:
+#line 121 "jaws.y"
     {
-      cout << "bison found a SPACE" << endl;
-    }
-#line 1248 "jaws.tab.c"
+    cout << "swap items on top of the stack" << endl;
+  }
+#line 1323 "jaws.tab.c"
     break;
 
-  case 6:
-#line 51 "jaws.y"
+  case 46:
+#line 125 "jaws.y"
     {
-      cout << "bison found a TAB" << endl;
-    }
-#line 1256 "jaws.tab.c"
+    cout << "discard item on top of the stack" << endl;
+  }
+#line 1331 "jaws.tab.c"
     break;
 
-  case 7:
-#line 54 "jaws.y"
+  case 47:
+#line 130 "jaws.y"
     {
-      cout << "bison found a NEWLINE" << endl;
-    }
-#line 1264 "jaws.tab.c"
+    cout << "addition" << endl;
+  }
+#line 1339 "jaws.tab.c"
+    break;
+
+  case 48:
+#line 134 "jaws.y"
+    {
+    cout << "subtraction" << endl;
+  }
+#line 1347 "jaws.tab.c"
+    break;
+
+  case 49:
+#line 138 "jaws.y"
+    {
+    cout << "multiplication" << endl;
+  }
+#line 1355 "jaws.tab.c"
+    break;
+
+  case 50:
+#line 142 "jaws.y"
+    {
+    cout << "division" << endl;
+  }
+#line 1363 "jaws.tab.c"
+    break;
+
+  case 51:
+#line 146 "jaws.y"
+    {
+    cout << "modulo" << endl;
+  }
+#line 1371 "jaws.tab.c"
+    break;
+
+  case 52:
+#line 151 "jaws.y"
+    {
+    cout << "heap store" << endl;
+  }
+#line 1379 "jaws.tab.c"
+    break;
+
+  case 53:
+#line 155 "jaws.y"
+    {
+    cout << "heap retrieve" << endl;
+  }
+#line 1387 "jaws.tab.c"
+    break;
+
+  case 54:
+#line 160 "jaws.y"
+    {
+    cout << "new label" << endl;
+  }
+#line 1395 "jaws.tab.c"
+    break;
+
+  case 55:
+#line 164 "jaws.y"
+    {
+    cout << "call subroutine" << endl;
+  }
+#line 1403 "jaws.tab.c"
+    break;
+
+  case 56:
+#line 168 "jaws.y"
+    {
+    cout << "jump unconditionally" << endl;
+  }
+#line 1411 "jaws.tab.c"
+    break;
+
+  case 57:
+#line 172 "jaws.y"
+    {
+    cout << "jump if top of stack is zero" << endl;
+  }
+#line 1419 "jaws.tab.c"
+    break;
+
+  case 58:
+#line 176 "jaws.y"
+    {
+    cout << "jump if top of stack is negative" << endl;
+  }
+#line 1427 "jaws.tab.c"
+    break;
+
+  case 59:
+#line 180 "jaws.y"
+    {
+    cout << "end subroutine" << endl;
+  }
+#line 1435 "jaws.tab.c"
+    break;
+
+  case 60:
+#line 184 "jaws.y"
+    {
+    cout << "end of program" << endl;
+  }
+#line 1443 "jaws.tab.c"
+    break;
+
+  case 61:
+#line 189 "jaws.y"
+    {
+    cout << "outputting a character to IO" << endl;
+  }
+#line 1451 "jaws.tab.c"
+    break;
+
+  case 62:
+#line 193 "jaws.y"
+    {
+    cout << "outputting an integer to IO" << endl;
+  }
+#line 1459 "jaws.tab.c"
+    break;
+
+  case 63:
+#line 197 "jaws.y"
+    {
+    cout << "reading a character from IO" << endl;
+  }
+#line 1467 "jaws.tab.c"
+    break;
+
+  case 64:
+#line 201 "jaws.y"
+    {
+    cout << "reading an integer from IO" << endl;
+  }
+#line 1475 "jaws.tab.c"
+    break;
+
+  case 65:
+#line 207 "jaws.y"
+    {
+    cout << "streaming from a file" << endl;
+  }
+#line 1483 "jaws.tab.c"
+    break;
+
+  case 66:
+#line 211 "jaws.y"
+    {
+    cout << "streaming from network connection: " << endl;
+  }
+#line 1491 "jaws.tab.c"
+    break;
+
+  case 68:
+#line 220 "jaws.y"
+    {
+    cout << "<arbitrary data>" << endl;
+  }
+#line 1499 "jaws.tab.c"
+    break;
+
+  case 69:
+#line 224 "jaws.y"
+    {
+    cout << "<label>" << endl;
+  }
+#line 1507 "jaws.tab.c"
+    break;
+
+  case 74:
+#line 236 "jaws.y"
+    {
+    cout << "<ip>" << endl;
+  }
+#line 1515 "jaws.tab.c"
+    break;
+
+  case 76:
+#line 243 "jaws.y"
+    {
+    cout << "<port>" << endl;
+  }
+#line 1523 "jaws.tab.c"
     break;
 
 
-#line 1268 "jaws.tab.c"
+#line 1527 "jaws.tab.c"
 
       default: break;
     }
@@ -1496,7 +1755,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 58 "jaws.y"
+#line 247 "jaws.y"
 
 
 int main(int, char**) {
@@ -1509,10 +1768,10 @@ int main(int, char**) {
   }
   // Set Flex to read from it instead of defaulting to STDIN:
   yyin = myfile;
-  
+
   // Parse through the input:
   yyparse();
-  
+
 }
 
 void yyerror(const char *s) {

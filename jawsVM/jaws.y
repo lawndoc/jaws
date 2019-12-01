@@ -1,51 +1,43 @@
 %{
   #include <cstdio>
   #include <iostream>
-  #include "lex.yy.c"
   using namespace std;
 
   // Declare stuff from Flex that Bison needs to know about:
   extern int yylex();
   extern int yyparse();
   extern FILE *yyin;
- 
+
   void yyerror(const char *s);
 %}
 
-// Bison fundamentally works by asking flex to get the next token, which it
-// returns as an object of type "yystype".  Initially (by default), yystype
-// is merely a typedef of "int", but for non-trivial projects, tokens could
-// be of any arbitrary data type.  So, to deal with that, the idea is to
-// override yystype's default typedef to be a C union instead.  Unions can
-// hold all of the types of tokens that Flex could return, and this this means
-// we can return ints or floats or strings cleanly.  Bison implements this
-// mechanism with the %union directive:
-
-// Define the "terminal symbol" token types I'm going to use (in CAPS
-// by convention), and associate each with a field of the %union:
+// Declare token types 
 %token SPACE
 %token TAB
 %token LF
 
 %%
-// This is the actual grammar that bison will parse, but for right now it's just
-// something silly to echo to the screen what bison gets from flex.  We'll
-// make a real one shortly:
+
+// Grammmar 
 jaws:
 //  header body_section footer {
-  body_section {
+  body_section {  // alternate line w/o header & footer
     cout << "done with a jaws file!" << endl;
   };
 //header:
-//  SPACE SPACE TAB TAB TAB LF {
+//  SPACE TAB TAB SPACE LF {
 //    cout << "started parsing jaws code!" << endl;
+//  };
+//footer:
+//  LF LF LF {  // need to change this so it is not ambiguous
+//    cout << "stopped parsing jaws code!" << endl;
 //  };
 body_section:
   body_instructions
   ;
-body_instructions: 
+body_instructions:
   body_instructions body_instruction
-  | body_instruction 
+  | body_instruction
   ;
 body_instruction:
   stack_manipulation
@@ -118,75 +110,96 @@ io_control_command:
 // -- Command Defs --
 // stack
 stack_push:
-  SPACE number
-  ;
+  SPACE number {
+    cout << "push data on top of the stack" << endl;
+  };
 stack_duplicate:
-  LF SPACE
-  ;
+  LF SPACE {
+    cout << "duplicate item on top of the stack" << endl;
+  };
 stack_swap:
-  LF TAB
-  ;
+  LF TAB {
+    cout << "swap items on top of the stack" << endl;
+  };
 stack_discard:
-  LF LF
-  ;
+  LF LF {
+    cout << "discard item on top of the stack" << endl;
+  };
 // arithmetic
 addition:
-  SPACE SPACE
-  ;
+  SPACE SPACE {
+    cout << "addition" << endl;
+  };
 subtraction:
-  SPACE TAB
-  ;
+  SPACE TAB {
+    cout << "subtraction" << endl;
+  };
 multiplication:
-  SPACE LF
-  ;
+  SPACE LF {
+    cout << "multiplication" << endl;
+  };
 integer_division:
-  TAB SPACE
-  ;
+  TAB SPACE {
+    cout << "division" << endl;
+  };
 modulo:
-  TAB TAB
-  ;
+  TAB TAB {
+    cout << "modulo" << endl;
+  };
 // heap
 heap_store:
-  SPACE
-  ;
+  SPACE {
+    cout << "heap store" << endl;
+  };
 heap_retrieve:
-  TAB
-  ;
+  TAB {
+    cout << "heap retrieve" << endl;
+  };
 // flow control
 new_label:
-  SPACE SPACE label
-  ;
+  SPACE SPACE label {
+    cout << "new label" << endl;
+  };
 call_subroutine:
-  SPACE TAB label
-  ;
+  SPACE TAB label {
+    cout << "call subroutine" << endl;
+  };
 uncond_jump:
-  SPACE LF label
-  ;
+  SPACE LF label {
+    cout << "jump unconditionally" << endl;
+  };
 jump_if_zero:
-  TAB SPACE label
-  ;
+  TAB SPACE label {
+    cout << "jump if top of stack is zero" << endl;
+  };
 jump_if_neg:
-  TAB TAB label
-  ;
+  TAB TAB label {
+    cout << "jump if top of stack is negative" << endl;
+  };
 end_subroutine:
-  TAB LF
-  ;
+  TAB LF {
+    cout << "end subroutine" << endl;
+  };
 end_program:
-  LF LF
-  ;
+  LF LF {
+    cout << "end of program" << endl;
+  };
 // io action
 output_char:
-  SPACE SPACE
-  ;
+  SPACE SPACE {
+    cout << "outputting a character to IO" << endl;
+  };
 output_int:
-  SPACE TAB
-  ;
+  SPACE TAB {
+    cout << "outputting an integer to IO" << endl;
+  };
 read_char:
-  TAB SPACE
-  ;
+  TAB SPACE {
+    cout << "reading a character from IO" << endl;
+  };
 read_int:
   TAB TAB {
-    cout << "reading an integer from io" << endl;
+    cout << "reading an integer from IO" << endl;
   };
   ;
 // io control
@@ -205,11 +218,11 @@ stream_stdio:
 // --- Parameters ---
 number:
   bits LF {
-    cout << "<number> " << endl;
+    cout << "<arbitrary data>" << endl;
   };
 label:
   bits LF {
-    cout << "<label> " << endl;
+    cout << "<label>" << endl;
   };
 bits:
   bits bit
@@ -221,20 +234,15 @@ bit:
   ;
 ip:
   octet octet octet octet {
-    cout << "<ip> " << endl;
+    cout << "<ip>" << endl;
   };
 octet:
   bit bit bit bit bit bit bit bit
   ;
 port:
   octet octet {
-    cout << "<port> " << endl;
+    cout << "<port>" << endl;
   };
-
-// --- Footer ---
-//footer:
-//  LF LF LF
-//  ;
 
 %%
 
@@ -248,10 +256,10 @@ int main(int, char**) {
   }
   // Set Flex to read from it instead of defaulting to STDIN:
   yyin = myfile;
-  
+
   // Parse through the input:
   yyparse();
-  
+
 }
 
 void yyerror(const char *s) {
