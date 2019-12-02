@@ -1,0 +1,10 @@
+stackPush    	 	 	  	
+stackPush    	 			 	 	 
+addition 	  stackDiscard  
+
+stackDiscard  
+
+endProgram
+
+
+
