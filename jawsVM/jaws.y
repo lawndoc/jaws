@@ -4,7 +4,7 @@
   using namespace std;
 
   // Declare stuff from Flex that Bison needs to know about:
-  extern int yylex();
+  extern "C" int yylex();
   extern int yyparse();
   extern FILE *yyin;
 
@@ -21,7 +21,7 @@
 // Grammmar 
 jaws:
 //  header body_section footer {
-  body_section {  // alternate line w/o header & footer
+  body_instructions {  // alternate line w/o header & footer
     cout << "done with a jaws file!" << endl;
   };
 //header:
@@ -32,9 +32,6 @@ jaws:
 //  LF LF LF {  // need to change this so it is not ambiguous
 //    cout << "stopped parsing jaws code!" << endl;
 //  };
-body_section:
-  body_instructions
-  ;
 body_instructions:
   body_instructions body_instruction
   | body_instruction

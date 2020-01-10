@@ -444,8 +444,9 @@ char *yytext;
   #include <cstdio>
 
   #include "jaws.tab.h" // to get the token types from Bison
-#line 447 "lex.yy.c"
+  extern "C" int yylex();
 #line 448 "lex.yy.c"
+#line 449 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -662,10 +663,10 @@ YY_DECL
 		}
 
 	{
-#line 8 "jaws.l"
+#line 9 "jaws.l"
 
 
-#line 668 "lex.yy.c"
+#line 669 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -724,31 +725,31 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 10 "jaws.l"
+#line 11 "jaws.l"
 { return SPACE; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 11 "jaws.l"
+#line 12 "jaws.l"
 { return TAB; }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 12 "jaws.l"
+#line 13 "jaws.l"
 { return LF; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 13 "jaws.l"
+#line 14 "jaws.l"
 ;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 15 "jaws.l"
+#line 16 "jaws.l"
 ECHO;
 	YY_BREAK
-#line 751 "lex.yy.c"
+#line 752 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1753,7 +1754,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 15 "jaws.l"
+#line 16 "jaws.l"
 
 
 
