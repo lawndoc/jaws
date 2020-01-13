@@ -20,18 +20,9 @@
 
 // Grammmar 
 jaws:
-//  header body_section footer {
-  body_instructions {  // alternate line w/o header & footer
+  body_instructions end_program {
     cout << "done with a jaws file!" << endl;
   };
-//header:
-//  SPACE TAB TAB SPACE LF {
-//    cout << "started parsing jaws code!" << endl;
-//  };
-//footer:
-//  LF LF LF {  // need to change this so it is not ambiguous
-//    cout << "stopped parsing jaws code!" << endl;
-//  };
 body_instructions:
   body_instructions body_instruction
   | body_instruction
@@ -56,13 +47,21 @@ heap_access:
   TAB TAB heap_command
   ;
 flow_control:
-  LF flow_command
+  LF SPACE flow_command
   ;
 io_action:
   TAB LF io_action_command
   ;
 io_control:
   TAB SPACE io_control_command
+  ;
+end_program:
+  LF LF LF {
+    cout << "end of program" << endl;
+  }
+  | LF LF LF extra_lines {
+    cout << "end of program" << endl;
+  }
   ;
 
 // --- IMP Commands ---
@@ -90,7 +89,6 @@ flow_command:
   | jump_if_zero
   | jump_if_neg
   | end_subroutine
-  | end_program
   ;
 io_action_command:
   output_char
@@ -177,10 +175,6 @@ end_subroutine:
   TAB LF {
     cout << "end subroutine" << endl;
   };
-end_program:
-  LF LF {
-    cout << "end of program" << endl;
-  };
 // io action
 output_char:
   SPACE SPACE {
@@ -240,7 +234,17 @@ port:
   octet octet {
     cout << "<port>" << endl;
   };
-
+// extra_lines -- ignore whitespace
+extra_lines:
+  extra_lines extra_line
+  | extra_line
+  ;
+extra_line:
+  SPACE
+  | TAB
+  | LF
+  ;
+// done with grammar
 %%
 
 int main(int, char**) {
@@ -262,5 +266,5 @@ int main(int, char**) {
 void yyerror(const char *s) {
   cout << "Whoopsie daisies, parse error!  Message: " << s << endl;
   // might as well halt now:
-  exit(-1);
+  exit(1);
 }

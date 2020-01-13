@@ -24,11 +24,13 @@ The IMP is the first part of a Jaws instruction. The command following it will b
 
 `[Tab][Tab]` Heap Access
 
-`[LF]` Flow Control
+`[LF][Space]` Flow Control
 
 `[Tab][LF]` I/O Action
 
 `[Tab][Space]` I/O Control
+
+`[LF][LF][LF]` End Program (no command)
 
 ## Commands
 
@@ -68,7 +70,7 @@ Heap access commands look at the stack to find the address of items to be stored
 
 `[Tab]` Retrieve
 
-### Flow Control (IMP: `[LF]`)
+### Flow Control (IMP: `[LF][Space]`)
 
 Flow control operations are also very common. Subroutines are marked by labels, as well as the targets of conditional and unconditional jumps, by which loops can be implemented. Programs must be ended with three line feeds so that the interpreter can exit cleanly.
 
@@ -83,8 +85,6 @@ Flow control operations are also very common. Subroutines are marked by labels, 
 `[Tab][Tab]` (Parameter: Label) Jump to a label if the top of the stack is negative
 
 `[Tab][LF]` End a subroutine and jump back to caller
-
-`[LF][LF]` End the program
 
 ### I/O Action (IMP: `[Tab][LF]`)
 
