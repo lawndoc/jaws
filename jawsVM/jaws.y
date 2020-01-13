@@ -19,15 +19,47 @@
 %%
 
 // Grammmar 
+
+//jaws:
+//  instructions end_program
+//  ;
+
 jaws:
-  body_instructions end_program {
+  bodies last_body {
+    cout << "done with a jaws file!" << endl;
+  }
+  last_body {
     cout << "done with a jaws file!" << endl;
   };
-body_instructions:
-  body_instructions body_instruction
-  | body_instruction
+bodies:
+  bodies body
+  | body
   ;
-body_instruction:
+body:
+  header instructions footer
+  ;
+last_body:
+  header instructions end_program
+  ;
+header:
+  extra_lines LF TAB SPACE {
+    cout << "Started interpreting jaws code..." << endl;
+  }
+  | LF TAB SPACE {
+    cout << "Started interpreting jaws code..." << endl;
+  }
+  ;
+footer:
+  LF TAB SPACE {
+    cout << "Paused interpreting jaws code..." << endl;
+  }
+  ;
+
+instructions:
+  instructions instruction
+  | instruction
+  ;
+instruction:
   stack_manipulation
   | arithmetic
   | heap_access

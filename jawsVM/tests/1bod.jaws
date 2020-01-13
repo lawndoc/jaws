@@ -5,15 +5,6 @@ addition[S][T][S][S] 	  stackDiscard[S][S][LF][LF]
 
 stackDiscard[S][S][LF][LF]  
 
-footer[LF][T][S]
-	 paused interpreting, to get
-started again, here's a header[LF][T][S]
-	 stackPush[S][S][S][data...]    	 	 	  	
-stackPush[S][S][S][data...]    	 			 	 	 
-addition[S][T][S][S] 	  stackDiscard[S][S][LF][LF]  
-
-stackDiscard[S][S][LF][LF]  
-
 endProgram[LF][LF][LF]
 
 
