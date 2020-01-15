@@ -1,0 +1,1674 @@
+State 3 conflicts: 1 shift/reduce
+State 26 conflicts: 1 shift/reduce
+State 45 conflicts: 3 shift/reduce
+State 93 conflicts: 3 shift/reduce
+
+
+Grammar
+
+    0 $accept: jaws $end
+
+    1 $@1: %empty
+
+    2 jaws: bodies last_body $@1 last_body
+
+    3 bodies: bodies body
+    4       | body
+
+    5 body: header instructions footer
+
+    6 last_body: header instructions end_program
+
+    7 header: extra_lines LF TAB SPACE
+    8       | LF TAB SPACE
+
+    9 footer: LF TAB SPACE
+
+   10 end_program: end_instruction extra_lines
+   11            | end_instruction
+
+   12 end_instruction: LF LF LF
+
+   13 extra_lines: extra_lines extra_line
+   14            | extra_line
+
+   15 extra_line: SPACE
+   16           | TAB
+   17           | LF
+
+   18 instructions: instructions instruction
+   19             | instruction
+
+   20 instruction: stack_manipulation
+   21            | arithmetic
+   22            | heap_access
+   23            | flow_control
+   24            | io_action
+   25            | io_control
+
+   26 stack_manipulation: SPACE SPACE stack_command
+
+   27 arithmetic: SPACE TAB arith_command
+
+   28 heap_access: TAB TAB heap_command
+
+   29 flow_control: LF SPACE flow_command
+
+   30 io_action: TAB LF io_action_command
+
+   31 io_control: TAB SPACE io_control_command
+
+   32 stack_command: stack_push
+   33              | stack_duplicate
+   34              | stack_swap
+   35              | stack_discard
+
+   36 arith_command: addition
+   37              | subtraction
+   38              | multiplication
+   39              | integer_division
+   40              | modulo
+
+   41 heap_command: heap_store
+   42             | heap_retrieve
+
+   43 flow_command: new_label
+   44             | call_subroutine
+   45             | uncond_jump
+   46             | jump_if_zero
+   47             | jump_if_neg
+   48             | end_subroutine
+
+   49 io_action_command: output_char
+   50                  | output_int
+   51                  | read_char
+   52                  | read_int
+
+   53 io_control_command: stream_file
+   54                   | stream_net
+   55                   | stream_stdio
+
+   56 stack_push: SPACE number
+
+   57 stack_duplicate: LF SPACE
+
+   58 stack_swap: LF TAB
+
+   59 stack_discard: LF LF
+
+   60 addition: SPACE SPACE
+
+   61 subtraction: SPACE TAB
+
+   62 multiplication: SPACE LF
+
+   63 integer_division: TAB SPACE
+
+   64 modulo: TAB TAB
+
+   65 heap_store: SPACE
+
+   66 heap_retrieve: TAB
+
+   67 new_label: SPACE SPACE label
+
+   68 call_subroutine: SPACE TAB label
+
+   69 uncond_jump: SPACE LF label
+
+   70 jump_if_zero: TAB SPACE label
+
+   71 jump_if_neg: TAB TAB label
+
+   72 end_subroutine: TAB LF
+
+   73 output_char: SPACE SPACE
+
+   74 output_int: SPACE TAB
+
+   75 read_char: TAB SPACE
+
+   76 read_int: TAB TAB
+
+   77 stream_file: SPACE SPACE
+
+   78 stream_net: SPACE TAB ip port
+
+   79 stream_stdio: TAB SPACE
+
+   80 number: bits LF
+
+   81 label: bits LF
+
+   82 bits: bits bit
+   83     | bit
+
+   84 bit: SPACE
+   85    | TAB
+
+   86 ip: octet octet octet octet
+
+   87 octet: bit bit bit bit bit bit bit bit
+
+   88 port: octet octet
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    SPACE (258) 7 8 9 15 26 27 29 31 56 57 60 61 62 63 65 67 68 69 70 73 74 75 77 78 79 84
+    TAB (259) 7 8 9 16 27 28 30 31 58 61 63 64 66 68 70 71 72 74 75 76 78 79 85
+    LF (260) 7 8 9 12 17 29 30 57 58 59 62 69 72 80 81
+
+
+Nonterminals, with rules where they appear
+
+    $accept (6)
+        on left: 0
+    jaws (7)
+        on left: 2
+        on right: 0
+    $@1 (8)
+        on left: 1
+        on right: 2
+    bodies (9)
+        on left: 3 4
+        on right: 2 3
+    body (10)
+        on left: 5
+        on right: 3 4
+    last_body (11)
+        on left: 6
+        on right: 2
+    header (12)
+        on left: 7 8
+        on right: 5 6
+    footer (13)
+        on left: 9
+        on right: 5
+    end_program (14)
+        on left: 10 11
+        on right: 6
+    end_instruction (15)
+        on left: 12
+        on right: 10 11
+    extra_lines (16)
+        on left: 13 14
+        on right: 7 10 13
+    extra_line (17)
+        on left: 15 16 17
+        on right: 13 14
+    instructions (18)
+        on left: 18 19
+        on right: 5 6 18
+    instruction (19)
+        on left: 20 21 22 23 24 25
+        on right: 18 19
+    stack_manipulation (20)
+        on left: 26
+        on right: 20
+    arithmetic (21)
+        on left: 27
+        on right: 21
+    heap_access (22)
+        on left: 28
+        on right: 22
+    flow_control (23)
+        on left: 29
+        on right: 23
+    io_action (24)
+        on left: 30
+        on right: 24
+    io_control (25)
+        on left: 31
+        on right: 25
+    stack_command (26)
+        on left: 32 33 34 35
+        on right: 26
+    arith_command (27)
+        on left: 36 37 38 39 40
+        on right: 27
+    heap_command (28)
+        on left: 41 42
+        on right: 28
+    flow_command (29)
+        on left: 43 44 45 46 47 48
+        on right: 29
+    io_action_command (30)
+        on left: 49 50 51 52
+        on right: 30
+    io_control_command (31)
+        on left: 53 54 55
+        on right: 31
+    stack_push (32)
+        on left: 56
+        on right: 32
+    stack_duplicate (33)
+        on left: 57
+        on right: 33
+    stack_swap (34)
+        on left: 58
+        on right: 34
+    stack_discard (35)
+        on left: 59
+        on right: 35
+    addition (36)
+        on left: 60
+        on right: 36
+    subtraction (37)
+        on left: 61
+        on right: 37
+    multiplication (38)
+        on left: 62
+        on right: 38
+    integer_division (39)
+        on left: 63
+        on right: 39
+    modulo (40)
+        on left: 64
+        on right: 40
+    heap_store (41)
+        on left: 65
+        on right: 41
+    heap_retrieve (42)
+        on left: 66
+        on right: 42
+    new_label (43)
+        on left: 67
+        on right: 43
+    call_subroutine (44)
+        on left: 68
+        on right: 44
+    uncond_jump (45)
+        on left: 69
+        on right: 45
+    jump_if_zero (46)
+        on left: 70
+        on right: 46
+    jump_if_neg (47)
+        on left: 71
+        on right: 47
+    end_subroutine (48)
+        on left: 72
+        on right: 48
+    output_char (49)
+        on left: 73
+        on right: 49
+    output_int (50)
+        on left: 74
+        on right: 50
+    read_char (51)
+        on left: 75
+        on right: 51
+    read_int (52)
+        on left: 76
+        on right: 52
+    stream_file (53)
+        on left: 77
+        on right: 53
+    stream_net (54)
+        on left: 78
+        on right: 54
+    stream_stdio (55)
+        on left: 79
+        on right: 55
+    number (56)
+        on left: 80
+        on right: 56
+    label (57)
+        on left: 81
+        on right: 67 68 69 70 71
+    bits (58)
+        on left: 82 83
+        on right: 80 81 82
+    bit (59)
+        on left: 84 85
+        on right: 82 83 87
+    ip (60)
+        on left: 86
+        on right: 78
+    octet (61)
+        on left: 87
+        on right: 86 88
+    port (62)
+        on left: 88
+        on right: 78
+
+
+State 0
+
+    0 $accept: . jaws $end
+
+    SPACE  shift, and go to state 1
+    TAB    shift, and go to state 2
+    LF     shift, and go to state 3
+
+    jaws         go to state 4
+    bodies       go to state 5
+    body         go to state 6
+    header       go to state 7
+    extra_lines  go to state 8
+    extra_line   go to state 9
+
+
+State 1
+
+   15 extra_line: SPACE .
+
+    $default  reduce using rule 15 (extra_line)
+
+
+State 2
+
+   16 extra_line: TAB .
+
+    $default  reduce using rule 16 (extra_line)
+
+
+State 3
+
+    8 header: LF . TAB SPACE
+   17 extra_line: LF .
+
+    TAB  shift, and go to state 10
+
+    TAB       [reduce using rule 17 (extra_line)]
+    $default  reduce using rule 17 (extra_line)
+
+
+State 4
+
+    0 $accept: jaws . $end
+
+    $end  shift, and go to state 11
+
+
+State 5
+
+    2 jaws: bodies . last_body $@1 last_body
+    3 bodies: bodies . body
+
+    SPACE  shift, and go to state 1
+    TAB    shift, and go to state 2
+    LF     shift, and go to state 3
+
+    body         go to state 12
+    last_body    go to state 13
+    header       go to state 14
+    extra_lines  go to state 8
+    extra_line   go to state 9
+
+
+State 6
+
+    4 bodies: body .
+
+    $default  reduce using rule 4 (bodies)
+
+
+State 7
+
+    5 body: header . instructions footer
+
+    SPACE  shift, and go to state 15
+    TAB    shift, and go to state 16
+    LF     shift, and go to state 17
+
+    instructions        go to state 18
+    instruction         go to state 19
+    stack_manipulation  go to state 20
+    arithmetic          go to state 21
+    heap_access         go to state 22
+    flow_control        go to state 23
+    io_action           go to state 24
+    io_control          go to state 25
+
+
+State 8
+
+    7 header: extra_lines . LF TAB SPACE
+   13 extra_lines: extra_lines . extra_line
+
+    SPACE  shift, and go to state 1
+    TAB    shift, and go to state 2
+    LF     shift, and go to state 26
+
+    extra_line  go to state 27
+
+
+State 9
+
+   14 extra_lines: extra_line .
+
+    $default  reduce using rule 14 (extra_lines)
+
+
+State 10
+
+    8 header: LF TAB . SPACE
+
+    SPACE  shift, and go to state 28
+
+
+State 11
+
+    0 $accept: jaws $end .
+
+    $default  accept
+
+
+State 12
+
+    3 bodies: bodies body .
+
+    $default  reduce using rule 3 (bodies)
+
+
+State 13
+
+    2 jaws: bodies last_body . $@1 last_body
+
+    $default  reduce using rule 1 ($@1)
+
+    $@1  go to state 29
+
+
+State 14
+
+    5 body: header . instructions footer
+    6 last_body: header . instructions end_program
+
+    SPACE  shift, and go to state 15
+    TAB    shift, and go to state 16
+    LF     shift, and go to state 17
+
+    instructions        go to state 30
+    instruction         go to state 19
+    stack_manipulation  go to state 20
+    arithmetic          go to state 21
+    heap_access         go to state 22
+    flow_control        go to state 23
+    io_action           go to state 24
+    io_control          go to state 25
+
+
+State 15
+
+   26 stack_manipulation: SPACE . SPACE stack_command
+   27 arithmetic: SPACE . TAB arith_command
+
+    SPACE  shift, and go to state 31
+    TAB    shift, and go to state 32
+
+
+State 16
+
+   28 heap_access: TAB . TAB heap_command
+   30 io_action: TAB . LF io_action_command
+   31 io_control: TAB . SPACE io_control_command
+
+    SPACE  shift, and go to state 33
+    TAB    shift, and go to state 34
+    LF     shift, and go to state 35
+
+
+State 17
+
+   29 flow_control: LF . SPACE flow_command
+
+    SPACE  shift, and go to state 36
+
+
+State 18
+
+    5 body: header instructions . footer
+   18 instructions: instructions . instruction
+
+    SPACE  shift, and go to state 15
+    TAB    shift, and go to state 16
+    LF     shift, and go to state 37
+
+    footer              go to state 38
+    instruction         go to state 39
+    stack_manipulation  go to state 20
+    arithmetic          go to state 21
+    heap_access         go to state 22
+    flow_control        go to state 23
+    io_action           go to state 24
+    io_control          go to state 25
+
+
+State 19
+
+   19 instructions: instruction .
+
+    $default  reduce using rule 19 (instructions)
+
+
+State 20
+
+   20 instruction: stack_manipulation .
+
+    $default  reduce using rule 20 (instruction)
+
+
+State 21
+
+   21 instruction: arithmetic .
+
+    $default  reduce using rule 21 (instruction)
+
+
+State 22
+
+   22 instruction: heap_access .
+
+    $default  reduce using rule 22 (instruction)
+
+
+State 23
+
+   23 instruction: flow_control .
+
+    $default  reduce using rule 23 (instruction)
+
+
+State 24
+
+   24 instruction: io_action .
+
+    $default  reduce using rule 24 (instruction)
+
+
+State 25
+
+   25 instruction: io_control .
+
+    $default  reduce using rule 25 (instruction)
+
+
+State 26
+
+    7 header: extra_lines LF . TAB SPACE
+   17 extra_line: LF .
+
+    TAB  shift, and go to state 40
+
+    TAB       [reduce using rule 17 (extra_line)]
+    $default  reduce using rule 17 (extra_line)
+
+
+State 27
+
+   13 extra_lines: extra_lines extra_line .
+
+    $default  reduce using rule 13 (extra_lines)
+
+
+State 28
+
+    8 header: LF TAB SPACE .
+
+    $default  reduce using rule 8 (header)
+
+
+State 29
+
+    2 jaws: bodies last_body $@1 . last_body
+
+    SPACE  shift, and go to state 1
+    TAB    shift, and go to state 2
+    LF     shift, and go to state 3
+
+    last_body    go to state 41
+    header       go to state 42
+    extra_lines  go to state 8
+    extra_line   go to state 9
+
+
+State 30
+
+    5 body: header instructions . footer
+    6 last_body: header instructions . end_program
+   18 instructions: instructions . instruction
+
+    SPACE  shift, and go to state 15
+    TAB    shift, and go to state 16
+    LF     shift, and go to state 43
+
+    footer              go to state 38
+    end_program         go to state 44
+    end_instruction     go to state 45
+    instruction         go to state 39
+    stack_manipulation  go to state 20
+    arithmetic          go to state 21
+    heap_access         go to state 22
+    flow_control        go to state 23
+    io_action           go to state 24
+    io_control          go to state 25
+
+
+State 31
+
+   26 stack_manipulation: SPACE SPACE . stack_command
+
+    SPACE  shift, and go to state 46
+    LF     shift, and go to state 47
+
+    stack_command    go to state 48
+    stack_push       go to state 49
+    stack_duplicate  go to state 50
+    stack_swap       go to state 51
+    stack_discard    go to state 52
+
+
+State 32
+
+   27 arithmetic: SPACE TAB . arith_command
+
+    SPACE  shift, and go to state 53
+    TAB    shift, and go to state 54
+
+    arith_command     go to state 55
+    addition          go to state 56
+    subtraction       go to state 57
+    multiplication    go to state 58
+    integer_division  go to state 59
+    modulo            go to state 60
+
+
+State 33
+
+   31 io_control: TAB SPACE . io_control_command
+
+    SPACE  shift, and go to state 61
+    TAB    shift, and go to state 62
+
+    io_control_command  go to state 63
+    stream_file         go to state 64
+    stream_net          go to state 65
+    stream_stdio        go to state 66
+
+
+State 34
+
+   28 heap_access: TAB TAB . heap_command
+
+    SPACE  shift, and go to state 67
+    TAB    shift, and go to state 68
+
+    heap_command   go to state 69
+    heap_store     go to state 70
+    heap_retrieve  go to state 71
+
+
+State 35
+
+   30 io_action: TAB LF . io_action_command
+
+    SPACE  shift, and go to state 72
+    TAB    shift, and go to state 73
+
+    io_action_command  go to state 74
+    output_char        go to state 75
+    output_int         go to state 76
+    read_char          go to state 77
+    read_int           go to state 78
+
+
+State 36
+
+   29 flow_control: LF SPACE . flow_command
+
+    SPACE  shift, and go to state 79
+    TAB    shift, and go to state 80
+
+    flow_command     go to state 81
+    new_label        go to state 82
+    call_subroutine  go to state 83
+    uncond_jump      go to state 84
+    jump_if_zero     go to state 85
+    jump_if_neg      go to state 86
+    end_subroutine   go to state 87
+
+
+State 37
+
+    9 footer: LF . TAB SPACE
+   29 flow_control: LF . SPACE flow_command
+
+    SPACE  shift, and go to state 36
+    TAB    shift, and go to state 88
+
+
+State 38
+
+    5 body: header instructions footer .
+
+    $default  reduce using rule 5 (body)
+
+
+State 39
+
+   18 instructions: instructions instruction .
+
+    $default  reduce using rule 18 (instructions)
+
+
+State 40
+
+    7 header: extra_lines LF TAB . SPACE
+
+    SPACE  shift, and go to state 89
+
+
+State 41
+
+    2 jaws: bodies last_body $@1 last_body .
+
+    $default  reduce using rule 2 (jaws)
+
+
+State 42
+
+    6 last_body: header . instructions end_program
+
+    SPACE  shift, and go to state 15
+    TAB    shift, and go to state 16
+    LF     shift, and go to state 17
+
+    instructions        go to state 90
+    instruction         go to state 19
+    stack_manipulation  go to state 20
+    arithmetic          go to state 21
+    heap_access         go to state 22
+    flow_control        go to state 23
+    io_action           go to state 24
+    io_control          go to state 25
+
+
+State 43
+
+    9 footer: LF . TAB SPACE
+   12 end_instruction: LF . LF LF
+   29 flow_control: LF . SPACE flow_command
+
+    SPACE  shift, and go to state 36
+    TAB    shift, and go to state 88
+    LF     shift, and go to state 91
+
+
+State 44
+
+    6 last_body: header instructions end_program .
+
+    $default  reduce using rule 6 (last_body)
+
+
+State 45
+
+   10 end_program: end_instruction . extra_lines
+   11            | end_instruction .
+
+    SPACE  shift, and go to state 1
+    TAB    shift, and go to state 2
+    LF     shift, and go to state 92
+
+    SPACE     [reduce using rule 11 (end_program)]
+    TAB       [reduce using rule 11 (end_program)]
+    LF        [reduce using rule 11 (end_program)]
+    $default  reduce using rule 11 (end_program)
+
+    extra_lines  go to state 93
+    extra_line   go to state 9
+
+
+State 46
+
+   56 stack_push: SPACE . number
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    number  go to state 96
+    bits    go to state 97
+    bit     go to state 98
+
+
+State 47
+
+   57 stack_duplicate: LF . SPACE
+   58 stack_swap: LF . TAB
+   59 stack_discard: LF . LF
+
+    SPACE  shift, and go to state 99
+    TAB    shift, and go to state 100
+    LF     shift, and go to state 101
+
+
+State 48
+
+   26 stack_manipulation: SPACE SPACE stack_command .
+
+    $default  reduce using rule 26 (stack_manipulation)
+
+
+State 49
+
+   32 stack_command: stack_push .
+
+    $default  reduce using rule 32 (stack_command)
+
+
+State 50
+
+   33 stack_command: stack_duplicate .
+
+    $default  reduce using rule 33 (stack_command)
+
+
+State 51
+
+   34 stack_command: stack_swap .
+
+    $default  reduce using rule 34 (stack_command)
+
+
+State 52
+
+   35 stack_command: stack_discard .
+
+    $default  reduce using rule 35 (stack_command)
+
+
+State 53
+
+   60 addition: SPACE . SPACE
+   61 subtraction: SPACE . TAB
+   62 multiplication: SPACE . LF
+
+    SPACE  shift, and go to state 102
+    TAB    shift, and go to state 103
+    LF     shift, and go to state 104
+
+
+State 54
+
+   63 integer_division: TAB . SPACE
+   64 modulo: TAB . TAB
+
+    SPACE  shift, and go to state 105
+    TAB    shift, and go to state 106
+
+
+State 55
+
+   27 arithmetic: SPACE TAB arith_command .
+
+    $default  reduce using rule 27 (arithmetic)
+
+
+State 56
+
+   36 arith_command: addition .
+
+    $default  reduce using rule 36 (arith_command)
+
+
+State 57
+
+   37 arith_command: subtraction .
+
+    $default  reduce using rule 37 (arith_command)
+
+
+State 58
+
+   38 arith_command: multiplication .
+
+    $default  reduce using rule 38 (arith_command)
+
+
+State 59
+
+   39 arith_command: integer_division .
+
+    $default  reduce using rule 39 (arith_command)
+
+
+State 60
+
+   40 arith_command: modulo .
+
+    $default  reduce using rule 40 (arith_command)
+
+
+State 61
+
+   77 stream_file: SPACE . SPACE
+   78 stream_net: SPACE . TAB ip port
+
+    SPACE  shift, and go to state 107
+    TAB    shift, and go to state 108
+
+
+State 62
+
+   79 stream_stdio: TAB . SPACE
+
+    SPACE  shift, and go to state 109
+
+
+State 63
+
+   31 io_control: TAB SPACE io_control_command .
+
+    $default  reduce using rule 31 (io_control)
+
+
+State 64
+
+   53 io_control_command: stream_file .
+
+    $default  reduce using rule 53 (io_control_command)
+
+
+State 65
+
+   54 io_control_command: stream_net .
+
+    $default  reduce using rule 54 (io_control_command)
+
+
+State 66
+
+   55 io_control_command: stream_stdio .
+
+    $default  reduce using rule 55 (io_control_command)
+
+
+State 67
+
+   65 heap_store: SPACE .
+
+    $default  reduce using rule 65 (heap_store)
+
+
+State 68
+
+   66 heap_retrieve: TAB .
+
+    $default  reduce using rule 66 (heap_retrieve)
+
+
+State 69
+
+   28 heap_access: TAB TAB heap_command .
+
+    $default  reduce using rule 28 (heap_access)
+
+
+State 70
+
+   41 heap_command: heap_store .
+
+    $default  reduce using rule 41 (heap_command)
+
+
+State 71
+
+   42 heap_command: heap_retrieve .
+
+    $default  reduce using rule 42 (heap_command)
+
+
+State 72
+
+   73 output_char: SPACE . SPACE
+   74 output_int: SPACE . TAB
+
+    SPACE  shift, and go to state 110
+    TAB    shift, and go to state 111
+
+
+State 73
+
+   75 read_char: TAB . SPACE
+   76 read_int: TAB . TAB
+
+    SPACE  shift, and go to state 112
+    TAB    shift, and go to state 113
+
+
+State 74
+
+   30 io_action: TAB LF io_action_command .
+
+    $default  reduce using rule 30 (io_action)
+
+
+State 75
+
+   49 io_action_command: output_char .
+
+    $default  reduce using rule 49 (io_action_command)
+
+
+State 76
+
+   50 io_action_command: output_int .
+
+    $default  reduce using rule 50 (io_action_command)
+
+
+State 77
+
+   51 io_action_command: read_char .
+
+    $default  reduce using rule 51 (io_action_command)
+
+
+State 78
+
+   52 io_action_command: read_int .
+
+    $default  reduce using rule 52 (io_action_command)
+
+
+State 79
+
+   67 new_label: SPACE . SPACE label
+   68 call_subroutine: SPACE . TAB label
+   69 uncond_jump: SPACE . LF label
+
+    SPACE  shift, and go to state 114
+    TAB    shift, and go to state 115
+    LF     shift, and go to state 116
+
+
+State 80
+
+   70 jump_if_zero: TAB . SPACE label
+   71 jump_if_neg: TAB . TAB label
+   72 end_subroutine: TAB . LF
+
+    SPACE  shift, and go to state 117
+    TAB    shift, and go to state 118
+    LF     shift, and go to state 119
+
+
+State 81
+
+   29 flow_control: LF SPACE flow_command .
+
+    $default  reduce using rule 29 (flow_control)
+
+
+State 82
+
+   43 flow_command: new_label .
+
+    $default  reduce using rule 43 (flow_command)
+
+
+State 83
+
+   44 flow_command: call_subroutine .
+
+    $default  reduce using rule 44 (flow_command)
+
+
+State 84
+
+   45 flow_command: uncond_jump .
+
+    $default  reduce using rule 45 (flow_command)
+
+
+State 85
+
+   46 flow_command: jump_if_zero .
+
+    $default  reduce using rule 46 (flow_command)
+
+
+State 86
+
+   47 flow_command: jump_if_neg .
+
+    $default  reduce using rule 47 (flow_command)
+
+
+State 87
+
+   48 flow_command: end_subroutine .
+
+    $default  reduce using rule 48 (flow_command)
+
+
+State 88
+
+    9 footer: LF TAB . SPACE
+
+    SPACE  shift, and go to state 120
+
+
+State 89
+
+    7 header: extra_lines LF TAB SPACE .
+
+    $default  reduce using rule 7 (header)
+
+
+State 90
+
+    6 last_body: header instructions . end_program
+   18 instructions: instructions . instruction
+
+    SPACE  shift, and go to state 15
+    TAB    shift, and go to state 16
+    LF     shift, and go to state 121
+
+    end_program         go to state 44
+    end_instruction     go to state 45
+    instruction         go to state 39
+    stack_manipulation  go to state 20
+    arithmetic          go to state 21
+    heap_access         go to state 22
+    flow_control        go to state 23
+    io_action           go to state 24
+    io_control          go to state 25
+
+
+State 91
+
+   12 end_instruction: LF LF . LF
+
+    LF  shift, and go to state 122
+
+
+State 92
+
+   17 extra_line: LF .
+
+    $default  reduce using rule 17 (extra_line)
+
+
+State 93
+
+   10 end_program: end_instruction extra_lines .
+   13 extra_lines: extra_lines . extra_line
+
+    SPACE  shift, and go to state 1
+    TAB    shift, and go to state 2
+    LF     shift, and go to state 92
+
+    SPACE     [reduce using rule 10 (end_program)]
+    TAB       [reduce using rule 10 (end_program)]
+    LF        [reduce using rule 10 (end_program)]
+    $default  reduce using rule 10 (end_program)
+
+    extra_line  go to state 27
+
+
+State 94
+
+   84 bit: SPACE .
+
+    $default  reduce using rule 84 (bit)
+
+
+State 95
+
+   85 bit: TAB .
+
+    $default  reduce using rule 85 (bit)
+
+
+State 96
+
+   56 stack_push: SPACE number .
+
+    $default  reduce using rule 56 (stack_push)
+
+
+State 97
+
+   80 number: bits . LF
+   82 bits: bits . bit
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+    LF     shift, and go to state 123
+
+    bit  go to state 124
+
+
+State 98
+
+   83 bits: bit .
+
+    $default  reduce using rule 83 (bits)
+
+
+State 99
+
+   57 stack_duplicate: LF SPACE .
+
+    $default  reduce using rule 57 (stack_duplicate)
+
+
+State 100
+
+   58 stack_swap: LF TAB .
+
+    $default  reduce using rule 58 (stack_swap)
+
+
+State 101
+
+   59 stack_discard: LF LF .
+
+    $default  reduce using rule 59 (stack_discard)
+
+
+State 102
+
+   60 addition: SPACE SPACE .
+
+    $default  reduce using rule 60 (addition)
+
+
+State 103
+
+   61 subtraction: SPACE TAB .
+
+    $default  reduce using rule 61 (subtraction)
+
+
+State 104
+
+   62 multiplication: SPACE LF .
+
+    $default  reduce using rule 62 (multiplication)
+
+
+State 105
+
+   63 integer_division: TAB SPACE .
+
+    $default  reduce using rule 63 (integer_division)
+
+
+State 106
+
+   64 modulo: TAB TAB .
+
+    $default  reduce using rule 64 (modulo)
+
+
+State 107
+
+   77 stream_file: SPACE SPACE .
+
+    $default  reduce using rule 77 (stream_file)
+
+
+State 108
+
+   78 stream_net: SPACE TAB . ip port
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    bit    go to state 125
+    ip     go to state 126
+    octet  go to state 127
+
+
+State 109
+
+   79 stream_stdio: TAB SPACE .
+
+    $default  reduce using rule 79 (stream_stdio)
+
+
+State 110
+
+   73 output_char: SPACE SPACE .
+
+    $default  reduce using rule 73 (output_char)
+
+
+State 111
+
+   74 output_int: SPACE TAB .
+
+    $default  reduce using rule 74 (output_int)
+
+
+State 112
+
+   75 read_char: TAB SPACE .
+
+    $default  reduce using rule 75 (read_char)
+
+
+State 113
+
+   76 read_int: TAB TAB .
+
+    $default  reduce using rule 76 (read_int)
+
+
+State 114
+
+   67 new_label: SPACE SPACE . label
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    label  go to state 128
+    bits   go to state 129
+    bit    go to state 98
+
+
+State 115
+
+   68 call_subroutine: SPACE TAB . label
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    label  go to state 130
+    bits   go to state 129
+    bit    go to state 98
+
+
+State 116
+
+   69 uncond_jump: SPACE LF . label
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    label  go to state 131
+    bits   go to state 129
+    bit    go to state 98
+
+
+State 117
+
+   70 jump_if_zero: TAB SPACE . label
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    label  go to state 132
+    bits   go to state 129
+    bit    go to state 98
+
+
+State 118
+
+   71 jump_if_neg: TAB TAB . label
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    label  go to state 133
+    bits   go to state 129
+    bit    go to state 98
+
+
+State 119
+
+   72 end_subroutine: TAB LF .
+
+    $default  reduce using rule 72 (end_subroutine)
+
+
+State 120
+
+    9 footer: LF TAB SPACE .
+
+    $default  reduce using rule 9 (footer)
+
+
+State 121
+
+   12 end_instruction: LF . LF LF
+   29 flow_control: LF . SPACE flow_command
+
+    SPACE  shift, and go to state 36
+    LF     shift, and go to state 91
+
+
+State 122
+
+   12 end_instruction: LF LF LF .
+
+    $default  reduce using rule 12 (end_instruction)
+
+
+State 123
+
+   80 number: bits LF .
+
+    $default  reduce using rule 80 (number)
+
+
+State 124
+
+   82 bits: bits bit .
+
+    $default  reduce using rule 82 (bits)
+
+
+State 125
+
+   87 octet: bit . bit bit bit bit bit bit bit
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    bit  go to state 134
+
+
+State 126
+
+   78 stream_net: SPACE TAB ip . port
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    bit    go to state 125
+    octet  go to state 135
+    port   go to state 136
+
+
+State 127
+
+   86 ip: octet . octet octet octet
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    bit    go to state 125
+    octet  go to state 137
+
+
+State 128
+
+   67 new_label: SPACE SPACE label .
+
+    $default  reduce using rule 67 (new_label)
+
+
+State 129
+
+   81 label: bits . LF
+   82 bits: bits . bit
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+    LF     shift, and go to state 138
+
+    bit  go to state 124
+
+
+State 130
+
+   68 call_subroutine: SPACE TAB label .
+
+    $default  reduce using rule 68 (call_subroutine)
+
+
+State 131
+
+   69 uncond_jump: SPACE LF label .
+
+    $default  reduce using rule 69 (uncond_jump)
+
+
+State 132
+
+   70 jump_if_zero: TAB SPACE label .
+
+    $default  reduce using rule 70 (jump_if_zero)
+
+
+State 133
+
+   71 jump_if_neg: TAB TAB label .
+
+    $default  reduce using rule 71 (jump_if_neg)
+
+
+State 134
+
+   87 octet: bit bit . bit bit bit bit bit bit
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    bit  go to state 139
+
+
+State 135
+
+   88 port: octet . octet
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    bit    go to state 125
+    octet  go to state 140
+
+
+State 136
+
+   78 stream_net: SPACE TAB ip port .
+
+    $default  reduce using rule 78 (stream_net)
+
+
+State 137
+
+   86 ip: octet octet . octet octet
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    bit    go to state 125
+    octet  go to state 141
+
+
+State 138
+
+   81 label: bits LF .
+
+    $default  reduce using rule 81 (label)
+
+
+State 139
+
+   87 octet: bit bit bit . bit bit bit bit bit
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    bit  go to state 142
+
+
+State 140
+
+   88 port: octet octet .
+
+    $default  reduce using rule 88 (port)
+
+
+State 141
+
+   86 ip: octet octet octet . octet
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    bit    go to state 125
+    octet  go to state 143
+
+
+State 142
+
+   87 octet: bit bit bit bit . bit bit bit bit
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    bit  go to state 144
+
+
+State 143
+
+   86 ip: octet octet octet octet .
+
+    $default  reduce using rule 86 (ip)
+
+
+State 144
+
+   87 octet: bit bit bit bit bit . bit bit bit
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    bit  go to state 145
+
+
+State 145
+
+   87 octet: bit bit bit bit bit bit . bit bit
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    bit  go to state 146
+
+
+State 146
+
+   87 octet: bit bit bit bit bit bit bit . bit
+
+    SPACE  shift, and go to state 94
+    TAB    shift, and go to state 95
+
+    bit  go to state 147
+
+
+State 147
+
+   87 octet: bit bit bit bit bit bit bit bit .
+
+    $default  reduce using rule 87 (octet)

@@ -7,6 +7,7 @@
   extern "C" int yylex();
   extern int yyparse();
   extern FILE *yyin;
+  extern int lineNum;
 
   void yyerror(const char *s);
 %}
@@ -28,7 +29,7 @@ jaws:
   bodies last_body {
     cout << "done with a jaws file!" << endl;
   }
-  last_body {
+  | last_body {
     cout << "done with a jaws file!" << endl;
   };
 bodies:
@@ -47,14 +48,28 @@ header:
   }
   | LF TAB SPACE {
     cout << "Started interpreting jaws code..." << endl;
-  }
-  ;
+  };
 footer:
   LF TAB SPACE {
     cout << "Paused interpreting jaws code..." << endl;
-  }
+  };
+end_program:
+  end_instruction extra_lines
+  | end_instruction
   ;
-
+end_instruction:
+  LF LF LF {
+    cout << "end of program" << endl;
+  };
+extra_lines:
+  extra_lines extra_line
+  | extra_line
+  ;
+extra_line:
+  SPACE
+  | TAB
+  | LF
+  ;
 instructions:
   instructions instruction
   | instruction
@@ -67,7 +82,6 @@ instruction:
   | io_action
   | io_control
   ;
-
 // ---- IMP Defs ----
 stack_manipulation:
   SPACE SPACE stack_command
@@ -87,15 +101,6 @@ io_action:
 io_control:
   TAB SPACE io_control_command
   ;
-end_program:
-  LF LF LF {
-    cout << "end of program" << endl;
-  }
-  | LF LF LF extra_lines {
-    cout << "end of program" << endl;
-  }
-  ;
-
 // --- IMP Commands ---
 stack_command:
   stack_push
@@ -266,16 +271,6 @@ port:
   octet octet {
     cout << "<port>" << endl;
   };
-// extra_lines -- ignore whitespace
-extra_lines:
-  extra_lines extra_line
-  | extra_line
-  ;
-extra_line:
-  SPACE
-  | TAB
-  | LF
-  ;
 // done with grammar
 %%
 
@@ -296,7 +291,7 @@ int main(int, char**) {
 }
 
 void yyerror(const char *s) {
-  cout << "Whoopsie daisies, parse error!  Message: " << s << endl;
+  cout << "Whoopsie daisies, error while parsing line " << lineNum << "!  Message: " << s << endl;
   // might as well halt now:
   exit(1);
 }

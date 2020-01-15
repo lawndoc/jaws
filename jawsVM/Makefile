@@ -5,12 +5,12 @@
 # compiler to use
 CC = g++
 
-LINKERFLAG = -lfl
-
+# check program dependencies
 EXECUTABLES = bison flex g++
 K := $(foreach exec,$(EXECUTABLES),\
 	        $(if $(shell which $(exec)),some string,$(error "No $(exec) in PATH")))
 
+# begin Makefile
 all: jaws.tab.c jaws.tab.h lex.yy.c jaws
 
 jaws.tab.c jaws.tab.h: jaws.y
@@ -23,7 +23,7 @@ lex.yy.c: jaws.l jaws.tab.h
 
 jaws: lex.yy.c jaws.tab.c jaws.tab.h
 	@echo "Compiling parser..."
-	@${CC} jaws.tab.c lex.yy.c ${LINKERFLAG} -o jaws
+	@${CC} jaws.tab.c lex.yy.c -o jaws
 
 clean:
 	@echo "Cleaning up..."
