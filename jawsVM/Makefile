@@ -23,12 +23,12 @@ lex.yy.c: jaws.l jaws.tab.h
 
 jaws: lex.yy.c jaws.tab.c jaws.tab.h
 	@echo "Compiling parser..."
-	@${CC} jaws.tab.c lex.yy.c -o jaws
+	@${CC} jaws.tab.c lex.jaws.c -o jaws
 
 clean:
 	@echo "Cleaning up..."
 	@rm jaws.tab.c
 	@rm jaws.tab.h
-	@rm lex.yy.c
+	@rm lex.jaws.c
 	@rm jaws
 	@echo "Done."

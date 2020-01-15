@@ -4,13 +4,15 @@
   using namespace std;
 
   // Declare stuff from Flex that Bison needs to know about:
-  extern "C" int yylex();
-  extern int yyparse();
-  extern FILE *yyin;
+  extern "C" int jawslex();
+  extern int jawsparse();
+  extern FILE *jawsin;
   extern int lineNum;
 
-  void yyerror(const char *s);
+  void jawserror(const char *s);
 %}
+
+%define api.prefix {jaws}
 
 // Declare token types 
 %token SPACE
@@ -20,11 +22,6 @@
 %%
 
 // Grammmar 
-
-//jaws:
-//  instructions end_program
-//  ;
-
 jaws:
   bodies last_body {
     cout << "done with a jaws file!" << endl;
@@ -283,14 +280,14 @@ int main(int, char**) {
     return -1;
   }
   // Set Flex to read from it instead of defaulting to STDIN:
-  yyin = myfile;
+  jawsin = myfile;
 
   // Parse through the input:
-  yyparse();
+  jawsparse();
 
 }
 
-void yyerror(const char *s) {
+void jawserror(const char *s) {
   cout << "Whoopsie daisies, error while parsing line " << lineNum << "!  Message: " << s << endl;
   // might as well halt now:
   exit(1);

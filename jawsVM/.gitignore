@@ -1,4 +1,4 @@
 jaws
 jaws.tab.c
 jaws.tab.h
-lex.yy.c
+lex.jaws.c
