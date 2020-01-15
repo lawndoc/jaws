@@ -10,6 +10,12 @@ Jaws (Just Another WhiteSpace) is an esoteric interpreted programming language s
 
 Like whitespace, the only lexical tokens in Jaws are *Space* (ASCII 32), *Tab*, (ASCII 9), and *Line Feed* (ASCII 10). The original choice to use line feed only and not carraige return was to avoid DOS/Unix conversion problems.
 
+## Starting/Stopping Interpretation
+
+Jaws code will only interpret whitespace tokens in the section of the file between the Jaws Header and Footer. There can be any number of such sections in the same file. This gives the Jaws interpreter the ability to start and stop interpretation any number of times until the end-of-program statement is reached. The tokens that make up the Header and the Footer are identical:
+
+`[LF][Tab][Space]` Header/Footer
+
 ## Instruction Set
 
 Each instruction consists of two parts: The Instruction Modification Parameter (IMP) and the command. The IMP describes what type of operation the command is. The command is interpreted based on which IMP preceeded it, and it is then executed accordingly. The IMPs and their commands are listed below.
