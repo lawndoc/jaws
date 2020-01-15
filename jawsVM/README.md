@@ -1,12 +1,20 @@
-# jaws
+# Jaws
 
-jaws (Just Another WhiteSpace) is an esoteric interpreted programming language strongly based on another, called [whitespace][1], with added functionality. jaws is an imperative, stack based language. The name jaws is an acronym, but the word itself was also intended to hold meaning because the code, being invisible to the human eye, is like a threat hidden beneath the surface.
+![Jaws Logo](../resources/jawsLogo.png)
+
+Jaws (Just Another WhiteSpace) is an esoteric interpreted programming language strongly based on another, called [whitespace][1], with added functionality. Jaws is an imperative, stack based language. The name Jaws is an acronym, but the word itself was also intended to hold meaning because the code, being invisible to the human eye, is like a threat hidden beneath the surface.
 
 [1]: https://en.wikipedia.org/wiki/Whitespace_(programming_language) "wikipedia"
 
 ## Lexical Tokens
 
-Like whitespace, the only lexical tokens in jaws are *Space* (ASCII 32), *Tab*, (ASCII 9), and *Line Feed* (ASCII 10). The original choice to use line feed only and not carraige return was to avoid DOS/Unix conversion problems.
+Like whitespace, the only lexical tokens in Jaws are *Space* (ASCII 32), *Tab*, (ASCII 9), and *Line Feed* (ASCII 10). The original choice to use line feed only and not carraige return was to avoid DOS/Unix conversion problems.
+
+## Starting/Stopping Interpretation
+
+Jaws code will only interpret whitespace tokens in the section of the file between the Jaws Header and Footer. There can be any number of such sections in the same file. This gives the Jaws interpreter the ability to start and stop interpretation any number of times until the end-of-program statement is reached. The tokens that make up the Header and the Footer are identical:
+
+`[LF][Tab][Space]` Header/Footer
 
 ## Instruction Set
 
@@ -14,7 +22,7 @@ Each instruction consists of two parts: The Instruction Modification Parameter (
 
 ## Instruction Modification Parameter (IMP)
 
-The IMP is the first part of a jaws instruction. The command following it will be interpreted differently depending on which IMP is selected. The chart below illustrates each IMP:
+The IMP is the first part of a Jaws instruction. The command following it will be interpreted differently depending on which IMP is selected. The chart below illustrates each IMP:
 
 `[Space][Space]` Stack Manipulation
 
@@ -22,11 +30,13 @@ The IMP is the first part of a jaws instruction. The command following it will b
 
 `[Tab][Tab]` Heap Access
 
-`[LF]` Flow Control
+`[LF][Space]` Flow Control
 
 `[Tab][LF]` I/O Action
 
 `[Tab][Space]` I/O Control
+
+`[LF][LF][LF]` End Program (no command)
 
 ## Commands
 
@@ -66,7 +76,7 @@ Heap access commands look at the stack to find the address of items to be stored
 
 `[Tab]` Retrieve
 
-### Flow Control (IMP: `[LF]`)
+### Flow Control (IMP: `[LF][Space]`)
 
 Flow control operations are also very common. Subroutines are marked by labels, as well as the targets of conditional and unconditional jumps, by which loops can be implemented. Programs must be ended with three line feeds so that the interpreter can exit cleanly.
 
@@ -82,8 +92,6 @@ Flow control operations are also very common. Subroutines are marked by labels, 
 
 `[Tab][LF]` End a subroutine and jump back to caller
 
-`[LF][LF]` End the program
-
 ### I/O Action (IMP: `[Tab][LF]`)
 
 We need to be able to interact with the user and the disk. There are I/O instructions for reading and writing numbers and individual characters. With these, string manipulation routines can be written. NOTE: the *read* instructions gets the heap address in which to store the result from the top of the stack.
@@ -96,7 +104,7 @@ We need to be able to interact with the user and the disk. There are I/O instruc
 
 `[Tab][Tab]` Read a number and place it in the location given by the top of the stack
 
-### I/O Control (IMP `[Tab][Space]`) -- IN PROGRESS
+### I/O Control (IMP `[Tab][Space]`)
 
 We need to be able to read and write from the disk. To do that, we will change the I/O stream from standard in/out to a file.
 

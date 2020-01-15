@@ -1,4 +1,4 @@
 jaws
-test.jaws
-jaws.l
-jaws.y
+jaws.tab.c
+jaws.tab.h
+lex.jaws.c

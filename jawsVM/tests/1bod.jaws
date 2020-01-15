@@ -1,0 +1,14 @@
+not interpreting yet, so here's a header[LF][T][S]
+	 stackPush[S][S][S][data...]    	 	 	  	
+stackPush[S][S][S][data...]    	 			 	 	 
+addition[S][T][S][S] 	  stackDiscard[S][S][LF][LF]  
+
+stackDiscard[S][S][LF][LF]  
+
+endProgram[LF][LF][LF]
+
+
+program is terminated now, extra stuff that
+doesn't
+matter  a a 
+
