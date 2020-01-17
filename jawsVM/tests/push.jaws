@@ -1,0 +1,8 @@
+header[LF][T][S]
+	 stackPush[S][S][S][10001010]   	   	 	 
+stackPush[S][S][S][00000001]          	
+stackPush[S][S][S][00000010]         	 
+endProgram[LF][LF][LF]
+
+
+

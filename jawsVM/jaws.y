@@ -1,6 +1,8 @@
 %{
   #include <cstdio>
+  #include <cstring>
   #include <iostream>
+  #include <math.h>
   using namespace std;
 
   // Declare stuff from Flex that Bison needs to know about:
@@ -10,9 +12,21 @@
   extern int lineNum;
 
   void jawserror(const char *s);
+  void accum_add(long bit);
+  long calc_accum();
+  void reset_accum();
+
+  // Declare global variables
+  char BITSTRING[33];
+  long ACCUM = 0x00000000;	// used for building binary numbers
+  short COUNT = 0;		// used for building binary numbers
 %}
 
 %define api.prefix {jaws}
+
+%union {
+  long val;
+}
 
 // Declare token types 
 %token SPACE
@@ -140,7 +154,10 @@ io_control_command:
 // stack
 stack_push:
   SPACE number {
-    cout << "push data on top of the stack" << endl;
+    // TODO: print value as character when 8 bits
+    cout << "push " << $<val>2 << " on top of the stack" << endl;
+    reset_accum();
+    //cout << "push a number on top of the stack" << endl;
   };
 stack_duplicate:
   LF SPACE {
@@ -187,23 +204,28 @@ heap_retrieve:
 // flow control
 new_label:
   SPACE SPACE label {
-    cout << "new label" << endl;
+    cout << "new label '" << $<val>3 << "'" << endl;
+    reset_accum();
   };
 call_subroutine:
   SPACE TAB label {
-    cout << "call subroutine" << endl;
+    cout << "call subroutine at label " << $<val>3 << endl;
+    reset_accum();
   };
 uncond_jump:
   SPACE LF label {
-    cout << "jump unconditionally" << endl;
+    cout << "jump unconditionally to label " << $<val>3 << endl;
+    reset_accum();
   };
 jump_if_zero:
   TAB SPACE label {
-    cout << "jump if top of stack is zero" << endl;
+    cout << "jump to label " << $<val>3 << " if top of stack is zero" << endl;
+    reset_accum();
   };
 jump_if_neg:
   TAB TAB label {
-    cout << "jump if top of stack is negative" << endl;
+    cout << "jump to " << $<val>3 << " if top of stack is negative" << endl;
+    reset_accum();
   };
 end_subroutine:
   TAB LF {
@@ -233,8 +255,9 @@ stream_file:
     cout << "streaming from a file" << endl;
   };
 stream_net:
-  SPACE TAB ip port {
-    cout << "streaming from network connection: " << endl;
+  SPACE TAB ip { reset_accum(); } port {
+    cout << "streaming from network connection IP: " << $<val>3 << " Port: " << $<val>4 << endl;
+    reset_accum();
   };
 stream_stdio:
   TAB SPACE
@@ -243,30 +266,30 @@ stream_stdio:
 // --- Parameters ---
 number:
   bits LF {
-    cout << "<arbitrary data>" << endl;
+    $<val>$ = calc_accum();
   };
 label:
   bits LF {
-    cout << "<label>" << endl;
+    $<val>$ = calc_accum();
   };
 bits:
   bits bit
   | bit
   ;
 bit:
-  SPACE
-  | TAB
+  SPACE { accum_add(0); }
+  | TAB { accum_add(1); }
   ;
 ip:
   octet octet octet octet {
-    cout << "<ip>" << endl;
+    $<val>$ = calc_accum();
   };
 octet:
   bit bit bit bit bit bit bit bit
   ;
 port:
   octet octet {
-    cout << "<port>" << endl;
+    $<val>$ = calc_accum();
   };
 // done with grammar
 %%
@@ -278,17 +301,40 @@ int main(int, char**) {
   if (!myfile) {
     cout << "I can't open test.jaws!" << endl;
     return -1;
-  }
+  } // end if
   // Set Flex to read from it instead of defaulting to STDIN:
   jawsin = myfile;
 
   // Parse through the input:
   jawsparse();
 
-}
+} // end main
 
 void jawserror(const char *s) {
-  cout << "Whoopsie daisies, error while parsing line " << lineNum << "!  Message: " << s << endl;
+  cout << "Whoopsie daisies! Error while parsing line " << lineNum << ".  Message: " << s << endl;
   // might as well halt now:
   exit(1);
-}
+} // end jawserror
+
+void accum_add(long bit) {
+  if (COUNT == 32) {
+    jawserror("More than 32 bits have been read white parsing binary number.");
+  } // end if
+  BITSTRING[COUNT] = (char) bit;
+  COUNT++;
+} // end accum_add
+
+long calc_accum() {
+  for (int i=0; i<COUNT; i++) {  // reads bitstring left-to-right
+    if (BITSTRING[i] == 1) {
+      ACCUM += pow( 2, (COUNT-1)-i );  // last bit in string is pow(2,0) 
+    } // end if
+  } // end for
+  return ACCUM;
+} // end calc_accum
+
+void reset_accum() {
+  memset(BITSTRING, 0, sizeof(BITSTRING));  // reset whole string
+  ACCUM = 0x00000000;
+  COUNT = 0;
+} // end reset_accum
