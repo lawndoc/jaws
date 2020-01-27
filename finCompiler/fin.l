@@ -3,7 +3,7 @@
   #include <iostream>
   using namespace std;
 
-  #include "fin.tab.h" // to get the token types from Bison
+//  #include "fin.tab.h" // to get the token types from Bison
   extern "C" int finlex();
 
   int lineNum = 1;
@@ -24,7 +24,10 @@ ULABEL  b(0|1){16}
 
 [ \t]				;
 \n				{ lineNum++; }
+header				{ cout << "Header" << endl; }
+footer				{ cout << "Footer" << endl; }
 stack|arith|heap|flow|ioa|ioc	{ cout << "IMP: " << yytext << endl; }
+elfin				{ cout << "End of program." << endl; }
 push|dup|swap|discard		{ cout << "Stack command: " << yytext << endl; }
 add|sub|mult|div|mod		{ cout << "Arith command: " << yytext << endl; }
 store|retrieve			{ cout << "Heap command: " << yytext << endl; }
@@ -41,4 +44,18 @@ fileio|netcon|stdio		{ cout << "IO Control : " << yytext << endl; }
 .				;
 
 %%
+
+int main(int, char**) {
+  // open a file handle to a particular file:
+  FILE *myfile = fopen("test.fin", "r");
+  // make sure it is valid:
+  if (!myfile) {
+    cout << "I can't open test.fin!" << endl;
+    return -1;
+  }
+  // Set flex to read from it instead of defaulting to STDIN:
+  finin = myfile;
+  // Parse through the input:
+  while(finlex());
+}
 
