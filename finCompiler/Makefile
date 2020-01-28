@@ -11,7 +11,7 @@ K := $(foreach exec,$(EXECUTABLES),\
 	        $(if $(shell which $(exec)),some string,$(error "No $(exec) in PATH")))
 
 # begin Makefile
-all: fin.tab.c fin.tab.h lex.yy.c fin
+all: fin.tab.c fin.tab.h lex.yy.c finc
 
 fin.tab.c fin.tab.h: fin.y
 	@echo "Compiling bison file..."
@@ -21,14 +21,14 @@ lex.yy.c: fin.l fin.tab.h
 	@echo "Compiling flex file..."
 	@flex fin.l
 
-fin: lex.yy.c fin.tab.c fin.tab.h
+finc: lex.yy.c fin.tab.c fin.tab.h
 	@echo "Compiling parser..."
-	@${CC} fin.tab.c lex.fin.c -o fin
+	@${CC} fin.tab.c lex.fin.c -o finc
 
 clean:
 	@echo "Cleaning up..."
 	@rm fin.tab.c
 	@rm fin.tab.h
 	@rm lex.fin.c
-	@rm fin
+	@rm finc
 	@echo "Done."
