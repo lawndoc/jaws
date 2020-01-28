@@ -1,0 +1,34 @@
+# Usage:
+# make        # compile all files
+# make clean  # remove ALL binaries and objects
+
+# compiler to use
+CC = g++
+
+# check program dependencies
+EXECUTABLES = bison flex g++
+K := $(foreach exec,$(EXECUTABLES),\
+	        $(if $(shell which $(exec)),some string,$(error "No $(exec) in PATH")))
+
+# begin Makefile
+all: fin.tab.c fin.tab.h lex.yy.c fin
+
+fin.tab.c fin.tab.h: fin.y
+	@echo "Compiling bison file..."
+	@bison -d fin.y
+
+lex.yy.c: fin.l fin.tab.h
+	@echo "Compiling flex file..."
+	@flex fin.l
+
+fin: lex.yy.c fin.tab.c fin.tab.h
+	@echo "Compiling parser..."
+	@${CC} fin.tab.c lex.fin.c -o fin
+
+clean:
+	@echo "Cleaning up..."
+	@rm fin.tab.c
+	@rm fin.tab.h
+	@rm lex.fin.c
+	@rm fin
+	@echo "Done."

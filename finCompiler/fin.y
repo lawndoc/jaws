@@ -83,12 +83,12 @@ bodies:
   ;
 body:
   header instructions footer {
-    cout << "footer"
+    cout << "footer" << endl;
   };
 
 last_body:
   header instructions END_PRGM {
-    cout << "end of program"
+    cout << "end of program" << endl;
   };
 header:
   HEADER {
@@ -171,10 +171,10 @@ io_control_command:
 // stack
 stack_push:
   STACK_PUSH number {
-    cout << "push " << $<ival>2 << "onto the stack" << endl;
+    cout << "push " << $<ival>2 << " onto the stack" << endl;
   }
   | STACK_PUSH character {
-    cout << "push " << $<cval>2 << "onto the stack" << endl;
+    cout << "push " << $<cval>2 << " onto the stack" << endl;
   };
 stack_duplicate:
   STACK_DUP {
@@ -260,7 +260,6 @@ read_int:
   INN {
     cout << "reading an integer from IO" << endl;
   };
-  ;
 // io control
 stream_file:
   IOC_FILE {
@@ -269,7 +268,6 @@ stream_file:
 stream_net:
   IOC_NET netcon {
     cout << "streaming from network connection" << endl;
-    reset_accum();
   };
 stream_stdio:
   IOC_STD {
