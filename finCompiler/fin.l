@@ -27,7 +27,7 @@ ULABEL  b(0|1){16}
 header				{ cout << "Header" << endl; }
 footer				{ cout << "Footer" << endl; }
 stack|arith|heap|flow|ioa|ioc	{ cout << "IMP: " << yytext << endl; }
-elfin				{ cout << "End of program." << endl; }
+FIN				{ cout << "End of program." << endl; }
 push|dup|swap|discard		{ cout << "Stack command: " << yytext << endl; }
 add|sub|mult|div|mod		{ cout << "Arith command: " << yytext << endl; }
 store|retrieve			{ cout << "Heap command: " << yytext << endl; }
