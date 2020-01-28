@@ -14,11 +14,13 @@
 %option prefix="fin"
 
 DIGIT	[0-9]
-UDIGIT	b(0|1){32}
+UDIGIT	0x[0-9a-f]{8}
 CHAR	[a-zA-Z]
-UCHAR	b(0|1){8}
+UCHAR	0x[0-9a-f]{2}
 LABEL	[a-z]{1,3}
-ULABEL  b(0|1){16}
+ULABEL  0x[0-9a-f]{4}
+NETCON	ip[0-9a-f]{8}pt[0-9a-f]{4}
+
 
 %%
 
@@ -26,21 +28,44 @@ ULABEL  b(0|1){16}
 \n				{ lineNum++; }
 header				{ cout << "Header" << endl; }
 footer				{ cout << "Footer" << endl; }
-stack|arith|heap|flow|ioa|ioc	{ cout << "IMP: " << yytext << endl; }
+stack				{ cout << "Stack IMP" << endl; }
+arith				{ cout << "Arithmetic IMP" << endl; }
+heap				{ cout << "Heap IMP" << endl; }
+flow				{ cout << "Flow IMP" << endl; }
+ioa				{ cout << "IO Action IMP" << endl; }
+ioc				{ cout << "IO Control IMP" << endl; }
 FIN				{ cout << "End of program." << endl; }
-push|dup|swap|discard		{ cout << "Stack command: " << yytext << endl; }
-add|sub|mult|div|mod		{ cout << "Arith command: " << yytext << endl; }
-store|retrieve			{ cout << "Heap command: " << yytext << endl; }
-mark|call|jumpu|jumpz|jumpn|return	{
-				  cout << "Flow command: " << yytext << endl; }
-outc|outn|inc|inn		{ cout << "IO Action : " << yytext << endl; }
-fileio|netcon|stdio		{ cout << "IO Control : " << yytext << endl; }
+push				{ cout << "Stack Push" << endl; }
+dup				{ cout << "Stack Duplicate" << endl; }
+swap				{ cout << "Stack Swap" << endl; }
+discard				{ cout << "Stack Discard" << endl; }
+add				{ cout << "Addition" << endl; }
+sub				{ cout << "Subraction" << endl; }
+mult				{ cout << "Multiplication" << endl; }
+div				{ cout << "Division" << endl; }
+mod				{ cout << "Modulo" << endl; }
+store				{ cout << "Heap Store" << endl; }
+retrieve			{ cout << "Heap Retrieve" << endl; }
+mark				{ cout << "New Label" << endl; }
+call				{ cout << "Call Subroutine" << endl; }
+jumpu				{ cout << "Unconditional Jump" << endl; }
+jumpz				{ cout << "Jump if Zero" << endl; }
+jumpn				{ cout << "Jump if Negative" << endl; }
+return				{ cout << "End-Subroutine" << endl; }
+outc				{ cout << "Output Character" << endl; }
+outn				{ cout << "Output Number" << endl; }
+inc				{ cout << "Input Character" << endl; }
+inn				{ cout << "Input Number" << endl; }
+fileio				{ cout << "Stream FileIO" << endl; }
+netcon				{ cout << "Stream NetworkIO" << endl; }
+stdio				{ cout << "Stream StdIO" << endl; }
 {DIGIT}+			{ cout << "Number: " << yytext << endl; }
 {UDIGIT}			{ cout << "Number: " << yytext << endl; }
 {CHAR}				{ cout << "Character: " << yytext << endl; }
 {UCHAR}				{ cout << "Character: " << yytext << endl; }
 {LABEL}				{ cout << "Label: " << yytext << endl; }
 {ULABEL}			{ cout << "Label: " << yytext << endl; }
+{NETCON}			{ cout << "IP:Port :" << yytext << endl; }
 .				;
 
 %%
