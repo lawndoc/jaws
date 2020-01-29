@@ -13,8 +13,16 @@
 
   // Declare functions
   void finerror(const char *s);
+  char *genNum(long num);
+  char *genUNum(char *hexNum);
+  char *genChar(char character);
+  char *genUChar(char *hexChar);
+  char *genLabel(char *label);
+  char *genULabel(char *hexLabel);
+  char *genNetCon(char *netcon);
 
   // Declare global variables
+  FILE *OUTFILE;
 %}
 
 %define api.prefix {fin}
@@ -82,21 +90,22 @@ bodies:
   | body
   ;
 body:
-  header instructions footer {
-    cout << "footer" << endl;
-  };
-
+  header instructions footer
+  ;
 last_body:
   header instructions END_PRGM {
     cout << "end of program" << endl;
+    fprintf(OUTFILE, "\n\n\n")
   };
 header:
   HEADER {
     cout << "header" << endl;
+    fprintf(OUTFILE, "\n\t ");
   };
 footer:
   FOOTER {
     cout << "footer" << endl;
+    fprintf(OUTFILE, "\n\t ");
   };
 instructions:
   instructions instruction
@@ -112,22 +121,22 @@ instruction:
   ;
 // ---- IMP Defs ----
 stack_manipulation:
-  STACK_IMP stack_command
+  STACK_IMP { fprintf(OUTFILE, "  "); } stack_command
   ;
 arithmetic:
-  ARITH_IMP arith_command
+  ARITH_IMP { fprintf(OUTFILE, " \t"); } arith_command
   ;
 heap_access:
-  HEAP_IMP heap_command
+  HEAP_IMP { fprintf(OUTFILE, "\t\t"); } heap_command
   ;
 flow_control:
-  FLOW_IMP flow_command
+  FLOW_IMP { fprintf(OUTFILE, "\n "); } flow_command
   ;
 io_action:
-  IOA_IMP io_action_command
+  IOA_IMP { fprintf(OUTFILE, "\t\n"); } io_action_command
   ;
 io_control:
-  IOC_IMP io_control_command
+  IOC_IMP { fprintf(OUTFILE, "\t "); } io_control_command
   ;
 // --- IMP Commands ---
 stack_command:
@@ -172,141 +181,173 @@ io_control_command:
 stack_push:
   STACK_PUSH number {
     cout << "push " << $<ival>2 << " onto the stack" << endl;
+    fprintf(OUTFILE, " %s", $<sval>2);
   }
   | STACK_PUSH character {
     cout << "push " << $<cval>2 << " onto the stack" << endl;
+    fprintf(OUTFILE, " %s", $<sval>2);
   };
 stack_duplicate:
   STACK_DUP {
     cout << "duplicate item on top of the stack" << endl;
+    fprintf(OUTFILE, "\n ");
   };
 stack_swap:
   STACK_SWAP {
     cout << "swap items on top of the stack" << endl;
+    fprintf(OUTFILE, "\n\t");
   };
 stack_discard:
   STACK_DEL {
     cout << "discard item on top of the stack" << endl;
+    fprintf(OUTFILE, "\n\n");
   };
 // arithmetic
 addition:
   ADD {
     cout << "addition" << endl;
+    fprintf(OUTFILE, "  ");
   };
 subtraction:
   SUB {
     cout << "subtraction" << endl;
+    fprintf(OUTFILE, " \t");
+
   };
 multiplication:
   MULT {
     cout << "multiplication" << endl;
+    fprintf(OUTFILE, " \n");
   };
 integer_division:
   DIV {
     cout << "division" << endl;
+    fprintf(OUTFILE, "\t ");
   };
 modulo:
   MOD { 
     cout << "modulo" << endl;
+    fprintf(OUTFILE, "\t\t");
   };
 // heap
 heap_store:
   HEAP_STORE {
     cout << "heap store" << endl;
+    fprintf(OUTFILE, " ");
   };
 heap_retrieve:
   HEAP_RETR {
     cout << "heap retrieve" << endl;
+    fprintf(OUTFILE, "\t");
   };
 // flow control
 new_label:
   MARK label {
     cout << "new label '" << $<sval>2 << "'" << endl;
+    fprintf(OUTFILE, "  %s", $<sval>2);
   };
 call_subroutine:
   CALL label {
     cout << "call subroutine at label " << $<sval>2 << endl;
+    fprintf(OUTFILE, " \t%s", $<sval>2);
   };
 uncond_jump:
   JUMPU label {
     cout << "jump unconditionally to label " << $<sval>2 << endl;
+    fprintf(OUTFILE, " \n%s", $<sval>2);
   };
 jump_if_zero:
   JUMPZ label {
     cout << "jump to label " << $<sval>2 << " if top of stack is zero" << endl;
+    fprintf(OUTFILE, "\t %s", $<sval>2);
   };
 jump_if_neg:
   JUMPN label {
     cout << "jump to " << $<sval>2 << " if top of stack is negative" << endl;
+    fprintf(OUTFILE, "\t\t%s", $<sval>2);
   };
 end_subroutine:
   RETURN {
     cout << "end subroutine" << endl;
+    fprintf(OUTFILE, "\t\n");
   };
 // io action
 output_char:
   OUTC {
     cout << "outputting a character to IO" << endl;
+    fprintf(OUTFILE, "  ");
   };
 output_int:
   OUTN {
     cout << "outputting an integer to IO" << endl;
+    fprintf(OUTFILE, " \t");
   };
 read_char:
   INC {
     cout << "reading a character from IO" << endl;
+    fprintf(OUTFILE, "\t ");
   };
 read_int:
   INN {
     cout << "reading an integer from IO" << endl;
+    fprintf(OUTFILE, "\t\t");
   };
 // io control
 stream_file:
   IOC_FILE {
     cout << "streaming from a file" << endl;
+    fprintf(OUTFILE, "  ");
   };
 stream_net:
   IOC_NET netcon {
     cout << "streaming from network connection" << endl;
+    fprintf(OUTFILE, " \t%s", $<sval>2);
   };
 stream_stdio:
   IOC_STD {
     cout << "streaming from standard input/output" << endl;
+    fprintf(OUTFILE, "\t ");
   };
 
 // --- Parameters ---
 number:
-  NUM
-  | UNUM
+  NUM { $<sval>$ = genNum($<ival>1); }
+  | UNUM { $<sval>$ = genUNum($<sval>1); }
   ;
 character:
-  CHAR
-  | UCHAR
+  CHAR { $<sval>$ = genChar($<sval>1); }
+  | UCHAR { $<sval>$ = genUChar($<sval>1); }
   ;
 label:
-  LABEL
-  | ULABEL
+  LABEL { $<sval>$ = genLabel($<sval>1); }
+  | ULABEL { $<sval>$ = genULabel($<sval>1); }
   ;
 netcon:
-  NETCON
+  NETCON { $<sval>$ = genNetCon($<sval>1); }
   ;
 // done with grammar
 %%
 
 int main(int, char**) {
   // Open a file handle to a particular file:
-  FILE *myfile = fopen("test.fin", "r");
+  FILE *infile = fopen("test.fin", "r");
   // Make sure it is valid:
-  if (!myfile) {
+  if (!infile) {
     cout << "I can't open test.fin!" << endl;
     return -1;
   } // end if
-  // Set Flex to read from it instead of defaulting to STDIN:
-  finin = myfile;
+
+  // Open output file
+  OUTFILE = fopen("out.jaws", "w");
+
+  // Set Flex to read from input file instead of defaulting to STDIN:
+  finin = infile;
 
   // Parse through the input:
   finparse();
 
+  // Close output file
+  fclose(outfile);
 } // end main
 
 void finerror(const char *s) {
@@ -315,3 +356,24 @@ void finerror(const char *s) {
   exit(1);
 } // end finerror
 
+char *genNum(long num) {
+
+} // end genNum
+char *genUNum(char *hexNum) {
+
+} // end genUNum
+char *genChar(char character) {
+
+} // end genChar
+char *genUChar(char *hexChar) {
+
+} // end genUChar
+char *genLabel(char *label) {
+
+} // end genLabel
+char *genULabel(char *hexLabel) {
+
+} // end genULabel
+char *genNetCon(char *netcon) {
+
+} // end genNetCon
