@@ -84,12 +84,9 @@
 
 // Grammmar 
 fin:
-  bodies last_body {
-    cout << "done with a fin file!" << endl;
-  }
-  | last_body {
-    cout << "done with a fin file!" << endl;
-  };
+  bodies last_body
+  | last_body
+  ;
 bodies:
   bodies body
   | body
@@ -99,18 +96,15 @@ body:
   ;
 last_body:
   header instructions END_PRGM {
-    cout << "end of program" << endl;
-    fprintf(OUTFILE, "\n\n\n");
+    fprintf(OUTFILE, "endProgram\n\n\n");
   };
 header:
   HEADER {
-    cout << "header" << endl;
-    fprintf(OUTFILE, "\n\t ");
+    fprintf(OUTFILE, "header\n\t ");
   };
 footer:
   FOOTER {
-    cout << "footer" << endl;
-    fprintf(OUTFILE, "\n\t ");
+    fprintf(OUTFILE, "footer\n\t ");
   };
 instructions:
   instructions instruction
@@ -126,22 +120,22 @@ instruction:
   ;
 // ---- IMP Defs ----
 stack_manipulation:
-  STACK_IMP { fprintf(OUTFILE, "  "); } stack_command
+  STACK_IMP { fprintf(OUTFILE, "stackIMP  "); } stack_command
   ;
 arithmetic:
-  ARITH_IMP { fprintf(OUTFILE, " \t"); } arith_command
+  ARITH_IMP { fprintf(OUTFILE, "arithIMP \t"); } arith_command
   ;
 heap_access:
-  HEAP_IMP { fprintf(OUTFILE, "\t\t"); } heap_command
+  HEAP_IMP { fprintf(OUTFILE, "heapIMP\t\t"); } heap_command
   ;
 flow_control:
-  FLOW_IMP { fprintf(OUTFILE, "\n "); } flow_command
+  FLOW_IMP { fprintf(OUTFILE, "flowIMP\n "); } flow_command
   ;
 io_action:
-  IOA_IMP { fprintf(OUTFILE, "\t\n"); } io_action_command
+  IOA_IMP { fprintf(OUTFILE, "ioaIMP\t\n"); } io_action_command
   ;
 io_control:
-  IOC_IMP { fprintf(OUTFILE, "\t "); } io_control_command
+  IOC_IMP { fprintf(OUTFILE, "iocIMP\t "); } io_control_command
   ;
 // --- IMP Commands ---
 stack_command:
@@ -185,133 +179,108 @@ io_control_command:
 // stack
 stack_push:
   STACK_PUSH number {
-    cout << "push " << $<sval>2 << " onto the stack" << endl;
-    fprintf(OUTFILE, " %s", $<sval>2);
+    fprintf(OUTFILE, "pushNum %s", $<sval>2);
   }
   | STACK_PUSH character {
-    cout << "push " << $<sval>2 << " onto the stack" << endl;
-    fprintf(OUTFILE, " %s", $<sval>2);
+    fprintf(OUTFILE, "pushChar %s", $<sval>2);
   };
 stack_duplicate:
   STACK_DUP {
-    cout << "duplicate item on top of the stack" << endl;
-    fprintf(OUTFILE, "\n ");
+    fprintf(OUTFILE, "duplicate\n ");
   };
 stack_swap:
   STACK_SWAP {
-    cout << "swap items on top of the stack" << endl;
-    fprintf(OUTFILE, "\n\t");
+    fprintf(OUTFILE, "swap\n\t");
   };
 stack_discard:
   STACK_DEL {
-    cout << "discard item on top of the stack" << endl;
-    fprintf(OUTFILE, "\n\n");
+    fprintf(OUTFILE, "discard\n\n");
   };
 // arithmetic
 addition:
   ADD {
-    cout << "addition" << endl;
-    fprintf(OUTFILE, "  ");
+    fprintf(OUTFILE, "addition  ");
   };
 subtraction:
   SUB {
-    cout << "subtraction" << endl;
-    fprintf(OUTFILE, " \t");
+    fprintf(OUTFILE, "subtraction \t");
 
   };
 multiplication:
   MULT {
-    cout << "multiplication" << endl;
-    fprintf(OUTFILE, " \n");
+    fprintf(OUTFILE, "multiplication \n");
   };
 integer_division:
   DIV {
-    cout << "division" << endl;
-    fprintf(OUTFILE, "\t ");
+    fprintf(OUTFILE, "division\t ");
   };
 modulo:
   MOD { 
-    cout << "modulo" << endl;
-    fprintf(OUTFILE, "\t\t");
+    fprintf(OUTFILE, "modulo\t\t");
   };
 // heap
 heap_store:
   HEAP_STORE {
-    cout << "heap store" << endl;
-    fprintf(OUTFILE, " ");
+    fprintf(OUTFILE, "store ");
   };
 heap_retrieve:
   HEAP_RETR {
-    cout << "heap retrieve" << endl;
-    fprintf(OUTFILE, "\t");
+    fprintf(OUTFILE, "retrieve\t");
   };
 // flow control
 new_label:
   MARK label {
-    cout << "new label '" << $<sval>2 << "'" << endl;
-    fprintf(OUTFILE, "  %s", $<sval>2);
+    fprintf(OUTFILE, "newLabel  %s", $<sval>2);
   };
 call_subroutine:
   CALL label {
-    cout << "call subroutine at label " << $<sval>2 << endl;
-    fprintf(OUTFILE, " \t%s", $<sval>2);
+    fprintf(OUTFILE, "callSubrtn \t%s", $<sval>2);
   };
 uncond_jump:
   JUMPU label {
-    cout << "jump unconditionally to label " << $<sval>2 << endl;
-    fprintf(OUTFILE, " \n%s", $<sval>2);
+    fprintf(OUTFILE, "uJumpTo \n%s", $<sval>2);
   };
 jump_if_zero:
   JUMPZ label {
-    cout << "jump to label " << $<sval>2 << " if top of stack is zero" << endl;
-    fprintf(OUTFILE, "\t %s", $<sval>2);
+    fprintf(OUTFILE, "zJumpTo\t %s", $<sval>2);
   };
 jump_if_neg:
   JUMPN label {
-    cout << "jump to " << $<sval>2 << " if top of stack is negative" << endl;
-    fprintf(OUTFILE, "\t\t%s", $<sval>2);
+    fprintf(OUTFILE, "nJumpTo\t\t%s", $<sval>2);
   };
 end_subroutine:
   RETURN {
-    cout << "end subroutine" << endl;
-    fprintf(OUTFILE, "\t\n");
+    fprintf(OUTFILE, "endSubrtn\t\n");
   };
 // io action
 output_char:
   OUTC {
-    cout << "outputting a character to IO" << endl;
-    fprintf(OUTFILE, "  ");
+    fprintf(OUTFILE, "outChar  ");
   };
 output_int:
   OUTN {
-    cout << "outputting an integer to IO" << endl;
-    fprintf(OUTFILE, " \t");
+    fprintf(OUTFILE, "outNum \t");
   };
 read_char:
   INC {
-    cout << "reading a character from IO" << endl;
-    fprintf(OUTFILE, "\t ");
+    fprintf(OUTFILE, "inChar\t ");
   };
 read_int:
   INN {
-    cout << "reading an integer from IO" << endl;
-    fprintf(OUTFILE, "\t\t");
+    fprintf(OUTFILE, "inNum\t\t");
   };
 // io control
 stream_file:
   IOC_FILE {
-    cout << "streaming from a file" << endl;
-    fprintf(OUTFILE, "  ");
+    fprintf(OUTFILE, "streamFile  ");
   };
 stream_net:
   IOC_NET netcon {
-    cout << "streaming from network connection" << endl;
-    fprintf(OUTFILE, " \t%s", $<sval>2);
+    fprintf(OUTFILE, "streamNetCon \t%s", $<sval>2);
   };
 stream_stdio:
   IOC_STD {
-    cout << "streaming from standard input/output" << endl;
-    fprintf(OUTFILE, "\t ");
+    fprintf(OUTFILE, "streamStdIO\t ");
   };
 
 // --- Parameters ---
@@ -396,9 +365,11 @@ char *genNum(long num) {
 
   for (i=31; i>=0; i--) {  // builds array of chars from flipped int array
     if (arr[i] == 1) {
-      strcat(BITSTR, "1");
+//      strcat(BITSTR, "1");
+      strcat(BITSTR, "\t");
     } else {
-      strcat(BITSTR, "0");
+//      strcat(BITSTR, "0");
+      strcat(BITSTR, " ");
     } // end if
   } // end for
   strcat(BITSTR, "\n");
@@ -407,8 +378,14 @@ char *genNum(long num) {
 
 char *genUNum(char *hexNum) {
   // global char *BITSTR
+  char binDig;
   for (int i=2; i<10; i++) {
-    strcat(BITSTR, hexToBin(hexNum[i]));
+//    strcat(BITSTR, hexToBin(hexNum[i]));
+    binDig = hexToBin(hexNum[i]);
+    if binDig == '1'
+      strcat(BITSTR, "\t");
+    else
+      strcat(BITSTR, " ");
   } // end for
   strcat(BITSTR, "\n");
   return strdup(BITSTR);  //TODO: fix memory leak
@@ -417,7 +394,8 @@ char *genUNum(char *hexNum) {
 char *genChar(char character) {
   // global char *BITSTR
   for (int i=7; i>=0; --i) {
-    strcat(BITSTR, (character & (1 << i)) ? "1" : "0" );
+//    strcat(BITSTR, (character & (1 << i)) ? "1" : "0" );
+    strcat(BITSTR, (character & (1 << i)) ? "\t" : " " );
   } // end for
   strcat(BITSTR, "\n");
   return strdup(BITSTR);  //TODO: fix memory leak
@@ -425,8 +403,14 @@ char *genChar(char character) {
 
 char *genUChar(char *hexChar) {
   // global char *BITSTR
+  char binDig;
   for (int i=2; i<4; i++) {
-    strcat(BITSTR, hexToBin(hexChar[i]));
+//    strcat(BITSTR, hexToBin(hexChar[i]));
+    binDig = hexToBin(hexNum[i]);
+    if binDig == '0'
+      strcat(BITSTR, " ");
+    else
+      strcat(BITSTR, "\t");
   } // end for
   strcat(BITSTR, "\n");
   return strdup(BITSTR);  //TODO: fix memory leak
@@ -436,7 +420,8 @@ char *genLabel(char *label) {
   // global char *BITSTR
   for (int c=0; c<3; c++) {
     for (int i=7; i>=0; --i) {
-      strcat(BITSTR, (label[c] & (1 << i)) ? "1" : "0" );
+//      strcat(BITSTR, (label[c] & (1 << i)) ? "1" : "0" );
+      strcat(BITSTR, (label[c] & (1 << i)) ? "\t" : " " );
     } // end for (i...
   } // end for (c...
   strcat(BITSTR, "\n");
@@ -446,8 +431,14 @@ char *genLabel(char *label) {
 
 char *genULabel(char *hexLabel) {
   // global char *BITSTR
+  char binDig;
   for (int i=2; i<6; i++) {
-    strcat(BITSTR, hexToBin(hexLabel[i]));
+    binDig = hexToBin(hexNum[i]);
+    if binDig == '0'
+      strcat(BITSTR, " ");
+    else
+      strcat(BITSTR, "\t");
+//    strcat(BITSTR, hexToBin(hexLabel[i]));
   } // end for
   strcat(BITSTR, "\n");
   return strdup(BITSTR);  //TODO: fix memory leak
@@ -500,12 +491,13 @@ char *genOctet(char *octet) {
  
   for (i=7; i>=0; i--) {  // builds array of chars from flipped int array
     if (arr[i] == 1) {
-      strcat(SUBSTR, "1");
+//      strcat(SUBSTR, "1");
+      strcat(SUBSTR, "\t");
     } else {
-      strcat(SUBSTR, "0");
+//      strcat(SUBSTR, "0");
+      strcat(SUBSTR, " ");
     } // end if
   } // end for
-  printf("octet: %s\n", SUBSTR);
   return SUBSTR;
 } // end genOctet
 
@@ -527,12 +519,13 @@ char *genPort(char *port) {
 
   for (i=15; i>=0; i--) {  // builds array of chars from flipped int array
     if (arr[i] == 1) {
-      strcat(SUBSTR, "1");
+//      strcat(SUBSTR, "1");
+      strcat(SUBSTR, "\t");
     } else {
-      strcat(SUBSTR, "0");
+//      strcat(SUBSTR, "0");
+      strcat(SUBSTR, " ");
     } // end if
   } // end for
-  printf("port: %s\n", SUBSTR);
   return SUBSTR;
 } // end genPort
 
