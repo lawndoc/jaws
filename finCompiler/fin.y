@@ -378,16 +378,17 @@ char *genNum(long num) {
 
 char *genUNum(char *hexNum) {
   // global char *BITSTR
-  char binDig;
+  char *binDig = (char *) malloc(33);
   for (int i=2; i<10; i++) {
 //    strcat(BITSTR, hexToBin(hexNum[i]));
-    binDig = hexToBin(hexNum[i]);
-    if binDig == '1'
+    strcat(binDig, hexToBin(hexNum[i]));
+  } // end for
+  for (int i=0; i<32; i++) {
+    if (binDig[i] == '1')
       strcat(BITSTR, "\t");
     else
-      strcat(BITSTR, " ");
+      strcat(BITSTR, " ");  strcat(BITSTR, "\n");
   } // end for
-  strcat(BITSTR, "\n");
   return strdup(BITSTR);  //TODO: fix memory leak
 } // end genUNum
 
@@ -403,14 +404,16 @@ char *genChar(char character) {
 
 char *genUChar(char *hexChar) {
   // global char *BITSTR
-  char binDig;
+  char *binDig = (char *) malloc(5);
   for (int i=2; i<4; i++) {
 //    strcat(BITSTR, hexToBin(hexChar[i]));
-    binDig = hexToBin(hexNum[i]);
-    if binDig == '0'
-      strcat(BITSTR, " ");
-    else
+    strcat(binDig, hexToBin(hexChar[i]));
+  } // end for
+  for (int i=0; i<8; i++) {
+    if (binDig[i] == '1')
       strcat(BITSTR, "\t");
+    else
+      strcat(BITSTR, " ");  strcat(BITSTR, "\n");
   } // end for
   strcat(BITSTR, "\n");
   return strdup(BITSTR);  //TODO: fix memory leak
@@ -431,14 +434,16 @@ char *genLabel(char *label) {
 
 char *genULabel(char *hexLabel) {
   // global char *BITSTR
-  char binDig;
+  char *binDig = (char *) malloc(5);
   for (int i=2; i<6; i++) {
-    binDig = hexToBin(hexNum[i]);
-    if binDig == '0'
-      strcat(BITSTR, " ");
-    else
-      strcat(BITSTR, "\t");
 //    strcat(BITSTR, hexToBin(hexLabel[i]));
+    strcat(binDig, hexToBin(hexLabel[i]));
+  } // end for
+  for (int i=0; i<16; i++) {
+    if (binDig[i] == '1')
+      strcat(BITSTR, "\t");
+    else
+      strcat(BITSTR, " ");  strcat(BITSTR, "\n");
   } // end for
   strcat(BITSTR, "\n");
   return strdup(BITSTR);  //TODO: fix memory leak
