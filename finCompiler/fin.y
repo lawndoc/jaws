@@ -20,9 +20,14 @@
   char *genLabel(char *label);
   char *genULabel(char *hexLabel);
   char *genNetCon(char *netcon);
+  char *genOctet(char *octet);
+  char *genPort(char *port);
+  char *hexToBin(char hexDig);
 
   // Declare global variables
-  FILE *OUTFILE;
+  FILE *OUTFILE;  // jaws output file
+  char *BITSTR; 
+  char *SUBSTR;
 %}
 
 %define api.prefix {fin}
@@ -95,7 +100,7 @@ body:
 last_body:
   header instructions END_PRGM {
     cout << "end of program" << endl;
-    fprintf(OUTFILE, "\n\n\n")
+    fprintf(OUTFILE, "\n\n\n");
   };
 header:
   HEADER {
@@ -180,11 +185,11 @@ io_control_command:
 // stack
 stack_push:
   STACK_PUSH number {
-    cout << "push " << $<ival>2 << " onto the stack" << endl;
+    cout << "push " << $<sval>2 << " onto the stack" << endl;
     fprintf(OUTFILE, " %s", $<sval>2);
   }
   | STACK_PUSH character {
-    cout << "push " << $<cval>2 << " onto the stack" << endl;
+    cout << "push " << $<sval>2 << " onto the stack" << endl;
     fprintf(OUTFILE, " %s", $<sval>2);
   };
 stack_duplicate:
@@ -311,24 +316,43 @@ stream_stdio:
 
 // --- Parameters ---
 number:
-  NUM { $<sval>$ = genNum($<ival>1); }
-  | UNUM { $<sval>$ = genUNum($<sval>1); }
-  ;
+  NUM {
+    $<sval>$ = genNum($<ival>1);
+    memset(BITSTR, '\0', sizeof(BITSTR));  // reset BITSTR after func. call
+  }
+  | UNUM { 
+    $<sval>$ = genUNum($<sval>1);
+    memset(BITSTR, '\0', sizeof(BITSTR));  // reset BITSTR after func. call
+  };
 character:
-  CHAR { $<sval>$ = genChar($<sval>1); }
-  | UCHAR { $<sval>$ = genUChar($<sval>1); }
-  ;
+  CHAR {
+    $<sval>$ = genChar($<cval>1);
+    memset(BITSTR, '\0', sizeof(BITSTR));  // reset BITSTR after func. call
+  }
+  | UCHAR {
+    $<sval>$ = genUChar($<sval>1);
+    memset(BITSTR, '\0', sizeof(BITSTR));  // reset BITSTR after func. call
+  };
 label:
-  LABEL { $<sval>$ = genLabel($<sval>1); }
-  | ULABEL { $<sval>$ = genULabel($<sval>1); }
-  ;
+  LABEL {
+    $<sval>$ = genLabel($<sval>1);
+    memset(BITSTR, '\0', sizeof(BITSTR));  // reset BITSTR after func. call
+  }
+  | ULABEL {
+    $<sval>$ = genULabel($<sval>1);
+    memset(BITSTR, '\0', sizeof(BITSTR));  // reset BITSTR after func. call
+  };
 netcon:
-  NETCON { $<sval>$ = genNetCon($<sval>1); }
-  ;
+  NETCON {
+    $<sval>$ = genNetCon($<sval>1);
+    memset(BITSTR, '\0', sizeof(BITSTR));  // reset BITSTR after func. call
+  };
 // done with grammar
 %%
 
 int main(int, char**) {
+  BITSTR = (char *) malloc(50); // for interpreting parameters MAX=>48+2 (\n\0)
+  SUBSTR = (char *) malloc(33); // for building BITSTR in genNetCon
   // Open a file handle to a particular file:
   FILE *infile = fopen("test.fin", "r");
   // Make sure it is valid:
@@ -346,8 +370,10 @@ int main(int, char**) {
   // Parse through the input:
   finparse();
 
-  // Close output file
-  fclose(outfile);
+  // Clean up
+  free(BITSTR);
+  free(SUBSTR);
+  fclose(OUTFILE);
 } // end main
 
 void finerror(const char *s) {
@@ -357,23 +383,192 @@ void finerror(const char *s) {
 } // end finerror
 
 char *genNum(long num) {
+  // global char *BITSTR
+  char arr[33];
+  long dec = num;
+  int i = 0;
 
+  while(dec > 0) {  // builds array of binary ints backwards
+    arr[i] = dec % 2;
+    i++;
+    dec = dec / 2;
+  } // end while
+
+  for (i=31; i>=0; i--) {  // builds array of chars from flipped int array
+    if (arr[i] == 1) {
+      strcat(BITSTR, "1");
+    } else {
+      strcat(BITSTR, "0");
+    } // end if
+  } // end for
+  strcat(BITSTR, "\n");
+  return strdup(BITSTR);  //TODO: fix memory leak
 } // end genNum
+
 char *genUNum(char *hexNum) {
-
+  // global char *BITSTR
+  for (int i=2; i<10; i++) {
+    strcat(BITSTR, hexToBin(hexNum[i]));
+  } // end for
+  strcat(BITSTR, "\n");
+  return strdup(BITSTR);  //TODO: fix memory leak
 } // end genUNum
+
 char *genChar(char character) {
-
+  // global char *BITSTR
+  for (int i=7; i>=0; --i) {
+    strcat(BITSTR, (character & (1 << i)) ? "1" : "0" );
+  } // end for
+  strcat(BITSTR, "\n");
+  return strdup(BITSTR);  //TODO: fix memory leak
 } // end genChar
-char *genUChar(char *hexChar) {
 
+char *genUChar(char *hexChar) {
+  // global char *BITSTR
+  for (int i=2; i<4; i++) {
+    strcat(BITSTR, hexToBin(hexChar[i]));
+  } // end for
+  strcat(BITSTR, "\n");
+  return strdup(BITSTR);  //TODO: fix memory leak
 } // end genUChar
+
 char *genLabel(char *label) {
+  // global char *BITSTR
+  for (int c=0; c<3; c++) {
+    for (int i=7; i>=0; --i) {
+      strcat(BITSTR, (label[c] & (1 << i)) ? "1" : "0" );
+    } // end for (i...
+  } // end for (c...
+  strcat(BITSTR, "\n");
+  return strdup(BITSTR);  //TODO: fix memory leak
 
 } // end genLabel
+
 char *genULabel(char *hexLabel) {
-
+  // global char *BITSTR
+  for (int i=2; i<6; i++) {
+    strcat(BITSTR, hexToBin(hexLabel[i]));
+  } // end for
+  strcat(BITSTR, "\n");
+  return strdup(BITSTR);  //TODO: fix memory leak
 } // end genULabel
-char *genNetCon(char *netcon) {
 
+char *genNetCon(char *netcon) {
+  int i = 0;
+  char *octet = (char *) malloc(4);
+  char *port = (char *) malloc(6);
+  // generate IPv4 bitstring
+  do {
+    if (netcon[i] == '.' || netcon[i] == ':') {
+      strcat(BITSTR, genOctet(octet));
+      memset(octet, '\0', sizeof(octet));
+      memset(SUBSTR, '\0', sizeof(SUBSTR));
+    } else {
+      strncat(octet, &netcon[i], 1);
+    } // end if
+    i++;
+  } while (netcon[i-1] != ':'); // end do-while
+  // generate port  bitstring
+  while (netcon[i] != '\0') {
+    strncat(port, &netcon[i], 1);
+    i++;
+  } // end while
+  strcat(BITSTR, genPort(port));
+  memset(SUBSTR, '\0', sizeof(SUBSTR));
+  strcat(BITSTR, "\n");
+
+  free(octet);
+  free(port);
+  return strdup(BITSTR);  //TODO: fix memory leak
 } // end genNetCon
+
+char *genOctet(char *octet) {
+  // calling fn char *SUBSTR
+  int arr[8];
+  int dec = atoi(octet);
+  int i = 0;
+
+  while(dec > 0) {  // builds array of binary ints backwards
+    arr[i] = dec % 2;
+    i++;
+    dec = dec / 2;
+  } // end while
+  while(i<8) {  // fill the rest of the array with 0's
+    arr[i] = 0;
+    i++;
+  }
+ 
+  for (i=7; i>=0; i--) {  // builds array of chars from flipped int array
+    if (arr[i] == 1) {
+      strcat(SUBSTR, "1");
+    } else {
+      strcat(SUBSTR, "0");
+    } // end if
+  } // end for
+  printf("octet: %s\n", SUBSTR);
+  return SUBSTR;
+} // end genOctet
+
+char *genPort(char *port) {
+  // calling fn char *SUBSTR
+  int arr[16];
+  int dec = atoi(port);
+  int i = 0;
+
+  while(dec > 0) {  // builds array of binary ints backwards
+    arr[i] = dec % 2;
+    i++;
+    dec = dec / 2;
+  } // end while
+  while(i<16) {  // fill the rest of the array with 0's
+    arr[i] = 0;
+    i++;
+  }
+
+  for (i=15; i>=0; i--) {  // builds array of chars from flipped int array
+    if (arr[i] == 1) {
+      strcat(SUBSTR, "1");
+    } else {
+      strcat(SUBSTR, "0");
+    } // end if
+  } // end for
+  printf("port: %s\n", SUBSTR);
+  return SUBSTR;
+} // end genPort
+
+char *hexToBin(char hexDig) {
+  if (hexDig == '0')
+    return (char *) "0000";
+  else if (hexDig == '1')
+    return (char *) "0001";
+  else if (hexDig == '2')
+    return (char *) "0010";
+  else if (hexDig == '3')
+    return (char *) "0011";
+  else if (hexDig == '4')
+    return (char *) "0100";
+  else if (hexDig == '5')
+    return (char *) "0101";
+  else if (hexDig == '6')
+    return (char *) "0110";
+  else if (hexDig == '7')
+    return (char *) "0111";
+  else if (hexDig == '8')
+    return (char *) "1000";
+  else if (hexDig == '9')
+    return (char *) "1001";
+  else if (hexDig == 'a')
+    return (char *) "1010";
+  else if (hexDig == 'b')
+    return (char *) "1011";
+  else if (hexDig == 'c')
+    return (char *) "1100";
+  else if (hexDig == 'd')
+    return (char *) "1101";
+  else if (hexDig == 'e')
+    return (char *) "1110";
+  else if (hexDig == 'f')
+    return (char *) "1111";
+  else
+    exit(1);
+} // end hexToBin
