@@ -3,6 +3,7 @@
   #include <cstring>
   #include <iostream>
   #include <math.h>
+  #include <unistd.h>
   using namespace std;
 
   // Declare stuff from Flex that Bison needs to know about:
@@ -28,6 +29,7 @@
   FILE *OUTFILE;  // jaws output file
   char *BITSTR; 
   char *SUBSTR;
+  int DEBUG;
 %}
 
 %define api.prefix {fin}
@@ -319,24 +321,78 @@ netcon:
 // done with grammar
 %%
 
-int main(int, char**) {
+int main(int argc, char** argv) {
   BITSTR = (char *) malloc(50); // for interpreting parameters MAX=>48+2 (\n\0)
   SUBSTR = (char *) malloc(33); // for building BITSTR in genNetCon
-  // Open a file handle to a particular file:
-  FILE *infile = fopen("test.fin", "r");
-  // Make sure it is valid:
+  DEBUG = 0;
+
+  // Parse command line args
+  int opt;
+  char *outfileName = (char *) "out.jaws";
+  char *infileName = NULL;
+    
+  while((opt = getopt(argc, argv, ":ho:")) != -1)  
+  {  
+    switch(opt)  
+    {  
+      case 'h':
+        cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
+        cout << "  -h : display help" << endl;
+        cout << "  -o <file> : specify outfile" << endl; 
+//        cout << "  -d : debugging mode" << endl;
+        return 0;
+      case 'o':
+        outfileName = optarg;
+        break;
+      case ':':
+        cout << "Option -" << optopt << " needs a value" << endl;
+        break;
+      case '?':
+        if (sizeof(opt) == 4) {
+          cout << "Unknown option '-" << (char)optopt << "'" << endl;
+          cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
+          cout << "  -h : display help" << endl;
+          cout << "  -o <file> : specify outfile" << endl; 
+//          cout << "  -d : debugging mode" << endl;
+          return -1;
+        } // end if
+        break;
+    } // end switch
+  } // end while
+
+  for (; optind < argc; optind++){ // extra arg should be file name
+    infileName = argv[optind];  
+  } // end for
+
+  // Make sure input file was specified
+  if (!infileName) {
+    cout << "ERROR: No Fin file specified." << endl;
+    cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
+    cout << "  -h : display help" << endl;
+    cout << "  -o <file> : specify outfile" << endl; 
+//    cout << "  -d : debugging mode" << endl;
+    return -1;
+  } // end if
+  // Open the input file
+  FILE *infile = fopen(infileName, "r");
+  // Make sure it is valid
   if (!infile) {
-    cout << "I can't open test.fin!" << endl;
+    cout << "I can't open " << infileName << "!" << endl;
     return -1;
   } // end if
 
-  // Open output file
-  OUTFILE = fopen("out.jaws", "w");
+  // Open the output file
+  OUTFILE = fopen(outfileName, "w");
+  // Make sure it is valid
+  if (!OUTFILE) {
+    cout << "I can't open " << outfileName << "!" << endl;
+    return -1;
+  } // end if
 
-  // Set Flex to read from input file instead of defaulting to STDIN:
+  // Set Flex to read from input file instead of defaulting to STDIN
   finin = infile;
 
-  // Parse through the input:
+  // Parse through the input
   finparse();
 
   // Clean up
