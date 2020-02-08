@@ -2,7 +2,7 @@
   #include <cstdio>
   #include <cstring>
   #include <iostream>
-  #include <math.h>
+  #include "runtime.h"
   using namespace std;
 
   // Declare stuff from Flex that Bison needs to know about:
@@ -11,16 +11,8 @@
   extern FILE *jawsin;
   extern int lineNum;
 
-  // Declare functions
-  void jawserror(const char *s);
-  void accum_add(char bit);
-  long calc_accum();
-  void reset_accum();
-
-  // Declare global variables
-  char BITSTRING[33];		// used for building semantic values
-  long ACCUM = 0x00000000;	// used for building semantic values
-  short COUNT = 0;		// used for building semantic values
+  // Declare stuff from runtime library
+  extern char BITSTRING[33];	// used for building semantic values
 %}
 
 %define api.prefix {jaws}
@@ -155,80 +147,55 @@ io_control_command:
 // stack
 stack_push:
   SPACE number {
-    // stack_push($<val>2);
     // print value as character when 8 bits
-    cout << "strlen(BITSTRING) == " << strlen(BITSTRING) << endl;
+    //cout << "strlen(BITSTRING) == " << strlen(BITSTRING) << endl;
     if (strlen(BITSTRING) == 8) {
      cout << "push " << (char)$<val>2 << " on top of the stack" << endl; 
+    } else {
+      cout << "push " << $<val>2 << " on top of the stack" << endl;
     }
-    cout << "push " << $<val>2 << " on top of the stack" << endl;
     reset_accum();
   };
 stack_duplicate:
   LF SPACE {
-    // temp1 = stack_pop();
-    // stack_push(temp);
-    // stack_push(temp);
     cout << "duplicate item on top of the stack" << endl;
   };
 stack_swap:
   LF TAB {
-    // temp1 = stack_pop();
-    // temp2 = stack_pop();
-    // stack_push(temp1);
-    // stack_push(temp2);
     cout << "swap items on top of the stack" << endl;
   };
 stack_discard:
   LF LF {
-    // stack_pop();
     cout << "discard item on top of the stack" << endl;
   };
 // arithmetic
 addition:
   SPACE SPACE {
-    // temp1  = stack_pop();
-    // temp2 = stack_pop();
-    // stack_push(temp1+temp2);
     cout << "addition" << endl;
   };
 subtraction:
   SPACE TAB {
-    // temp1 = stack_pop();
-    // temp2 = stack_pop();
-    // stack_push(temp1-temp2);  // TODO: check if order is right
     cout << "subtraction" << endl;
   };
 multiplication:
   SPACE LF {
-    // temp1 = stack_pop();
-    // temp2 = stack_pop();
-    // stack_push(temp1*temp2);
     cout << "multiplication" << endl;
   };
 integer_division:
   TAB SPACE {
-    // temp1 = stack_pop();
-    // temp2 = stack_pop();
-    // stack_push(temp1/temp2);  // TODO: check if order is right
     cout << "division" << endl;
   };
 modulo:
   TAB TAB { 
-    // temp1 = stack_pop();
-    // temp2 = stack_pop();
-    // stack_push(temp1%temp2);  // TODO: check if order is right
     cout << "modulo" << endl;
   };
 // heap
 heap_store:
   SPACE {
-    // stack_push(heap_store(stack_pop()));
     cout << "heap store" << endl;
   };
 heap_retrieve:
   TAB {
-    // stack_push(heap_store(stack_pop()));
     cout << "heap retrieve" << endl;
   };
 // flow control
@@ -340,31 +307,3 @@ int main(int, char**) {
 
 } // end main
 
-void jawserror(const char *s) {
-  cout << "Whoopsie daisies! Error while parsing line " << lineNum << ".  Message: " << s << endl;
-  // might as well halt now:
-  exit(1);
-} // end jawserror
-
-void accum_add(char bit) {
-  if (COUNT == 32) {
-    jawserror("More than 32 bits have been read while parsing binary number.");
-  } // end if
-  BITSTRING[COUNT] = bit;
-  COUNT++;
-} // end accum_add
-
-long calc_accum() {
-  for (int i=0; i<COUNT; i++) {  // reads bitstring left-to-right
-    if (BITSTRING[i] == '1') {
-      ACCUM += pow( 2, (COUNT-1)-i );  // last bit in string is pow(2,0) 
-    } // end if
-  } // end for
-  return ACCUM;
-} // end calc_accum
-
-void reset_accum() {
-  memset(BITSTRING, 0, sizeof(BITSTRING));  // reset whole string
-  ACCUM = 0x00000000;
-  COUNT = 0;
-} // end reset_accum

@@ -22,8 +22,8 @@ lex.yy.c: jaws.l jaws.tab.h
 	@flex jaws.l
 
 jaws: lex.yy.c jaws.tab.c jaws.tab.h
-	@echo "Compiling parser..."
-	@${CC} jaws.tab.c lex.jaws.c -o jaws
+	@echo "Compiling virtual machine..."
+	@${CC} jaws.tab.c lex.jaws.c runtime.c -o jaws
 
 clean:
 	@echo "Cleaning up..."
