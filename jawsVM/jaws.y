@@ -348,7 +348,7 @@ void jawserror(const char *s) {
 
 void accum_add(char bit) {
   if (COUNT == 32) {
-    jawserror("More than 32 bits have been read white parsing binary number.");
+    jawserror("More than 32 bits have been read while parsing binary number.");
   } // end if
   BITSTRING[COUNT] = bit;
   COUNT++;
