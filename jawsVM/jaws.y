@@ -12,7 +12,8 @@
   extern int lineNum;
 
   // Declare stuff from runtime library
-  extern char BITSTRING[33];	// used for building semantic values
+  extern Program PROGRAM;		// for runtime system
+  extern char BITSTRING[33];		// used for building semantic values
 %}
 
 %define api.prefix {jaws}
@@ -299,11 +300,17 @@ int main(int, char**) {
     cout << "I can't open test.jaws!" << endl;
     return -1;
   } // end if
-  // Set Flex to read from it instead of defaulting to STDIN:
+
+  // Initialize the program for runtime
+  init_Program(&PROGRAM, INIT_PRGM_CAP);
+
+  // Set Flex to read from input file instead of defaulting to STDIN
   jawsin = myfile;
 
-  // Parse through the input:
+  // Parse the input and build program
   jawsparse();
 
+  // Program is now built, so execute it
+  // TODO: execute program
 } // end main
 
