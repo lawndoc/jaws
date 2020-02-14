@@ -1,3 +1,4 @@
+#include "uthash.h"
 #define INIT_PRGM_CAP 4096
 #define STACK_SIZE 4096
 
@@ -20,8 +21,10 @@ typedef struct {
   int capacity;
 } Stack;
 typedef struct {
-
-} Jumptable;
+  int label;		// key
+  int index;		// location in Program
+  UT_hash_handle hh;	// makes structure hashable
+} Label;
 
 //----------------------------------------------//
 // --- Data Structure Function Declarations --- //
@@ -39,8 +42,11 @@ void push_address(Stack *stack, long *address);
 long pop_num(Stack *stack);
 long pop_char(Stack *stack);
 long *pop_address(Stack *stack);
+// Label Functions
+void init_Label(Label *record, int label, int index);
 // Jumptable Functions
-void jumptable_mark(int index, long label);
+void jumptable_mark(int index, long identifier);
+int jumptable_find(long identifier);
 
 //---------------------------------------//
 // --- Runtime Function Declarations --- //

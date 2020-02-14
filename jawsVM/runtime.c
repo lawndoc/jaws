@@ -14,6 +14,7 @@ extern int lineNum;		// for jawserror function
 // Declare global variables
 Program PROGRAM;		// for runtime system
 int IP;	//(instruction pointer)	// for runtime system
+Label *JUMPTABLE = NULL;	// for runtime system
 char BITSTRING[33];		// for building semantic values
 long ACCUM = 0x00000000;	// for building semantic values
 short COUNT = 0;		// for building semantic values
@@ -21,7 +22,8 @@ short COUNT = 0;		// for building semantic values
 //----------------------------------//
 // --- Data Structure Functions --- //
 //----------------------------------//
-// Instr Functions
+
+//--- Instr Functions ---//
 void init_Instr(Instr *instruction, char *name, long parameter) {
   instruction->param = parameter;
   if (strcmp(name, "stack_push") == 0)
@@ -74,7 +76,8 @@ void init_Instr(Instr *instruction, char *name, long parameter) {
     instruction->funcPtr = &ioc_stdio;
 } // end new_instruction
 
-// Program Functions
+
+//--- Program Functions---//
 void init_Program(Program *program, int capacity) {
   program->instructions = (Instr *) malloc(capacity * sizeof(Instr));
   program->size = 0;
@@ -95,7 +98,8 @@ void add_instruction(Program *program, char *name, long parameter) {
   program->size++;
 } // end add_instruction
 
-// stack Functions
+
+//--- Stack Functions ---//
 void init_Stack(Stack *stack, int capacity) {
   stack->stack = (long long *) malloc(capacity * sizeof(long long));
   stack->types = (char *) malloc(capacity * sizeof(char));
@@ -139,7 +143,10 @@ void push_address(Stack *stack, long *pointer) {
 long pop_num(Stack *stack) {
   long data = (long) stack->stack[stack->top];
   if (stack->types[stack->top] != 'n') {
-    jawserror("Expected to pop a Number but found a Character");
+    if (stack->types[stack->top] == 'c')
+      jawserror("Expected to pop a Number but found a Character");
+    else
+      jawserror("Expected to pop a Number but found an Address");
   } // end if
   stack->top--;
   return data;
@@ -148,7 +155,10 @@ long pop_num(Stack *stack) {
 long pop_char(Stack *stack) {
   long data = (long) stack->stack[stack->top];
   if (stack->types[stack->top] != 'c') {
-    jawserror("Expected to pop a Character but found a Number");
+    if (stack->types[stack->top] == 'n')
+      jawserror("Expected to pop a Character but found a Number");
+    else
+      jawserror("Expected to pop a Character but found an Address");
   } // end if
   stack->top--;
   return data;
@@ -157,20 +167,39 @@ long pop_char(Stack *stack) {
 long *pop_address(Stack *stack) {
   long *pointer = (long *) stack->stack[stack->top];
   if (stack->types[stack->top] != 'a') {
-    jawserror("Expected to pop an Address but found a Number");
+    if (stack->types[stack->top] == 'n')
+      jawserror("Expected to pop an Address but found a Number");
+    else
+      jawserror("Expected to pop an Address but found a Character");
   } // end if
   stack->top--;
   return pointer;
 } // end pop_address
 
-// Jump Table Functions
-void jumptable_mark(int index, long label) {
 
+//--- Jump Table Functions ---//
+void init_Label(Label *record, int label, int index) {
+  record->label = label;
+  record->index = index;
+} // end init_Label
+
+void jumptable_mark(int index, long identifier) {
+  Label record;
+  init_Label(&record, (int) identifier, index);
+  HASH_ADD_INT(JUMPTABLE, label, &record);
 } // end jumptable_mark
+
+int jumptable_find(long identifier) {
+  Label *record;
+  HASH_FIND_INT(JUMPTABLE, &identifier, record);
+  return record->index;
+} // end jumptable_get
+
 
 //---------------------------//
 // --- Runtime Functions --- //
 //---------------------------//
+
 // Instruction Functions
 void stack_push(long parameter) {
 

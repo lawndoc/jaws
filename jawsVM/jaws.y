@@ -13,6 +13,8 @@
 
   // Declare stuff from runtime library
   extern Program PROGRAM;		// for runtime system
+  extern int IP; // instruction pointer // for runtime system
+  extern Label *JUMPTABLE;		// for runtime system
   extern char BITSTRING[33];		// used for building semantic values
 %}
 
@@ -301,7 +303,7 @@ int main(int, char**) {
     return -1;
   } // end if
 
-  // Initialize the program for runtime
+  // Initialize the program to be built during parsing
   init_Program(&PROGRAM, INIT_PRGM_CAP);
 
   // Set Flex to read from input file instead of defaulting to STDIN
