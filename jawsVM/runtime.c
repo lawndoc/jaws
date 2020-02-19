@@ -202,99 +202,98 @@ int jumptable_find(long identifier) {
 
 // Instruction Functions
 void stack_push(long parameter) {
-
+  printf("Stack Push\n"); IP++;
 } // end stack_push
-
 void stack_duplicate(long noParam) {
-
+  printf("Stack Duplicate\n"); IP++;
 } // end stack_duplicate
 
 void stack_swap(long noParam) {
-
+  printf("Stack Swap\n"); IP++;
 } // end stack_swap
 
 void stack_discard(long noParam) {
-
+  printf("Stack Discard\n"); IP++;
 } // end stack_discard
 
 void arith_add(long noParam) {
-
+  printf("Add\n"); IP++;
 } // end arith_add
 
 void arith_sub(long noParam) {
-
+  printf("Subtract\n"); IP++;
 } // end arith_sub
 
 void arith_mult(long noParam) {
-
+  printf("Multiply\n"); IP++;
 } // end arith_mult
 
 void arith_div(long noParam) {
-
+  printf("Divide\n"); IP++;
 } // end arith_div
 
 void arith_mod(long noParam) {
-
+  printf("Modulo\n"); IP++;
 } // end arith_mod
 
 void heap_store(long noParam) {
-
+  printf("Heap Store\n"); IP++;
 } // end heap_store
 
 void heap_retrieve(long noParam) {
-
+  printf("Heap Retrieve\n"); IP++;
 } // end heap_retrieve
 
 void flow_mark(long parameter) {
-
+  printf("New Label\n"); IP++;
 } // end flow_mark
 
 void flow_call(long parameter) {
-
+  printf("Call Subroutine\n"); IP++;
 } // end flow_call
 
 void flow_jumpu(long parameter) {
-
+  printf("Unconditional Jump\n"); IP++;
 } // end flow_jumpu
 
 void flow_jumpz(long parameter) {
-
+  printf("Jump if Zero\n"); IP++;
 } // end flow_jumpz
 
 void flow_jumpn(long parameter) {
-
+  printf("Jump if Negative\n"); IP++;
 } // end flow_jumpn
 
 void flow_return(long noParam) {
-
+  printf("Return from Subroutine\n"); IP++;
 } // end flow_return
 
 void ioa_outc(long noParam) {
-
+  printf("Output Character\n"); IP++;
 } // end ioa_outc
 
 void ioa_outn(long noParam) {
-
+  printf("Output Number\n"); IP++;
 } // end ioa_outn
 
 void ioa_inc(long noParam) {
-
+  printf("Input Character\n"); IP++;
 } // end ioa_inc
 
 void ioa_inn(long noParam) {
-
+  printf("Input Number\n"); IP++;
 } // end ioa_inn
 
 void ioc_file(long noParam) {
-
+  printf("Stream File\n"); IP++;
 } // end ioc_file
 
 void ioc_netcon(long parameter) {
-
+  printf("Stream Network Connection\n"); IP++;
 } // end ioc_netcon
 
 void ioc_stdio(long noParam) {
-
+  printf("Stream Standard I/O\n"); IP++;
 } // end ioc_stdio
 
 //--------------------------//

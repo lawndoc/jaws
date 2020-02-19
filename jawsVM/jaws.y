@@ -310,9 +310,14 @@ int main(int, char**) {
   jawsin = myfile;
 
   // Parse the input and build program
-  jawsparse();
+  jawsparse(); //TODO: build PROGRAM and JUMPTABLE as the program is parsed
 
   // Program is now built, so execute it
-  // TODO: execute program
+  IP = 0;  // set instruction pointer to first index of PROGRAM
+//  while (IP < PROGRAM.size) {
+//    instruction = PROGRAM.instructions[IP];
+//    (*(instruction.funcPtr))(instruction.param);
+//    // instruction functions modify IP
+//  } // end while
 } // end main
 

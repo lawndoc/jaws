@@ -42,9 +42,8 @@ void push_address(Stack *stack, long *address);
 long pop_num(Stack *stack);
 long pop_char(Stack *stack);
 long *pop_address(Stack *stack);
-// Label Functions
+// Jump Table Functions
 void init_Label(Label *record, int label, int index);
-// Jumptable Functions
 void jumptable_mark(int index, long identifier);
 int jumptable_find(long identifier);
 
