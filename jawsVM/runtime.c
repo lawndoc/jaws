@@ -13,10 +13,11 @@ extern int lineNum;		// for jawserror function
 
 // Declare global variables
 Program PROGRAM;		// for runtime system
-int IP;	//(instruction pointer)	// for runtime system
+int IPTR;			// for runtime system
+Stack STACK;			// for runtime system
 Label *JUMPTABLE = NULL;	// for runtime system
-char BITSTRING[33];		// for building semantic values
-long ACCUM = 0x00000000;	// for building semantic values
+char BITSTRING[65];		// for building semantic values
+long ACCUM = 0x0000000000000000;// for building semantic values
 short COUNT = 0;		// for building semantic values
 
 //----------------------------------//
@@ -104,6 +105,7 @@ void init_Stack(Stack *stack, int capacity) {
   stack->stack = (long long *) malloc(capacity * sizeof(long long));
   stack->types = (char *) malloc(capacity * sizeof(char));
   stack->top = 0;
+  stack->types[stack->top] = 'x';
   stack->capacity = capacity;
 } // end init_Stack
 
@@ -144,9 +146,11 @@ long pop_num(Stack *stack) {
   long data = (long) stack->stack[stack->top];
   if (stack->types[stack->top] != 'n') {
     if (stack->types[stack->top] == 'c')
-      jawserror("Expected to pop a Number but found a Character");
-    else
-      jawserror("Expected to pop a Number but found an Address");
+      stackerror("Expected to pop a Number but found a Character");
+    else if (stack->types[stack->top] == 'a')
+      stackerror("Expected to pop a Number but found an Address");
+    else if (stack->types[stack->top] == 'x')
+      stackerror("Reached bottom of the stack when trying to pop a Number");
   } // end if
   stack->top--;
   return data;
@@ -156,9 +160,11 @@ long pop_char(Stack *stack) {
   long data = (long) stack->stack[stack->top];
   if (stack->types[stack->top] != 'c') {
     if (stack->types[stack->top] == 'n')
-      jawserror("Expected to pop a Character but found a Number");
-    else
-      jawserror("Expected to pop a Character but found an Address");
+      stackerror("Expected to pop a Character but found a Number");
+    else if (stack->types[stack->top] == 'a')
+      stackerror("Expected to pop a Character but found an Address");
+    else if (stack->types[stack->top] == 'x')
+      stackerror("Reached bottom of the stack when trying to pop a Character");
   } // end if
   stack->top--;
   return data;
@@ -168,9 +174,11 @@ long *pop_address(Stack *stack) {
   long *pointer = (long *) stack->stack[stack->top];
   if (stack->types[stack->top] != 'a') {
     if (stack->types[stack->top] == 'n')
-      jawserror("Expected to pop an Address but found a Number");
-    else
-      jawserror("Expected to pop an Address but found a Character");
+      stackerror("Expected to pop an Address but found a Number");
+    else if (stack->types[stack->top] == 'c')
+      stackerror("Expected to pop an Address but found a Character");
+    else if (stack->types[stack->top] == 'x')
+      stackerror("Reached bottom of the stack when trying to pop an Address");
   } // end if
   stack->top--;
   return pointer;
@@ -202,98 +210,171 @@ int jumptable_find(long identifier) {
 
 // Instruction Functions
 void stack_push(long parameter) {
-  printf("Stack Push\n"); IP++;
-} // end stack_push
+  printf("Stack Push\n"); IPTR++;
+  push_num(&STACK, parameter);
+} // end stack_pushn
+void stack_pushc(long parameter) {
+  printf("Stack Push\n"); IPTR++;
+  push_char(&STACK, parameter);
+} // end stack_pushc
+
 void stack_duplicate(long noParam) {
-  printf("Stack Duplicate\n"); IP++;
+  printf("Stack Duplicate\n"); IPTR++;
+  long topVal = STACK.stack[STACK.top];
+  char topType = STACK.types[STACK.top];
+  if (topType == 'n')
+    push_num(&STACK, topVal);
+  else if (topType == 'c')
+    push_char(&STACK, topVal);
+  else
+    push_address(&STACK, (long *) topVal);
 } // end stack_duplicate
 
 void stack_swap(long noParam) {
-  printf("Stack Swap\n"); IP++;
+  printf("Stack Swap\n"); IPTR++;
+  long firstVal;
+  long secondVal;
+  char firstType = STACK.types[STACK.top];
+  char secondType = STACK.types[STACK.top-1];
+  // pop top element
+  if (firstType == 'n')
+    firstVal = pop_num(&STACK);
+  else if (firstType == 'c')
+    firstVal = pop_char(&STACK);
+  else
+    firstVal = (long) pop_address(&STACK);
+  // pop second element
+  if (secondType == 'n')
+    secondVal = pop_num(&STACK);
+  else if (secondType == 'c')
+    secondVal = pop_char(&STACK);
+  else
+    secondVal = (long) pop_address(&STACK);
+  // push top element first
+  if (firstType == 'n')
+    push_num(&STACK, firstVal);
+  else if (firstType == 'c')
+    push_char(&STACK, firstVal);
+  else
+    push_address(&STACK, (long *) firstVal);
+  // push second element on top
+  if (secondType == 'n')
+    push_num(&STACK, secondVal);
+  else if (secondType == 'c')
+    push_char(&STACK, secondVal);
+  else
+    push_address(&STACK, (long *) secondVal);
+
 } // end stack_swap
 
 void stack_discard(long noParam) {
-  printf("Stack Discard\n"); IP++;
+  printf("Stack Discard\n"); IPTR++;
+  char topType = STACK.types[STACK.top];
+  if (topType == 'n')
+    pop_num(&STACK);
+  else if (topType == 'c')
+    pop_char(&STACK);
+  else if (topType == 'a')
+    pop_address(&STACK);
+  else if (topType == 'x')
+    stackerror("Stack is empty -- cannot discard top item");
+  else
+    stackerror("Reached unexpected type on the stack... How did this happen?");
 } // end stack_discard
 
 void arith_add(long noParam) {
-  printf("Add\n"); IP++;
+  printf("Add\n"); IPTR++;
+  long left = pop_num(&STACK);
+  long right = pop_num(&STACK);
+  push_num(&STACK, (left+right));
 } // end arith_add
 
 void arith_sub(long noParam) {
-  printf("Subtract\n"); IP++;
+  printf("Subtract\n"); IPTR++;
+  long left = pop_num(&STACK);
+  long right = pop_num(&STACK);
+  push_num(&STACK, (left-right));
 } // end arith_sub
 
 void arith_mult(long noParam) {
-  printf("Multiply\n"); IP++;
+  printf("Multiply\n"); IPTR++;
+  long left = pop_num(&STACK);
+  long right = pop_num(&STACK);
+  push_num(&STACK, (left*right));
 } // end arith_mult
 
 void arith_div(long noParam) {
-  printf("Divide\n"); IP++;
+  printf("Divide\n"); IPTR++;
+  long left = pop_num(&STACK);
+  long right = pop_num(&STACK);
+  push_num(&STACK, (left/right));
 } // end arith_div
 
 void arith_mod(long noParam) {
-  printf("Modulo\n"); IP++;
+  printf("Modulo\n"); IPTR++;
+  long left = pop_num(&STACK);
+  long right = pop_num(&STACK);
+  push_num(&STACK, (left%right));
 } // end arith_mod
 
 void heap_store(long noParam) {
-  printf("Heap Store\n"); IP++;
+  printf("Heap Store\n"); IPTR++;
 } // end heap_store
 
 void heap_retrieve(long noParam) {
-  printf("Heap Retrieve\n"); IP++;
+  printf("Heap Retrieve\n"); IPTR++;
 } // end heap_retrieve
 
 void flow_mark(long parameter) {
-  printf("New Label\n"); IP++;
+  printf("New Label\n"); IPTR++;
 } // end flow_mark
 
 void flow_call(long parameter) {
-  printf("Call Subroutine\n"); IP++;
+  printf("Call Subroutine\n"); IPTR++;
 } // end flow_call
 
 void flow_jumpu(long parameter) {
-  printf("Unconditional Jump\n"); IP++;
+  printf("Unconditional Jump\n"); IPTR++;
 } // end flow_jumpu
 
 void flow_jumpz(long parameter) {
-  printf("Jump if Zero\n"); IP++;
+  printf("Jump if Zero\n"); IPTR++;
 } // end flow_jumpz
 
 void flow_jumpn(long parameter) {
-  printf("Jump if Negative\n"); IP++;
+  printf("Jump if Negative\n"); IPTR++;
 } // end flow_jumpn
 
 void flow_return(long noParam) {
-  printf("Return from Subroutine\n"); IP++;
+  printf("Return from Subroutine\n"); IPTR++;
 } // end flow_return
 
 void ioa_outc(long noParam) {
-  printf("Output Character\n"); IP++;
+  printf("Output Character\n"); IPTR++;
 } // end ioa_outc
 
 void ioa_outn(long noParam) {
-  printf("Output Number\n"); IP++;
+  printf("Output Number\n"); IPTR++;
 } // end ioa_outn
 
 void ioa_inc(long noParam) {
-  printf("Input Character\n"); IP++;
+  printf("Input Character\n"); IPTR++;
 } // end ioa_inc
 
 void ioa_inn(long noParam) {
-  printf("Input Number\n"); IP++;
+  printf("Input Number\n"); IPTR++;
 } // end ioa_inn
 
 void ioc_file(long noParam) {
-  printf("Stream File\n"); IP++;
+  printf("Stream File\n"); IPTR++;
 } // end ioc_file
 
 void ioc_netcon(long parameter) {
-  printf("Stream Network Connection\n"); IP++;
+  printf("Stream Network Connection\n"); IPTR++;
 } // end ioc_netcon
 
 void ioc_stdio(long noParam) {
-  printf("Stream Standard I/O\n"); IP++;
+  printf("Stream Standard I/O\n"); IPTR++;
 } // end ioc_stdio
 
 //--------------------------//
@@ -306,12 +387,12 @@ void jawserror(const char *s) {
 } // end jawserror
 
 void stackerror(const char *s) {
-  printf("Oh dear! Type error on the stack for instruction %d. Message: %s\n", IP, s);
+  printf("Oh dear! Type error on the stack for instruction %d. Message: %s\n", IPTR, s);
   exit(1); // might as well halt now
 } // end stackerror
 
 void accum_add(char bit) {
-  if (COUNT == 32) {
+  if (COUNT == 64) {
     jawserror("More than 32 bits have been read while parsing binary number.");
   } // end if
   BITSTRING[COUNT] = bit;
@@ -329,6 +410,6 @@ long calc_accum() {
 
 void reset_accum() {
   memset(BITSTRING, 0, sizeof(BITSTRING));  // reset whole string
-  ACCUM = 0x00000000;
+  ACCUM = 0x0000000000000000;
   COUNT = 0;
 } // end reset_accum

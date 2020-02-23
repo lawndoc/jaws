@@ -13,9 +13,10 @@
 
   // Declare stuff from runtime library
   extern Program PROGRAM;		// for runtime system
-  extern int IP; // instruction pointer // for runtime system
+  extern int IPTR;			// for runtime system
+  extern Stack STACK;			// for runtime system
   extern Label *JUMPTABLE;		// for runtime system
-  extern char BITSTRING[33];		// used for building semantic values
+  extern char BITSTRING[65];		// used for building semantic values
 %}
 
 %define api.prefix {jaws}
@@ -153,115 +154,141 @@ stack_push:
     // print value as character when 8 bits
     //cout << "strlen(BITSTRING) == " << strlen(BITSTRING) << endl;
     if (strlen(BITSTRING) == 8) {
-     cout << "push " << (char)$<val>2 << " on top of the stack" << endl; 
+      cout << "push " << (char)$<val>2 << " on top of the stack" << endl; 
     } else {
       cout << "push " << $<val>2 << " on top of the stack" << endl;
-    }
+    } // end if
+    add_instruction(&PROGRAM, (char *) "stack_push", $<val>2);
     reset_accum();
   };
 stack_duplicate:
   LF SPACE {
     cout << "duplicate item on top of the stack" << endl;
+    add_instruction(&PROGRAM, (char *) "stack_duplicate", 0);
   };
 stack_swap:
   LF TAB {
     cout << "swap items on top of the stack" << endl;
+    add_instruction(&PROGRAM, (char *) "stack_swap", 0);
   };
 stack_discard:
   LF LF {
     cout << "discard item on top of the stack" << endl;
+    add_instruction(&PROGRAM, (char *) "stack_discard", 0);
   };
 // arithmetic
 addition:
   SPACE SPACE {
     cout << "addition" << endl;
+    add_instruction(&PROGRAM, (char *) "arith_add", 0);
   };
 subtraction:
   SPACE TAB {
     cout << "subtraction" << endl;
+    add_instruction(&PROGRAM, (char *) "arith_sub", 0);
   };
 multiplication:
   SPACE LF {
     cout << "multiplication" << endl;
+    add_instruction(&PROGRAM, (char *) "arith_mult", 0);
   };
 integer_division:
   TAB SPACE {
     cout << "division" << endl;
+    add_instruction(&PROGRAM, (char *) "arith_div", 0);
   };
 modulo:
   TAB TAB { 
     cout << "modulo" << endl;
+    add_instruction(&PROGRAM, (char *) "arith_mod", 0);
   };
 // heap
 heap_store:
   SPACE {
     cout << "heap store" << endl;
+    add_instruction(&PROGRAM, (char *) "heap_store", 0);
   };
 heap_retrieve:
   TAB {
     cout << "heap retrieve" << endl;
+    add_instruction(&PROGRAM, (char *) "heap_retrieve", 0);
   };
 // flow control
 new_label:
   SPACE SPACE label {
     cout << "new label '" << $<val>3 << "'" << endl;
+    add_instruction(&PROGRAM, (char *) "flow_mark", $<val>3);
     reset_accum();
   };
 call_subroutine:
   SPACE TAB label {
     cout << "call subroutine at label " << $<val>3 << endl;
+    add_instruction(&PROGRAM, (char *) "flow_call", $<val>3);
     reset_accum();
   };
 uncond_jump:
   SPACE LF label {
     cout << "jump unconditionally to label " << $<val>3 << endl;
+    add_instruction(&PROGRAM, (char *) "flow_jumpu", $<val>3);
     reset_accum();
   };
 jump_if_zero:
   TAB SPACE label {
     cout << "jump to label " << $<val>3 << " if top of stack is zero" << endl;
+    add_instruction(&PROGRAM, (char *) "flow_jumpz", $<val>3);
     reset_accum();
   };
 jump_if_neg:
   TAB TAB label {
     cout << "jump to " << $<val>3 << " if top of stack is negative" << endl;
+    add_instruction(&PROGRAM, (char *) "flow_jumpn", $<val>3);
     reset_accum();
   };
 end_subroutine:
   TAB LF {
     cout << "end subroutine" << endl;
+    add_instruction(&PROGRAM, (char *) "flow_return", 0);
   };
 // io action
 output_char:
   SPACE SPACE {
     cout << "outputting a character to IO" << endl;
+    add_instruction(&PROGRAM, (char *) "ioa_outc", 0);
   };
 output_int:
   SPACE TAB {
     cout << "outputting an integer to IO" << endl;
+    add_instruction(&PROGRAM, (char *) "ioa_outn", 0);
   };
 read_char:
   TAB SPACE {
     cout << "reading a character from IO" << endl;
+    add_instruction(&PROGRAM, (char *) "ioa_inc", 0);
   };
 read_int:
   TAB TAB {
     cout << "reading an integer from IO" << endl;
+    add_instruction(&PROGRAM, (char *) "ioa_inn", 0);
   };
   ;
 // io control
 stream_file:
   SPACE SPACE {
     cout << "streaming from a file" << endl;
+    add_instruction(&PROGRAM, (char *) "ioc_file", 0);
   };
 stream_net:
   SPACE TAB ip { reset_accum(); } port {
     cout << "streaming from network connection IP: " << $<val>3 << " Port: " << $<val>4 << endl;
+    long netcon = $<val>3 << 32 | $<val>4; // combine into one 64 bit parameter
+    add_instruction(&PROGRAM, (char *) "ioc_netcon", netcon);
     reset_accum();
   };
 stream_stdio:
-  TAB SPACE
-  ;
+  TAB SPACE {
+    cout << "streaming from standard i/o" << endl;
+    add_instruction(&PROGRAM, (char *) "ioc_stdio", 0);
+  };
 
 // --- Parameters ---
 number:
@@ -310,14 +337,15 @@ int main(int, char**) {
   jawsin = myfile;
 
   // Parse the input and build program
-  jawsparse(); //TODO: build PROGRAM and JUMPTABLE as the program is parsed
+  jawsparse();
 
   // Program is now built, so execute it
-  IP = 0;  // set instruction pointer to first index of PROGRAM
-//  while (IP < PROGRAM.size) {
-//    instruction = PROGRAM.instructions[IP];
-//    (*(instruction.funcPtr))(instruction.param);
-//    // instruction functions modify IP
-//  } // end while
+  Instr instruction;			// var for current instruction
+  IPTR = 0;  				// init instruction pointer
+  init_Stack(&STACK, STACK_SIZE);	// init stack
+  while (IPTR < PROGRAM.size) {		// fetch and execute instructions
+    instruction = PROGRAM.instructions[IPTR];
+    (*(instruction.funcPtr))(instruction.param); // (modifies IPTR)
+  } // end while
 } // end main
 
