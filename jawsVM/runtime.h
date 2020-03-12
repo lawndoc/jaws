@@ -1,6 +1,6 @@
 #include "uthash.h"
 #define INIT_PRGM_CAP 4096
-#define STACK_SIZE 4096
+#define MEM_SIZE 4096
 
 //-------------------------//
 // --- Data Structures --- //
@@ -21,10 +21,19 @@ typedef struct {
   int capacity;
 } Stack;
 typedef struct {
+  long *heap;
+  char *types;
+  int capacity;
+} Heap;
+typedef struct {
   int label;		// key
   int index;		// location in Program
   UT_hash_handle hh;	// makes structure hashable
 } Label;
+typedef struct {
+  Label *jumptable;
+  Stack callStack;
+} Jumptable;
 
 //----------------------------------------------//
 // --- Data Structure Function Declarations --- //
@@ -42,10 +51,18 @@ void push_address(Stack *stack, long *address);
 long pop_num(Stack *stack);
 long pop_char(Stack *stack);
 long *pop_address(Stack *stack);
+// Heap Functions
+void init_Heap(Heap *heap, int capacity);
+  // retrieve (implemented in runtime function for type persistence)
+void store_num(Heap *heap, long value, long address);
+void store_char(Heap *heap, long value, long address);
 // Jump Table Functions
 void init_Label(Label *record, int label, int index);
-void jumptable_mark(int index, long identifier);
-int jumptable_find(long identifier);
+void init_Jumptable(Jumptable *jumptable, int capacity);
+void jumptable_mark(Jumptable *jumptable, int index, long identifier);
+int jumptable_find(Jumptable *jumptable, long identifier);
+void jumptable_call(Jumptable *jumptable, int index);
+int jumptable_return(Jumptable *jumptable);
 
 //---------------------------------------//
 // --- Runtime Function Declarations --- //
@@ -81,6 +98,9 @@ void ioc_stdio(long noParam);
 //--------------------------------------//
 void jawserror(const char *s);
 void stackerror(const char *s);
+void heaperror(const char *s);
+void runtimeerror(const char *s);
+void getIString(char *instruction);
 void accum_add(char bit);
 long calc_accum();
 void reset_accum();

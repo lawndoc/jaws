@@ -15,7 +15,8 @@
   extern Program PROGRAM;		// for runtime system
   extern int IPTR;			// for runtime system
   extern Stack STACK;			// for runtime system
-  extern Label *JUMPTABLE;		// for runtime system
+  extern Heap HEAP;			// for runtime system
+  extern Jumptable JUMPTABLE;		// for runtime system
   extern char BITSTRING[65];		// used for building semantic values
 %}
 
@@ -341,8 +342,10 @@ int main(int, char**) {
 
   // Program is now built, so execute it
   Instr instruction;			// var for current instruction
-  IPTR = 0;  				// init instruction pointer
-  init_Stack(&STACK, STACK_SIZE);	// init stack
+  IPTR = 0;  				// set instruction pointer
+  init_Stack(&STACK, MEM_SIZE);		// initialize stack
+  init_Heap(&HEAP, MEM_SIZE);		// initialize heap
+  init_Jumptable(&JUMPTABLE, MEM_SIZE); // initialize jump table
   while (IPTR < PROGRAM.size) {		// fetch and execute instructions
     instruction = PROGRAM.instructions[IPTR];
     (*(instruction.funcPtr))(instruction.param); // (modifies IPTR)

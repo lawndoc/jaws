@@ -108,7 +108,11 @@ We need to be able to interact with the user and the disk. There are I/O instruc
 
 We need to be able to read and write from the disk. To do that, we will change the I/O stream from standard in/out to a file.
 
-`[Space][Space]` Get file path from the stack and change I/O stream to that file
+`[Space][Space]` Get mode character and then file path from the stack and change I/O stream to that file
+
+- Mode is one of 3 characters: r, w, or a
+- Each mode's functionality is equivalent to C language's r+, w+, and a+ modes
+- File path is between { } brackets and popped characters are arranged left-to-right (push characters onto the stack backwards so they are popped in order)
 
 `[Space][Tab]` (Parameters: IP, Port) Change I/O stream to TCP connection at IP, Port
 
