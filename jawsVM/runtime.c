@@ -8,6 +8,9 @@
 // --- Variable Declarations --- //
 //-------------------------------//
 
+// Declare debug level from command line arg
+extern int DEBUG;
+
 // Declare stuff from Flex and Bison
 extern int lineNum;		// for jawserror function
 
@@ -266,26 +269,27 @@ int jumptable_return(Jumptable *jumptable) {
 
 // Instruction Functions
 void stack_push(long parameter) {
-  printf("Stack Push\n");
+  if (DEBUG > 0)
+    printf("Stack Push: %ld\n", parameter);
   push_num(&STACK, parameter);
   IPTR++;
 } // end stack_pushn
 void stack_pushc(long parameter) {
-  printf("Stack Push\n");
+  if (DEBUG > 0)
+    printf("Stack Push: %c\n", (char) parameter);
   push_char(&STACK, parameter);
   IPTR++;
 } // end stack_pushc
 
 void stack_duplicate(long noParam) {
-  printf("Stack Duplicate\n");
+  if (DEBUG > 0)
+    printf("Stack Duplicate\n");
   long topVal = STACK.stack[STACK.top];
   char topType = STACK.types[STACK.top];
   if (topType == 'n')
     push_num(&STACK, topVal);
   else if (topType == 'c')
     push_char(&STACK, topVal);
-  else if (topType == 'a')
-    push_address(&STACK, (long *) topVal);
   else if (topType == 'x')
     stackerror("Stack is empty -- cannot duplicate top item");
   else
@@ -294,7 +298,8 @@ void stack_duplicate(long noParam) {
 } // end stack_duplicate
 
 void stack_swap(long noParam) {
-  printf("Stack Swap\n");
+  if (DEBUG > 0)
+    printf("Stack Swap\n");
   long firstVal;
   long secondVal;
   char firstType = STACK.types[STACK.top];
@@ -304,8 +309,6 @@ void stack_swap(long noParam) {
     firstVal = pop_num(&STACK);
   else if (firstType == 'c')
     firstVal = pop_char(&STACK);
-  else if (firstType == 'a') 
-    firstVal = (long) pop_address(&STACK);
   else if (firstType == 'x')
     stackerror("Stack is empty -- cannot swap top two items");
   else
@@ -315,8 +318,6 @@ void stack_swap(long noParam) {
     secondVal = pop_num(&STACK);
   else if (secondType == 'c')
     secondVal = pop_char(&STACK);
-  else if (secondType == 'a')
-    secondVal = (long) pop_address(&STACK);
   else if (secondType == 'x')
     stackerror("Only one item on the stack -- cannot swap top two items");
   else
@@ -326,28 +327,23 @@ void stack_swap(long noParam) {
     push_num(&STACK, firstVal);
   else if (firstType == 'c')
     push_char(&STACK, firstVal);
-  else
-    push_address(&STACK, (long *) firstVal);
   // push second element on top
   if (secondType == 'n')
     push_num(&STACK, secondVal);
   else if (secondType == 'c')
     push_char(&STACK, secondVal);
-  else
-    push_address(&STACK, (long *) secondVal);
   IPTR++;
 
 } // end stack_swap
 
 void stack_discard(long noParam) {
-  printf("Stack Discard\n");
+  if (DEBUG > 0)
+    printf("Stack Discard\n");
   char topType = STACK.types[STACK.top];
   if (topType == 'n')
     pop_num(&STACK);
   else if (topType == 'c')
     pop_char(&STACK);
-  else if (topType == 'a')
-    pop_address(&STACK);
   else if (topType == 'x')
     stackerror("Stack is empty -- cannot discard top item");
   else
@@ -356,7 +352,8 @@ void stack_discard(long noParam) {
 } // end stack_discard
 
 void arith_add(long noParam) {
-  printf("Add\n");
+  if (DEBUG > 0)
+    printf("Add\n");
   long left = pop_num(&STACK);
   long right = pop_num(&STACK);
   push_num(&STACK, (left+right));
@@ -364,7 +361,8 @@ void arith_add(long noParam) {
 } // end arith_add
 
 void arith_sub(long noParam) {
-  printf("Subtract\n");
+  if (DEBUG > 0)
+    printf("Subtract\n");
   long left = pop_num(&STACK);
   long right = pop_num(&STACK);
   push_num(&STACK, (left-right));
@@ -372,7 +370,8 @@ void arith_sub(long noParam) {
 } // end arith_sub
 
 void arith_mult(long noParam) {
-  printf("Multiply\n");
+  if (DEBUG > 0)
+    printf("Multiply\n");
   long left = pop_num(&STACK);
   long right = pop_num(&STACK);
   push_num(&STACK, (left*right));
@@ -380,7 +379,8 @@ void arith_mult(long noParam) {
 } // end arith_mult
 
 void arith_div(long noParam) {
-  printf("Divide\n");
+  if (DEBUG > 0)
+    printf("Divide\n");
   long left = pop_num(&STACK);
   long right = pop_num(&STACK);
   push_num(&STACK, (left/right));
@@ -388,7 +388,8 @@ void arith_div(long noParam) {
 } // end arith_div
 
 void arith_mod(long noParam) {
-  printf("Modulo\n");
+  if (DEBUG > 0)
+    printf("Modulo\n");
   long left = pop_num(&STACK);
   long right = pop_num(&STACK);
   push_num(&STACK, (left%right));
@@ -396,7 +397,8 @@ void arith_mod(long noParam) {
 } // end arith_mod
 
 void heap_store(long noParam) {
-  printf("Heap Store\n");
+  if (DEBUG > 0)
+    printf("Heap Store\n");
   long topVal;
   long address;
   char topType = STACK.types[STACK.top];
@@ -424,7 +426,8 @@ void heap_store(long noParam) {
 } // end heap_store
 
 void heap_retrieve(long noParam) { // note: doesn't use Heap structure functions
-  printf("Heap Retrieve\n");
+  if (DEBUG > 0)
+    printf("Heap Retrieve\n");
   long value;
   long address;
   char valueType;
@@ -453,24 +456,28 @@ void heap_retrieve(long noParam) { // note: doesn't use Heap structure functions
 } // end heap_retrieve
 
 void flow_mark(long parameter) {
-  printf("New Label\n");
+  if (DEBUG > 0)
+    printf("New Label\n");
   jumptable_mark(&JUMPTABLE, IPTR+1, parameter);
   IPTR++;
 } // end flow_mark
 
 void flow_call(long parameter) {
-  printf("Call Subroutine\n");
+  if (DEBUG > 0)
+    printf("Call Subroutine\n");
   jumptable_call(&JUMPTABLE, IPTR+1);
   IPTR = jumptable_find(&JUMPTABLE, parameter);
 } // end flow_call
 
 void flow_jumpu(long parameter) {
-  printf("Unconditional Jump\n");
+  if (DEBUG > 0)
+    printf("Unconditional Jump\n");
   IPTR = jumptable_find(&JUMPTABLE, parameter);
 } // end flow_jumpu
 
 void flow_jumpz(long parameter) {
-  printf("Jump if Zero\n");
+  if (DEBUG > 0)
+    printf("Jump if Zero\n");
   if (STACK.types[STACK.top] != 'n')
     stackerror("Cannot do conditional jump without a number on top of the stack");
   if (STACK.stack[STACK.top] == 0)
@@ -480,7 +487,8 @@ void flow_jumpz(long parameter) {
 } // end flow_jumpz
 
 void flow_jumpn(long parameter) {
-  printf("Jump if Negative\n");
+  if (DEBUG > 0)
+    printf("Jump if Negative\n");
   if (STACK.types[STACK.top] != 'n')
     stackerror("Cannot do conditional jump without a number on top of the stack");
   if (STACK.stack[STACK.top] < 0)
@@ -490,21 +498,25 @@ void flow_jumpn(long parameter) {
 } // end flow_jumpn
 
 void flow_return(long noParam) {
-  printf("Return from Subroutine\n");
+  if (DEBUG > 0)
+    printf("Return from Subroutine\n");
   IPTR = jumptable_return(&JUMPTABLE);
 } // end flow_return
 
 void ioa_outc(long noParam) {
-  printf("Output Character\n");
-  char output;
+  if (DEBUG > 0)
+    printf("Output Character: ");
+  char output = (char) pop_char(&STACK);
+  // determine I/O mode
   if (IOSTREAM == 's') {
-    output = (char) pop_char(&STACK);
     printf("%c", output);
+    if (DEBUG > 0)
+      printf("\n");
   } else if (IOSTREAM == 'f') {
-    output = (char) pop_char(&STACK);
-    if (FILESTREAM == NULL) {
+    if (FILESTREAM == NULL)
       runtimeerror("Tried writing character to file before it was opened, or the file was not successfully opened.");
-    } // end if (FILESTREAM...
+    if (DEBUG > 0)
+      printf("%c\n", output);
     fprintf(FILESTREAM, "%c", output);
   } else if (IOSTREAM == 'n') {
     // TODO : save for later
@@ -515,16 +527,18 @@ void ioa_outc(long noParam) {
 } // end ioa_outc
 
 void ioa_outn(long noParam) {
-  printf("Output Number\n");
-  long output;
+  if (DEBUG > 0)
+    printf("Output Number: ");
+  long output = pop_num(&STACK);
   if (IOSTREAM == 's') {
-    output = pop_num(&STACK);
     printf("%ld", output);
+    if (DEBUG > 0)
+      printf("\n");
   } else if (IOSTREAM == 'f') {
-    output = pop_num(&STACK);
-    if (FILESTREAM == NULL) {
+    if (FILESTREAM == NULL)
       runtimeerror("Tried writing number to file before it was opened, or the file was not successfully opened.");
-    } // end if (FILESTREAM...
+    if (DEBUG > 0)
+      printf("%ld\n", output);
     fprintf(FILESTREAM, "%ld", output);
   } else if (IOSTREAM == 'n') {
     // TODO : save for later
@@ -535,26 +549,29 @@ void ioa_outn(long noParam) {
 } // end ioa_outn
 
 void ioa_inc(long noParam) {
-  printf("Input Character\n");
+  if (DEBUG > 0)
+    printf("Input Character: ");
   char input;
   if (IOSTREAM == 's') {
     input = getchar();
   } else if (IOSTREAM == 'f') {
-    if (FILESTREAM == NULL) {
+    if (FILESTREAM == NULL)
       runtimeerror("Tried writing number to file before it was opened, or the file was not successfully opened.");
     input = (char) fgetc(FILESTREAM);
-    } // end if (FILESTREAM...
   } else if (IOSTREAM == 'n') {
     // TODO : save for later
   } else {
     runtimeerror("Invalid IO Stream type... How did this happen?");
   } // end if (IOSTREAM...
+  if (DEBUG > 0)
+    printf("%c\n", input);
   push_char(&STACK, (long) input);
   IPTR++;
 } // end ioa_inc
 
 void ioa_inn(long noParam) {
-  printf("Input Number\n");
+  if (DEBUG > 0)
+    printf("Input Number: ");
   long input;
   char buf[MEM_SIZE];
   char *extra;
@@ -577,12 +594,15 @@ void ioa_inn(long noParam) {
   } else {
     runtimeerror("Invalid IO Stream type... How did this happen?");
   } // end if (IOSTREAM...
+  if (DEBUG > 0)
+    printf("%ld\n", input);
   push_num(&STACK, input);
   IPTR++;
 } // end ioa_inn
 
 void ioc_file(long noParam) {
-  printf("Stream File\n");
+  if (DEBUG > 0)
+    printf("Stream File: ");
   char mode;
   char path[4096];
   char current;
@@ -594,6 +614,8 @@ void ioc_file(long noParam) {
     current = (char) pop_char(&STACK);
     strncat(path, &current, 1);
   } // end while
+  if (DEBUG > 0)
+    printf("%s\n", path);
   pop_char(&STACK); // pop '}' char
   IOSTREAM = 'f';
   if (mode == 'r')
@@ -608,14 +630,16 @@ void ioc_file(long noParam) {
 } // end ioc_file
 
 void ioc_netcon(long parameter) {
-  printf("Stream Network Connection\n");
+  if (DEBUG > 0)
+    printf("Stream Network Connection\n");
   IOSTREAM = 'n';
   // TODO : save for later
   IPTR++;
 } // end ioc_netcon
 
 void ioc_stdio(long noParam) {
-  printf("Stream Standard I/O\n");
+  if (DEBUG > 0)
+    printf("Stream Standard I/O\n");
   IOSTREAM = 's';
   IPTR++;
 } // end ioc_stdio
@@ -625,22 +649,22 @@ void ioc_stdio(long noParam) {
 //--------------------------//
 
 void jawserror(const char *s) {
-  printf("Whoopsie daisies! Error while parsing line %d.  Message: %s\n", lineNum, s);
+  printf("\nWhoopsie daisies! Error while parsing line %d.  Message: %s\n", lineNum, s);
   exit(1); // might as well halt now:
 } // end jawserror
 
 void stackerror(const char *s) {
-  printf("Oh dear! Type error on the stack.\nInstruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
+  printf("\nOh dear! Type error on the stack.\nInstruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
   exit(1); // might as well halt now
 } // end stackerror
 
 void heaperror(const char *s) {
-  printf("Rats! Type error on the heap.\nInstruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
+  printf("\nRats! Type error on the heap.\nInstruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
   exit(1); // might as well halt now
 } // end heaperror
 
 void runtimeerror(const char *s) {
-  printf("Oh dear! Invalid data being used for an operation. Instruction: %d -> %s\nFin line: %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
+  printf("\nOh dear! Invalid data being used for an operation. Instruction: %d -> %s\nFin line: %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
   exit(1); // might as well halt now
 } // end runtimeerror 
 

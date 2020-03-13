@@ -3,7 +3,11 @@
   #include <cstring>
   #include <iostream>
   #include "runtime.h"
+  #include <unistd.h>
   using namespace std;
+
+  // Debug level
+  int DEBUG = 0;
 
   // Declare stuff from Flex that Bison needs to know about:
   extern "C" int jawslex();
@@ -37,10 +41,12 @@
 // Grammmar 
 jaws:
   bodies last_body {
-    cout << "done with a jaws file!" << endl;
+    if (DEBUG > 1)
+      cout << "done with a jaws file!" << endl;
   }
   | last_body {
-    cout << "done with a jaws file!" << endl;
+    if (DEBUG > 1)
+      cout << "done with a jaws file!" << endl;
   };
 bodies:
   bodies body
@@ -54,18 +60,21 @@ last_body:
   ;
 header:
   extra_lines LF TAB SPACE {
-    cout << "Started interpreting jaws code..." << endl;
+    if (DEBUG > 1)
+      cout << "Started interpreting jaws code..." << endl;
     PROGRAM.headFooters++;
     JAWSLINE++;
   }
   | LF TAB SPACE {
-    cout << "Started interpreting jaws code..." << endl;
+    if (DEBUG > 1)
+      cout << "Started interpreting jaws code..." << endl;
     PROGRAM.headFooters++;
     JAWSLINE++;
   };
 footer:
   LF TAB SPACE {
-    cout << "Paused interpreting jaws code..." << endl;
+    if (DEBUG > 1)
+      cout << "Paused interpreting jaws code..." << endl;
     PROGRAM.headFooters++;
     JAWSLINE++;
   };
@@ -75,7 +84,8 @@ end_program:
   ;
 end_instruction:
   LF LF LF {
-    cout << "end of program" << endl;
+    if (DEBUG > 1)
+      cout << "end of program" << endl;
     JAWSLINE++;
     JAWSLINE++;
     JAWSLINE++;
@@ -166,10 +176,12 @@ stack_push:
     // print value as character when 8 bits
     //cout << "strlen(BITSTRING) == " << strlen(BITSTRING) << endl;
     if (strlen(BITSTRING) == 8) {
-      cout << "push " << (char)$<val>2 << " on top of the stack" << endl;
+      if (DEBUG > 1)
+        cout << "push " << (char)$<val>2 << " on top of the stack" << endl;
       add_instruction(&PROGRAM, (char *) "stack_pushc", $<val>2);
     } else {
-      cout << "push " << $<val>2 << " on top of the stack" << endl;
+      if (DEBUG > 1)
+        cout << "push " << $<val>2 << " on top of the stack" << endl;
       add_instruction(&PROGRAM, (char *) "stack_push", $<val>2);
     } // end if
     reset_accum();
@@ -177,19 +189,22 @@ stack_push:
   };
 stack_duplicate:
   LF SPACE {
-    cout << "duplicate item on top of the stack" << endl;
+    if (DEBUG > 1)
+      cout << "duplicate item on top of the stack" << endl;
     add_instruction(&PROGRAM, (char *) "stack_duplicate", 0);
     JAWSLINE++;
   };
 stack_swap:
   LF TAB {
-    cout << "swap items on top of the stack" << endl;
+    if (DEBUG > 1)
+      cout << "swap items on top of the stack" << endl;
     add_instruction(&PROGRAM, (char *) "stack_swap", 0);
     JAWSLINE++;
   };
 stack_discard:
   LF LF {
-    cout << "discard item on top of the stack" << endl;
+    if (DEBUG > 1)
+      cout << "discard item on top of the stack" << endl;
     add_instruction(&PROGRAM, (char *) "stack_discard", 0);
     JAWSLINE++;
     JAWSLINE++;
@@ -197,59 +212,69 @@ stack_discard:
 // arithmetic
 addition:
   SPACE SPACE {
-    cout << "addition" << endl;
+    if (DEBUG > 1)
+      cout << "addition" << endl;
     add_instruction(&PROGRAM, (char *) "arith_add", 0);
   };
 subtraction:
   SPACE TAB {
-    cout << "subtraction" << endl;
+    if (DEBUG > 1)
+      cout << "subtraction" << endl;
     add_instruction(&PROGRAM, (char *) "arith_sub", 0);
   };
 multiplication:
   SPACE LF {
-    cout << "multiplication" << endl;
+    if (DEBUG > 1)
+      cout << "multiplication" << endl;
     add_instruction(&PROGRAM, (char *) "arith_mult", 0);
     JAWSLINE++;
   };
 integer_division:
   TAB SPACE {
-    cout << "division" << endl;
+    if (DEBUG > 1)
+      cout << "division" << endl;
     add_instruction(&PROGRAM, (char *) "arith_div", 0);
   };
 modulo:
   TAB TAB { 
-    cout << "modulo" << endl;
+    if (DEBUG > 1)
+      cout << "modulo" << endl;
     add_instruction(&PROGRAM, (char *) "arith_mod", 0);
   };
 // heap
 heap_store:
   SPACE {
-    cout << "heap store" << endl;
+    if (DEBUG > 1)
+      cout << "heap store" << endl;
     add_instruction(&PROGRAM, (char *) "heap_store", 0);
   };
 heap_retrieve:
   TAB {
-    cout << "heap retrieve" << endl;
+    if (DEBUG > 1)
+      cout << "heap retrieve" << endl;
     add_instruction(&PROGRAM, (char *) "heap_retrieve", 0);
   };
 // flow control
 new_label:
   SPACE SPACE label {
-    cout << "new label '" << $<val>3 << "'" << endl;
+    if (DEBUG > 1)
+      cout << "new label '" << $<val>3 << "'" << endl;
     add_instruction(&PROGRAM, (char *) "flow_mark", $<val>3);
     reset_accum();
     JAWSLINE++;
   };
 call_subroutine:
   SPACE TAB label {
-    cout << "call subroutine at label " << $<val>3 << endl;
+    if (DEBUG > 1)
+      cout << "call subroutine at label " << $<val>3 << endl;
     add_instruction(&PROGRAM, (char *) "flow_call", $<val>3);
     reset_accum();
     JAWSLINE++;
   };
 uncond_jump:
   SPACE LF label {
-    cout << "jump unconditionally to label " << $<val>3 << endl;
+    if (DEBUG > 1)
+      cout << "jump unconditionally to label " << $<val>3 << endl;
     add_instruction(&PROGRAM, (char *) "flow_jumpu", $<val>3);
     reset_accum();
     JAWSLINE++;
@@ -257,55 +282,64 @@ uncond_jump:
   };
 jump_if_zero:
   TAB SPACE label {
-    cout << "jump to label " << $<val>3 << " if top of stack is zero" << endl;
+    if (DEBUG > 1)
+      cout << "jump to label " << $<val>3 << " if top of stack is zero" << endl;
     add_instruction(&PROGRAM, (char *) "flow_jumpz", $<val>3);
     reset_accum();
     JAWSLINE++;
   };
 jump_if_neg:
   TAB TAB label {
-    cout << "jump to " << $<val>3 << " if top of stack is negative" << endl;
+    if (DEBUG > 1)
+      cout << "jump to " << $<val>3 << " if top of stack is negative" << endl;
     add_instruction(&PROGRAM, (char *) "flow_jumpn", $<val>3);
     reset_accum();
     JAWSLINE++;
   };
 end_subroutine:
   TAB LF {
-    cout << "end subroutine" << endl;
+    if (DEBUG > 1)
+      cout << "end subroutine" << endl;
     add_instruction(&PROGRAM, (char *) "flow_return", 0);
     JAWSLINE++;
   };
 // io action
 output_char:
   SPACE SPACE {
-    cout << "outputting a character to IO" << endl;
+    if (DEBUG > 1)
+      cout << "outputting a character to IO" << endl;
     add_instruction(&PROGRAM, (char *) "ioa_outc", 0);
   };
 output_int:
   SPACE TAB {
-    cout << "outputting an integer to IO" << endl;
+    if (DEBUG > 1)
+      cout << "outputting an integer to IO" << endl;
     add_instruction(&PROGRAM, (char *) "ioa_outn", 0);
   };
 read_char:
   TAB SPACE {
-    cout << "reading a character from IO" << endl;
+    if (DEBUG > 1)
+      cout << "reading a character from IO" << endl;
     add_instruction(&PROGRAM, (char *) "ioa_inc", 0);
   };
 read_int:
   TAB TAB {
-    cout << "reading an integer from IO" << endl;
+    if (DEBUG > 1)
+      cout << "reading an integer from IO" << endl;
     add_instruction(&PROGRAM, (char *) "ioa_inn", 0);
   };
   ;
 // io control
 stream_file:
   SPACE SPACE {
-    cout << "streaming from a file" << endl;
+    if (DEBUG > 1)
+      cout << "streaming from a file" << endl;
     add_instruction(&PROGRAM, (char *) "ioc_file", 0);
   };
 stream_net:
   SPACE TAB ip { reset_accum(); } port {
-    cout << "streaming from network connection IP: " << $<val>3 << " Port: " << $<val>4 << endl;
+    if (DEBUG > 1)
+      cout << "streaming from network connection IP: " << $<val>3 << " Port: " << $<val>4 << endl;
     long netcon = $<val>3 << 32 | $<val>4; // combine into one 64 bit parameter
     add_instruction(&PROGRAM, (char *) "ioc_netcon", netcon);
     reset_accum();
@@ -313,7 +347,8 @@ stream_net:
   };
 stream_stdio:
   TAB SPACE {
-    cout << "streaming from standard i/o" << endl;
+    if (DEBUG > 1)
+      cout << "streaming from standard i/o" << endl;
     add_instruction(&PROGRAM, (char *) "ioc_stdio", 0);
   };
 
@@ -348,12 +383,64 @@ port:
 // done with grammar
 %%
 
-int main(int, char**) {
-  // Open a file handle to a particular file:
-  FILE *myfile = fopen("test.jaws", "r");
-  // Make sure it is valid:
-  if (!myfile) {
-    cout << "I can't open test.jaws!" << endl;
+int main(int argc, char** argv) {
+  // Parse command line args
+  int opt;
+  char *infileName = NULL;
+    
+  while((opt = getopt(argc, argv, ":hd:")) != -1)  
+  {  
+    switch(opt)  
+    {  
+      case 'h':
+        cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
+        cout << "  -h : display help" << endl;
+        cout << "  -d <level> : debug level (0-2)" << endl; 
+        return 0;
+      case 'd':
+        DEBUG = atoi(optarg);
+        break;
+      case ':':
+        cout << "Option -" << optopt << " needs a value" << endl;
+        break;
+      case '?':
+        if (sizeof(opt) == 4) {
+          cout << "Unknown option '-" << (char)optopt << "'" << endl;
+          cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
+          cout << "  -h : display help" << endl;
+          cout << "  -d <level> : debug level (0-2)" << endl; 
+          return -1;
+        } // end if
+        break;
+    } // end switch
+  } // end while
+
+  for (int count=0; optind < argc; optind++){ // remaining arg should be file name
+    infileName = argv[optind];
+    count++;
+    if (count > 1) {
+      cout << "Extra option '" << argv[optind] << "'" << endl;
+      cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
+      cout << "  -h : display help" << endl;
+      cout << "  -d <level> : debug level (0-2)" << endl; 
+    } // end if
+  } // end for
+
+  // Make sure input file was specified
+  if (!infileName) {
+    cout << "ERROR: No Fin file specified." << endl;
+    cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
+    cout << "  -h : display help" << endl;
+    cout << "  -o <file> : specify outfile" << endl; 
+//    cout << "  -d : debugging mode" << endl;
+    return -1;
+  } // end if
+
+  // Open the input file
+  FILE *infile = fopen(infileName, "r");
+  // Make sure it is valid
+  if (!infile) {
+    cout << "I can't open " << infileName << "!" << endl;
     return -1;
   } // end if
 
@@ -361,9 +448,12 @@ int main(int, char**) {
   init_Program(&PROGRAM, INIT_PRGM_CAP);
 
   // Set Flex to read from input file instead of defaulting to STDIN
-  jawsin = myfile;
+  jawsin = infile;
 
   // Parse the input and build program
+  if (DEBUG > 1) {
+    cout << "\nParsing Jaws program...\n" << endl;
+  } // end if
   jawsparse();
 
   // Program is now built, so execute it
@@ -372,6 +462,8 @@ int main(int, char**) {
   init_Stack(&STACK, MEM_SIZE);		// initialize stack
   init_Heap(&HEAP, MEM_SIZE);		// initialize heap
   init_Jumptable(&JUMPTABLE, MEM_SIZE); // initialize jump table
+  if (DEBUG > 0)
+    cout << "\nExecuting Jaws program...\n" << endl;
   while (IPTR < PROGRAM.size) {		// fetch and execute instructions
     instruction = PROGRAM.instructions[IPTR];
     (*(instruction.funcPtr))(instruction.param); // (modifies IPTR)

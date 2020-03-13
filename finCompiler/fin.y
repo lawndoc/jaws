@@ -360,8 +360,15 @@ int main(int argc, char** argv) {
     } // end switch
   } // end while
 
-  for (; optind < argc; optind++){ // extra arg should be file name
-    infileName = argv[optind];  
+  for (int count=0; optind < argc; optind++){ // extra arg should be file name
+    infileName = argv[optind];
+    count++;
+    if (count > 1) {
+      cout << "Extra option '" << argv[optind] << "'" << endl;
+      cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
+      cout << "  -h : display help" << endl;
+      cout << "  -o <file> : specify outfile" << endl; 
+    } // end if
   } // end for
 
   // Make sure input file was specified
