@@ -17,6 +17,7 @@
   extern Stack STACK;			// for runtime system
   extern Heap HEAP;			// for runtime system
   extern Jumptable JUMPTABLE;		// for runtime system
+  extern int JAWSLINE;			// for calculating instruction line numbers
   extern char BITSTRING[65];		// used for building semantic values
 %}
 
@@ -54,13 +55,19 @@ last_body:
 header:
   extra_lines LF TAB SPACE {
     cout << "Started interpreting jaws code..." << endl;
+    PROGRAM.headFooters++;
+    JAWSLINE++;
   }
   | LF TAB SPACE {
     cout << "Started interpreting jaws code..." << endl;
+    PROGRAM.headFooters++;
+    JAWSLINE++;
   };
 footer:
   LF TAB SPACE {
     cout << "Paused interpreting jaws code..." << endl;
+    PROGRAM.headFooters++;
+    JAWSLINE++;
   };
 end_program:
   end_instruction extra_lines
@@ -69,6 +76,9 @@ end_program:
 end_instruction:
   LF LF LF {
     cout << "end of program" << endl;
+    JAWSLINE++;
+    JAWSLINE++;
+    JAWSLINE++;
   };
 extra_lines:
   extra_lines extra_line
@@ -77,8 +87,9 @@ extra_lines:
 extra_line:
   SPACE
   | TAB
-  | LF
-  ;
+  | LF {
+  JAWSLINE++;
+  };
 instructions:
   instructions instruction
   | instruction
@@ -102,10 +113,10 @@ heap_access:
   TAB TAB heap_command
   ;
 flow_control:
-  LF SPACE flow_command
+  LF {JAWSLINE++;} SPACE flow_command
   ;
 io_action:
-  TAB LF io_action_command
+  TAB LF {JAWSLINE++;} io_action_command
   ;
 io_control:
   TAB SPACE io_control_command
@@ -155,27 +166,33 @@ stack_push:
     // print value as character when 8 bits
     //cout << "strlen(BITSTRING) == " << strlen(BITSTRING) << endl;
     if (strlen(BITSTRING) == 8) {
-      cout << "push " << (char)$<val>2 << " on top of the stack" << endl; 
+      cout << "push " << (char)$<val>2 << " on top of the stack" << endl;
+      add_instruction(&PROGRAM, (char *) "stack_pushc", $<val>2);
     } else {
       cout << "push " << $<val>2 << " on top of the stack" << endl;
+      add_instruction(&PROGRAM, (char *) "stack_push", $<val>2);
     } // end if
-    add_instruction(&PROGRAM, (char *) "stack_push", $<val>2);
     reset_accum();
+    JAWSLINE++;
   };
 stack_duplicate:
   LF SPACE {
     cout << "duplicate item on top of the stack" << endl;
     add_instruction(&PROGRAM, (char *) "stack_duplicate", 0);
+    JAWSLINE++;
   };
 stack_swap:
   LF TAB {
     cout << "swap items on top of the stack" << endl;
     add_instruction(&PROGRAM, (char *) "stack_swap", 0);
+    JAWSLINE++;
   };
 stack_discard:
   LF LF {
     cout << "discard item on top of the stack" << endl;
     add_instruction(&PROGRAM, (char *) "stack_discard", 0);
+    JAWSLINE++;
+    JAWSLINE++;
   };
 // arithmetic
 addition:
@@ -192,6 +209,7 @@ multiplication:
   SPACE LF {
     cout << "multiplication" << endl;
     add_instruction(&PROGRAM, (char *) "arith_mult", 0);
+    JAWSLINE++;
   };
 integer_division:
   TAB SPACE {
@@ -220,35 +238,42 @@ new_label:
     cout << "new label '" << $<val>3 << "'" << endl;
     add_instruction(&PROGRAM, (char *) "flow_mark", $<val>3);
     reset_accum();
+    JAWSLINE++;
   };
 call_subroutine:
   SPACE TAB label {
     cout << "call subroutine at label " << $<val>3 << endl;
     add_instruction(&PROGRAM, (char *) "flow_call", $<val>3);
     reset_accum();
+    JAWSLINE++;
   };
 uncond_jump:
   SPACE LF label {
     cout << "jump unconditionally to label " << $<val>3 << endl;
     add_instruction(&PROGRAM, (char *) "flow_jumpu", $<val>3);
     reset_accum();
+    JAWSLINE++;
+    JAWSLINE++;
   };
 jump_if_zero:
   TAB SPACE label {
     cout << "jump to label " << $<val>3 << " if top of stack is zero" << endl;
     add_instruction(&PROGRAM, (char *) "flow_jumpz", $<val>3);
     reset_accum();
+    JAWSLINE++;
   };
 jump_if_neg:
   TAB TAB label {
     cout << "jump to " << $<val>3 << " if top of stack is negative" << endl;
     add_instruction(&PROGRAM, (char *) "flow_jumpn", $<val>3);
     reset_accum();
+    JAWSLINE++;
   };
 end_subroutine:
   TAB LF {
     cout << "end subroutine" << endl;
     add_instruction(&PROGRAM, (char *) "flow_return", 0);
+    JAWSLINE++;
   };
 // io action
 output_char:
@@ -284,6 +309,7 @@ stream_net:
     long netcon = $<val>3 << 32 | $<val>4; // combine into one 64 bit parameter
     add_instruction(&PROGRAM, (char *) "ioc_netcon", netcon);
     reset_accum();
+    JAWSLINE++;
   };
 stream_stdio:
   TAB SPACE {
@@ -316,7 +342,7 @@ octet:
   bit bit bit bit bit bit bit bit
   ;
 port:
-  octet octet {
+  octet octet LF {
     $<val>$ = calc_accum();
   };
 // done with grammar

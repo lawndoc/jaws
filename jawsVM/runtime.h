@@ -8,11 +8,14 @@
 typedef struct {
   void (*funcPtr)(long);
   long param;
+  char *name;
+  int jawsLine;
 } Instr;
 typedef struct {
   Instr *instructions;
   int size;
   int capacity;
+  int headFooters;
 } Program;
 typedef struct {
   long long *stack;
@@ -69,6 +72,7 @@ int jumptable_return(Jumptable *jumptable);
 //---------------------------------------//
 // Instruction Functions
 void stack_push(long parameter);
+void stack_pushc(long parameter);
 void stack_duplicate(long noParam);
 void stack_swap(long noParam);
 void stack_discard(long noParam);
@@ -100,7 +104,6 @@ void jawserror(const char *s);
 void stackerror(const char *s);
 void heaperror(const char *s);
 void runtimeerror(const char *s);
-void getIString(char *instruction);
 void accum_add(char bit);
 long calc_accum();
 void reset_accum();

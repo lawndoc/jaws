@@ -19,6 +19,7 @@ Heap HEAP;			// for runtime system
 Jumptable JUMPTABLE;		// for runtime system
 char IOSTREAM = 's';		// for runtime system
 FILE *FILESTREAM;		// for runtime system
+int JAWSLINE = 1;		// for calculating instruction line numbers
 char BITSTRING[65];		// for building semantic values
 long ACCUM = 0x0000000000000000;// for building semantic values
 short COUNT = 0;		// for building semantic values
@@ -32,6 +33,8 @@ void init_Instr(Instr *instruction, char *name, long parameter) {
   instruction->param = parameter;
   if (strcmp(name, "stack_push") == 0)
     instruction->funcPtr = &stack_push;
+  else if (strcmp(name, "stack_pushc") == 0)
+    instruction->funcPtr = &stack_pushc;
   else if (strcmp(name, "stack_duplicate") == 0)
     instruction->funcPtr = &stack_duplicate;
   else if (strcmp(name, "stack_swap") == 0)
@@ -78,6 +81,8 @@ void init_Instr(Instr *instruction, char *name, long parameter) {
     instruction->funcPtr = &ioc_netcon;
   else if (strcmp(name, "ioc_stdio") == 0)
     instruction->funcPtr = &ioc_stdio;
+  instruction->name = name;
+  instruction->jawsLine = JAWSLINE;
 } // end new_instruction
 
 
@@ -86,6 +91,7 @@ void init_Program(Program *program, int capacity) {
   program->instructions = (Instr *) malloc(capacity * sizeof(Instr));
   program->size = 0;
   program->capacity = capacity;
+  program->headFooters = 0;
 } // end init_Program
 
 void add_instruction(Program *program, char *name, long parameter) {
@@ -262,9 +268,10 @@ int jumptable_return(Jumptable *jumptable) {
 void stack_push(long parameter) {
   printf("Stack Push\n");
   push_num(&STACK, parameter);
+  IPTR++;
 } // end stack_pushn
 void stack_pushc(long parameter) {
-  printf("Stack Push\n"); IPTR++;
+  printf("Stack Push\n");
   push_char(&STACK, parameter);
   IPTR++;
 } // end stack_pushc
@@ -623,76 +630,19 @@ void jawserror(const char *s) {
 } // end jawserror
 
 void stackerror(const char *s) {
-  char *instruction = (char *) malloc(45 * sizeof(char));
-  printf("Oh dear! Type error on the stack for instruction %d -> %s\nMessage: %s\n", IPTR, instruction, s);
+  printf("Oh dear! Type error on the stack.\nInstruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
   exit(1); // might as well halt now
 } // end stackerror
 
 void heaperror(const char *s) {
-  char *instruction = (char *) malloc(45 * sizeof(char));
-  printf("Rats! Type error on the heap for instruction %d -> %s\nMessage: %s\n", IPTR, instruction, s);
+  printf("Rats! Type error on the heap.\nInstruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
   exit(1); // might as well halt now
 } // end heaperror
 
 void runtimeerror(const char *s) {
-  char *instruction = (char *) malloc(45 * sizeof(char));
-   getIString(instruction);
-  printf("Oh dear! Invalid data being used for operation %d -> %s\nMessage: %s\n", IPTR, instruction, s);
+  printf("Oh dear! Invalid data being used for an operation. Instruction: %d -> %s\nFin line: %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
   exit(1); // might as well halt now
 } // end runtimeerror 
-
-void getIString(char *instruction) {
-  if (PROGRAM.instructions[IPTR].funcPtr == &stack_push)
-    strcat(instruction, "stack_push");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &stack_duplicate)
-    strcat(instruction, "stack_duplicate");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &stack_swap)
-    strcat(instruction, "stack_swap");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &stack_discard)
-    strcat(instruction, "stack_discard");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &arith_add)
-    strcat(instruction, "arith_add");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &arith_sub)
-    strcat(instruction, "arith_sub");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &arith_mult)
-    strcat(instruction, "arith_mult");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &arith_div)
-    strcat(instruction, "arith_div");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &arith_mod)
-    strcat(instruction, "arith_mod");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &heap_store)
-    strcat(instruction, "heap_store");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &heap_retrieve)
-    strcat(instruction, "heap_retrieve");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &flow_mark)
-    strcat(instruction, "flow_mark");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &flow_call)
-    strcat(instruction, "flow_call");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &flow_jumpu)
-    strcat(instruction, "flow_jumpu");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &flow_jumpz)
-    strcat(instruction, "flow_jumpz");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &flow_jumpn)
-    strcat(instruction, "flow_jumpn");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &flow_return)
-    strcat(instruction, "flow_return");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &ioa_outc)
-    strcat(instruction, "ioa_outc");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &ioa_outn)
-    strcat(instruction, "ioa_outn");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &ioa_inc)
-    strcat(instruction, "ioa_inc");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &ioa_inn)
-    strcat(instruction, "ioa_inn");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &ioc_file)
-    strcat(instruction, "ioc_file");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &ioc_netcon)
-    strcat(instruction, "ioc_netcon");
-  else if (PROGRAM.instructions[IPTR].funcPtr == &ioc_stdio)
-    strcat(instruction, "ioc_stdio");
-  else
-    strcat(instruction, "unknown instruction -- how did this happen?");
-} // end getIString
 
 void accum_add(char bit) {
   if (COUNT == 64) {
