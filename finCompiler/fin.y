@@ -41,6 +41,8 @@
 }
 
 // Declare token types 
+%token PEEKN 		// used for debugging
+%token PEEKC		// used for debugging
 %token HEADER
 %token FOOTER
 %token END_PRGM
@@ -119,7 +121,16 @@ instruction:
   | flow_control
   | io_action
   | io_control
+  | peek
   ;
+peek:
+  PEEKN {
+    fprintf(OUTFILE, "duplicate\n outNum \t");
+  }
+  |
+  PEEKC {
+    fprintf(OUTFILE, "duplicate\n outC  ");
+  };
 // ---- IMP Defs ----
 stack_manipulation:
   STACK_IMP { fprintf(OUTFILE, "stackIMP  "); } stack_command
