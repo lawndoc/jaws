@@ -664,7 +664,7 @@ void heaperror(const char *s) {
 } // end heaperror
 
 void runtimeerror(const char *s) {
-  printf("\nOh dear! Invalid data being used for an operation. Instruction: %d -> %s\nFin line: %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
+  printf("\nFiddlesticks! Invalid data being used for an operation. Instruction: %d -> %s\nFin line: %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
   exit(1); // might as well halt now
 } // end runtimeerror 
 

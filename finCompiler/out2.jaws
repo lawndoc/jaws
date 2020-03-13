@@ -1,0 +1,7 @@
+header
+	 stackIMP  pushNum                             	   
+stackIMP  pushNum                            	 	  
+arithIMP 	addition  iocIMP	 streamStdIO	 ioaIMP	
+outNum 	endProgram
+
+
