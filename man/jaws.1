@@ -1,0 +1,27 @@
+.TH JAWS 1 "15 March 2020" "version 0.0.1"
+.SH NAME
+jaws - an invisible, stack-based, interpreted programming language
+.SH SYNOPSIS
+.B jaws [ -h ]
+.B [ -d 
+.I debuglevel
+.B ] 
+.I infile
+.SH DESCRIPTION
+.B Jaws
+(Just Another WhiteSpace) is an esoteric interpreted programming language based on another, called whitespace, with more functionality. Jaws is an imperative, stack based language. The name Jaws is an acronym, but the word itself was also intended to hold meaning because the code, being invisible to the human eye, is like a threat hidden beneath the surface.
+.PP
+Like whitespace, the only lexical tokens in Jaws are \fISpace \fR(ASCII 32), \fITab \fR(ASCII 9), and \fI Linefeed \fR(ASCII 10). The original choice to use linefeed only and not carraige return was to avoid DOS/Unix conversion problems.
+.PP
+To see the language specification for Jaws, go to:
+.br
+https://kirito.palehat.net/lawndoc/jaws/-/tree/master/jawsVM/
+.SH OPTIONS
+.IP -h
+Show usage for jaws
+.IP "-d \fIdebuglevel"
+.R Specifies debug level. 0 is default. 1 prints instructions as they are executed. 2 also prints instructions as they are parsed.
+.SH BUGS
+Currently, more testing needs to be done to ensure all instructions are working properly. It is known that all instructions related to networking I/O have not been implemented yet. That functionality will be coming in an update in pre-release version 0.1.0.
+.SH AUTHOR
+This program was written by C.J. May (doctormay6[at]gmail[dot]com).

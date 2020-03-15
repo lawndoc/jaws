@@ -28,6 +28,9 @@ install:
 	@sudo cp finCompiler/finc /usr/local/bin
 	@sudo chown root:root /usr/local/bin/finc
 	@sudo chmod 755 /usr/local/bin/finc
+	@echo "Installing man pages..."
+	@sudo cp man/jaws.1 /usr/local/share/man/man1/
+	@sudo cp man/finc.1 /usr/local/share/man/man1/
 	@echo "Done."
 
 clean:

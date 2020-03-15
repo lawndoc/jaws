@@ -2,7 +2,7 @@
 
 ![Jaws Logo](../resources/jawsLogo.png)
 
-Jaws (Just Another WhiteSpace) is an esoteric interpreted programming language strongly based on another, called [whitespace][1], with added functionality. Jaws is an imperative, stack based language. The name Jaws is an acronym, but the word itself was also intended to hold meaning because the code, being invisible to the human eye, is like a threat hidden beneath the surface.
+Jaws (Just Another WhiteSpace) is an esoteric interpreted programming language based on another, called [whitespace][1], with more functionality. Jaws is an imperative, stack based language. The name Jaws is an acronym, but the word itself was also intended to hold meaning because the code, being invisible to the human eye, is like a threat hidden beneath the surface.
 
 [1]: https://en.wikipedia.org/wiki/Whitespace_(programming_language) "wikipedia"
 

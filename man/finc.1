@@ -1,0 +1,27 @@
+.TH FINC 1 "15 March 2020" "version 0.1.0"
+.SH NAME
+finc - a compiler to tranlate Fin, a visible version of the Jaws programming language, into invisible Jaws code
+.SH SYNOPSIS
+.B finc [ -h ]
+.B [ -o 
+.I outfile
+.B ] [ -s ]
+.I infile
+.SH DESCRIPTION
+.B Fin
+Fin is a visible, directly-translatable version of Jaws, an invisible, esoteric, interpreted programming language. The sole purpose of the Fin programming language is to make it easier to write Jaws programs.
+.PP
+To see the language specification for Fin, go to:
+.br
+https://kirito.palehat.net/lawndoc/jaws/-/tree/master/finCompiler/
+.SH OPTIONS
+.IP -h
+Show usage for finc
+.IP "-o \fIoutfile"
+.R Specifies the output file where the translated Jaws code will be saved
+.IP -s
+.R Suppress annotation of the outputted Jaws code -- only output \fISpaces\fR, \fITabs\fR, and \fILinefeeds
+.SH BUGS
+Currently, there are no known bugs in pre-release version 0.1.0. If you find any, please contact the author.
+.SH AUTHOR
+This program was written by C.J. May (doctormay6[at]gmail[dot]com).
