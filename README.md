@@ -6,7 +6,7 @@ Jaws is an esoteric programming language that was created for research purposes.
 
 ## Install
 
-You can install all the programs by running the following commands:
+You can install all the programs by running the following command in the top level directory:
 
 `$ make && make install`		<-- (you will be prompted for your sudo password)
 
