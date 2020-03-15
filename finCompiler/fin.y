@@ -26,10 +26,10 @@
   char *hexToBin(char hexDig);
 
   // Declare global variables
-  FILE *OUTFILE;  // jaws output file
+  FILE *OUTFILE;	// jaws output file
   char *BITSTR; 
   char *SUBSTR;
-  int DEBUG;
+  int SUPPRESS = 0;	// output annotation switch
 %}
 
 %define api.prefix {fin}
@@ -41,6 +41,8 @@
 }
 
 // Declare token types 
+%token PEEKN 		// used for debugging
+%token PEEKC		// used for debugging
 %token HEADER
 %token FOOTER
 %token END_PRGM
@@ -98,15 +100,21 @@ body:
   ;
 last_body:
   header instructions END_PRGM {
-    fprintf(OUTFILE, "endProgram\n\n\n");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "endProgram");
+    fprintf(OUTFILE, "\n\n\n");
   };
 header:
   HEADER {
-    fprintf(OUTFILE, "header\n\t ");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "header");
+    fprintf(OUTFILE, "\n\t ");
   };
 footer:
   FOOTER {
-    fprintf(OUTFILE, "footer\n\t ");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "footer");
+    fprintf(OUTFILE, "\n\t ");
   };
 instructions:
   instructions instruction
@@ -119,25 +127,68 @@ instruction:
   | flow_control
   | io_action
   | io_control
+  | peek
   ;
+peek:
+  PEEKN {
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "duplicate");
+    fprintf(OUTFILE, "\n ");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "outNum");
+    fprintf(OUTFILE, " \t");
+  }
+  |
+  PEEKC {
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "duplicate");
+    fprintf(OUTFILE, "\n ");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "outC");
+    fprintf(OUTFILE, "  ");
+  };
 // ---- IMP Defs ----
 stack_manipulation:
-  STACK_IMP { fprintf(OUTFILE, "stackIMP  "); } stack_command
+  STACK_IMP {
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "stackIMP");
+    fprintf(OUTFILE, "  ");
+  } stack_command
   ;
 arithmetic:
-  ARITH_IMP { fprintf(OUTFILE, "arithIMP \t"); } arith_command
+  ARITH_IMP {
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "arithIMP");
+    fprintf(OUTFILE, " \t");
+  } arith_command
   ;
 heap_access:
-  HEAP_IMP { fprintf(OUTFILE, "heapIMP\t\t"); } heap_command
+  HEAP_IMP {
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "heapIMP");
+    fprintf(OUTFILE, "\t\t");
+  } heap_command
   ;
 flow_control:
-  FLOW_IMP { fprintf(OUTFILE, "flowIMP\n "); } flow_command
+  FLOW_IMP {
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "flowIMP");
+    fprintf(OUTFILE, "\n ");
+  } flow_command
   ;
 io_action:
-  IOA_IMP { fprintf(OUTFILE, "ioaIMP\t\n"); } io_action_command
+  IOA_IMP {
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "ioaIMP");
+    fprintf(OUTFILE, "\t\n");
+  } io_action_command
   ;
 io_control:
-  IOC_IMP { fprintf(OUTFILE, "iocIMP\t "); } io_control_command
+  IOC_IMP {
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "iocIMP");
+    fprintf(OUTFILE, "\t ");
+  } io_control_command
   ;
 // --- IMP Commands ---
 stack_command:
@@ -181,108 +232,158 @@ io_control_command:
 // stack
 stack_push:
   STACK_PUSH number {
-    fprintf(OUTFILE, "pushNum %s", $<sval>2);
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "pushNum");
+    fprintf(OUTFILE, " %s", $<sval>2);
   }
   | STACK_PUSH character {
-    fprintf(OUTFILE, "pushChar %s", $<sval>2);
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "pushChar");
+    fprintf(OUTFILE, " %s", $<sval>2);
   };
 stack_duplicate:
   STACK_DUP {
-    fprintf(OUTFILE, "duplicate\n ");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "duplicate");
+    fprintf(OUTFILE, "\n ");
   };
 stack_swap:
   STACK_SWAP {
-    fprintf(OUTFILE, "swap\n\t");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "swap");
+    fprintf(OUTFILE, "\n\t");
   };
 stack_discard:
   STACK_DEL {
-    fprintf(OUTFILE, "discard\n\n");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "discard");
+    fprintf(OUTFILE, "\n\n");
   };
 // arithmetic
 addition:
   ADD {
-    fprintf(OUTFILE, "addition  ");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "addition");
+    fprintf(OUTFILE, "  ");
   };
 subtraction:
   SUB {
-    fprintf(OUTFILE, "subtraction \t");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "subtraction");
+    fprintf(OUTFILE, " \t");
 
   };
 multiplication:
   MULT {
-    fprintf(OUTFILE, "multiplication \n");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "multiplication");
+    fprintf(OUTFILE, " \n");
   };
 integer_division:
   DIV {
-    fprintf(OUTFILE, "division\t ");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "division");
+    fprintf(OUTFILE, "\t ");
   };
 modulo:
   MOD { 
-    fprintf(OUTFILE, "modulo\t\t");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "modulo");
+    fprintf(OUTFILE, "\t\t");
   };
 // heap
 heap_store:
   HEAP_STORE {
-    fprintf(OUTFILE, "store ");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "store");
+    fprintf(OUTFILE, " ");
   };
 heap_retrieve:
   HEAP_RETR {
-    fprintf(OUTFILE, "retrieve\t");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "retrieve");
+    fprintf(OUTFILE, "\t");
   };
 // flow control
 new_label:
   MARK label {
-    fprintf(OUTFILE, "newLabel  %s", $<sval>2);
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "newLabel");
+    fprintf(OUTFILE, "  %s", $<sval>2);
   };
 call_subroutine:
   CALL label {
-    fprintf(OUTFILE, "callSubrtn \t%s", $<sval>2);
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "callSubrtn");
+    fprintf(OUTFILE, " \t%s", $<sval>2);
   };
 uncond_jump:
   JUMPU label {
-    fprintf(OUTFILE, "uJumpTo \n%s", $<sval>2);
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "uJumpTo");
+    fprintf(OUTFILE, " \n%s", $<sval>2);
   };
 jump_if_zero:
   JUMPZ label {
-    fprintf(OUTFILE, "zJumpTo\t %s", $<sval>2);
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "zJumpTo");
+    fprintf(OUTFILE, "\t %s", $<sval>2);
   };
 jump_if_neg:
   JUMPN label {
-    fprintf(OUTFILE, "nJumpTo\t\t%s", $<sval>2);
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "nJumpTo");
+    fprintf(OUTFILE, "\t\t%s", $<sval>2);
   };
 end_subroutine:
   RETURN {
-    fprintf(OUTFILE, "endSubrtn\t\n");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "endSubrtn");
+    fprintf(OUTFILE, "\t\n");
   };
 // io action
 output_char:
   OUTC {
-    fprintf(OUTFILE, "outChar  ");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "outChar");
+    fprintf(OUTFILE, "  ");
   };
 output_int:
   OUTN {
-    fprintf(OUTFILE, "outNum \t");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "outNum");
+    fprintf(OUTFILE, " \t");
   };
 read_char:
   INC {
-    fprintf(OUTFILE, "inChar\t ");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "inChar");
+    fprintf(OUTFILE, "\t ");
   };
 read_int:
   INN {
-    fprintf(OUTFILE, "inNum\t\t");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "inNum");
+    fprintf(OUTFILE, "\t\t");
   };
 // io control
 stream_file:
   IOC_FILE {
-    fprintf(OUTFILE, "streamFile  ");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "streamFile");
+    fprintf(OUTFILE, "  ");
   };
 stream_net:
   IOC_NET netcon {
-    fprintf(OUTFILE, "streamNetCon \t%s", $<sval>2);
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "streamNetCon");
+    fprintf(OUTFILE, " \t%s", $<sval>2);
   };
 stream_stdio:
   IOC_STD {
-    fprintf(OUTFILE, "streamStdIO\t ");
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "streamStdIO");
+    fprintf(OUTFILE, "\t ");
   };
 
 // --- Parameters ---
@@ -324,25 +425,28 @@ netcon:
 int main(int argc, char** argv) {
   BITSTR = (char *) malloc(50); // for interpreting parameters MAX=>48+2 (\n\0)
   SUBSTR = (char *) malloc(33); // for building BITSTR in genNetCon
-  DEBUG = 0;
 
   // Parse command line args
   int opt;
   char *outfileName = (char *) "out.jaws";
   char *infileName = NULL;
     
-  while((opt = getopt(argc, argv, ":ho:")) != -1)  
+  while((opt = getopt(argc, argv, ":ho:s")) != -1)  
   {  
     switch(opt)  
     {  
       case 'h':
         cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
         cout << "  -h : display help" << endl;
-        cout << "  -o <file> : specify outfile" << endl; 
-//        cout << "  -d : debugging mode" << endl;
+        cout << "  -o <file> : specify outfile" << endl;
+        cout << "  -s : suppress output file annotation" << endl;
         return 0;
       case 'o':
         outfileName = optarg;
+        break;
+      case 's':
+        SUPPRESS = 1;
+	printf("Suppressing output file annotation\n");
         break;
       case ':':
         cout << "Option -" << optopt << " needs a value" << endl;
@@ -353,15 +457,23 @@ int main(int argc, char** argv) {
           cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
           cout << "  -h : display help" << endl;
           cout << "  -o <file> : specify outfile" << endl; 
-//          cout << "  -d : debugging mode" << endl;
+          cout << "  -s : suppress output file annotation" << endl;
           return -1;
         } // end if
         break;
     } // end switch
   } // end while
 
-  for (; optind < argc; optind++){ // extra arg should be file name
-    infileName = argv[optind];  
+  for (int count=0; optind < argc; optind++){ // extra arg should be file name
+    infileName = argv[optind];
+    count++;
+    if (count > 1) {
+      cout << "Extra option '" << argv[optind] << "'" << endl;
+      cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
+      cout << "  -h : display help" << endl;
+      cout << "  -o <file> : specify outfile" << endl;
+      cout << "  -s : suppress output file annotation" << endl;
+    } // end if
   } // end for
 
   // Make sure input file was specified
@@ -369,8 +481,8 @@ int main(int argc, char** argv) {
     cout << "ERROR: No Fin file specified." << endl;
     cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
     cout << "  -h : display help" << endl;
-    cout << "  -o <file> : specify outfile" << endl; 
-//    cout << "  -d : debugging mode" << endl;
+    cout << "  -o <file> : specify outfile" << endl;
+    cout << "  -s : suppress output file annotation" << endl;
     return -1;
   } // end if
   // Open the input file

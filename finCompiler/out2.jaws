@@ -2,12 +2,6 @@ header
 	 stackIMP  pushNum                             	   
 stackIMP  pushNum                            	 	  
 arithIMP 	addition  iocIMP	 streamStdIO	 ioaIMP	
-outNum 	footer
-	 header
-	 stackIMP  pushChar  		 	 	 
-stackIMP  pushChar  		   		
-iocIMP	 streamStdIO	 ioaIMP	
-outChar  ioaIMP	
-outChar  endProgram
+outNum 	endProgram
 
 

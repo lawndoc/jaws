@@ -14,21 +14,20 @@ K := $(foreach exec,$(EXECUTABLES),\
 all: fin.tab.c fin.tab.h lex.yy.c finc
 
 fin.tab.c fin.tab.h: fin.y
-	@echo "Compiling bison file..."
+	@echo "Compiling Fin bison file..."
 	@bison -d fin.y
 
 lex.yy.c: fin.l fin.tab.h
-	@echo "Compiling flex file..."
+	@echo "Compiling Fin flex file..."
 	@flex fin.l
 
 finc: lex.yy.c fin.tab.c fin.tab.h
-	@echo "Compiling parser..."
+	@echo "Compiling Fin parser..."
 	@${CC} fin.tab.c lex.fin.c -o finc
 
 clean:
-	@echo "Cleaning up..."
+	@echo "Cleaning up Fin..."
 	@rm fin.tab.c
 	@rm fin.tab.h
 	@rm lex.fin.c
 	@rm finc
-	@echo "Done."

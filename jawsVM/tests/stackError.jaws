@@ -8,6 +8,6 @@ outNum 	footer
 stackIMP  pushChar  		   		
 iocIMP	 streamStdIO	 ioaIMP	
 outChar  ioaIMP	
-outChar  endProgram
+outNum(Error) 	endProgram
 
 

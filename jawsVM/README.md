@@ -2,7 +2,7 @@
 
 ![Jaws Logo](../resources/jawsLogo.png)
 
-Jaws (Just Another WhiteSpace) is an esoteric interpreted programming language strongly based on another, called [whitespace][1], with added functionality. Jaws is an imperative, stack based language. The name Jaws is an acronym, but the word itself was also intended to hold meaning because the code, being invisible to the human eye, is like a threat hidden beneath the surface.
+Jaws (Just Another WhiteSpace) is an esoteric interpreted programming language based on another, called [whitespace][1], with more functionality. Jaws is an imperative, stack based language. The name Jaws is an acronym, but the word itself was also intended to hold meaning because the code, being invisible to the human eye, is like a threat hidden beneath the surface.
 
 [1]: https://en.wikipedia.org/wiki/Whitespace_(programming_language) "wikipedia"
 
@@ -12,9 +12,11 @@ Like whitespace, the only lexical tokens in Jaws are *Space* (ASCII 32), *Tab*, 
 
 ## Starting/Stopping Interpretation
 
-Jaws code will only interpret whitespace tokens in the section of the file between the Jaws Header and Footer. There can be any number of such sections in the same file. This gives the Jaws interpreter the ability to start and stop interpretation any number of times until the end-of-program statement is reached. The tokens that make up the Header and the Footer are identical:
+Jaws code will only interpret whitespace tokens in the section of the file between the Jaws Header and Footer. There can be any number of such sections in the same file. This gives the Jaws interpreter the ability to start and stop interpretation any number of times until the End-of-Program statement is reached. The tokens that make up the Header and the Footer are identical:
 
 `[LF][Tab][Space]` Header/Footer
+
+`[LF][LF][LF]` End-of-Program
 
 ## Instruction Set
 
@@ -35,8 +37,6 @@ The IMP is the first part of a Jaws instruction. The command following it will b
 `[Tab][LF]` I/O Action
 
 `[Tab][Space]` I/O Control
-
-`[LF][LF][LF]` End Program (no command)
 
 ## Commands
 
@@ -108,7 +108,11 @@ We need to be able to interact with the user and the disk. There are I/O instruc
 
 We need to be able to read and write from the disk. To do that, we will change the I/O stream from standard in/out to a file.
 
-`[Space][Space]` Get file path from the stack and change I/O stream to that file
+`[Space][Space]` Get mode character and then file path from the stack and change I/O stream to that file
+
+- Mode is one of 3 characters: r, w, or a
+- Each mode's functionality is equivalent to C language's r+, w+, and a+ modes
+- File path is between { } brackets and popped characters are arranged left-to-right (push characters onto the stack backwards so they are popped in order)
 
 `[Space][Tab]` (Parameters: IP, Port) Change I/O stream to TCP connection at IP, Port
 

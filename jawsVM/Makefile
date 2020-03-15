@@ -14,21 +14,20 @@ K := $(foreach exec,$(EXECUTABLES),\
 all: jaws.tab.c jaws.tab.h lex.yy.c jaws
 
 jaws.tab.c jaws.tab.h: jaws.y
-	@echo "Compiling bison file..."
+	@echo "Compiling Jaws bison file..."
 	@bison -d jaws.y
 
 lex.yy.c: jaws.l jaws.tab.h
-	@echo "Compiling flex file..."
+	@echo "Compiling Jaws flex file..."
 	@flex jaws.l
 
 jaws: lex.yy.c jaws.tab.c jaws.tab.h
-	@echo "Compiling parser..."
-	@${CC} jaws.tab.c lex.jaws.c -o jaws
+	@echo "Compiling Jaws virtual machine..."
+	@${CC} jaws.tab.c lex.jaws.c runtime.c -o jaws
 
 clean:
-	@echo "Cleaning up..."
+	@echo "Cleaning up Jaws..."
 	@rm jaws.tab.c
 	@rm jaws.tab.h
 	@rm lex.jaws.c
 	@rm jaws
-	@echo "Done."
