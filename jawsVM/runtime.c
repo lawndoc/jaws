@@ -249,7 +249,8 @@ void jumptable_mark(Jumptable *jumptable, int index, long identifier) {
 
 int jumptable_find(Jumptable *jumptable, long identifier) {
   Label *record;
-  HASH_FIND_INT(JUMPTABLE.jumptable, &identifier, record);
+  int label = (int) identifier;
+  HASH_FIND_INT(JUMPTABLE.jumptable, &label, record);
   return record->index;
 } // end jumptable_get
 
@@ -457,27 +458,26 @@ void heap_retrieve(long noParam) { // note: doesn't use Heap structure functions
 
 void flow_mark(long parameter) {
   if (DEBUG > 0)
-    printf("New Label\n");
-  jumptable_mark(&JUMPTABLE, IPTR+1, parameter);
+    printf("Label: %lx\n", parameter);
   IPTR++;
 } // end flow_mark
 
 void flow_call(long parameter) {
   if (DEBUG > 0)
-    printf("Call Subroutine\n");
+    printf("Call Subroutine at label: 0x%lx\n", parameter);
   jumptable_call(&JUMPTABLE, IPTR+1);
   IPTR = jumptable_find(&JUMPTABLE, parameter);
 } // end flow_call
 
 void flow_jumpu(long parameter) {
   if (DEBUG > 0)
-    printf("Unconditional Jump\n");
+    printf("Unconditional Jump to label: 0x%lx\n", parameter);
   IPTR = jumptable_find(&JUMPTABLE, parameter);
 } // end flow_jumpu
 
 void flow_jumpz(long parameter) {
   if (DEBUG > 0)
-    printf("Jump if Zero\n");
+    printf("Jump if Zero to label: 0x%lx\n", parameter);
   if (STACK.types[STACK.top] != 'n')
     stackerror("Cannot do conditional jump without a number on top of the stack");
   if (STACK.stack[STACK.top] == 0)
@@ -488,7 +488,7 @@ void flow_jumpz(long parameter) {
 
 void flow_jumpn(long parameter) {
   if (DEBUG > 0)
-    printf("Jump if Negative\n");
+    printf("Jump if Negative to label: 0x%lx\n", parameter);
   if (STACK.types[STACK.top] != 'n')
     stackerror("Cannot do conditional jump without a number on top of the stack");
   if (STACK.stack[STACK.top] < 0)
@@ -499,7 +499,7 @@ void flow_jumpn(long parameter) {
 
 void flow_return(long noParam) {
   if (DEBUG > 0)
-    printf("Return from Subroutine\n");
+    printf("Return from Subroutine to instruction: %d\n", (int) JUMPTABLE.callStack.stack[JUMPTABLE.callStack.top]);
   IPTR = jumptable_return(&JUMPTABLE);
 } // end flow_return
 
