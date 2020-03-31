@@ -1,0 +1,23 @@
+header
+	 stackIMP  pushChar     	 	 
+stackIMP  pushNum                                	
+stackIMP  duplicate
+ stackIMP  pushNum                               	 
+arithIMP 	addition  stackIMP  pushNum                               	 
+stackIMP  swap
+	stackIMP  pushNum                               		
+stackIMP  pushNum                                	
+arithIMP 	addition  stackIMP  duplicate
+ stackIMP  swap
+	stackIMP  discard
+
+stackIMP  pushNum                              	 	
+ioaIMP	
+outNum 	ioaIMP	
+outNum 	ioaIMP	
+outNum 	ioaIMP	
+outNum 	ioaIMP	
+outNum 	ioaIMP	
+outChar  endProgram
+
+
