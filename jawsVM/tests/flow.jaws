@@ -1,0 +1,106 @@
+header
+	 stackIMP  pushNum                                	
+stackIMP  pushNum                              	 	
+heapIMP		store stackIMP  pushNum                               	 
+stackIMP  pushNum                                 
+heapIMP		store flowIMP
+ newLabel   		    	 		    	 		    	
+stackIMP  pushNum                               	 
+heapIMP		retrieve	stackIMP  pushNum                                	
+heapIMP		retrieve	arithIMP 	subtraction 	flowIMP
+ zJumpTo	  		    	 		    	 		   	 
+stackIMP  discard
+
+stackIMP  pushChar     	 	 
+stackIMP  pushNum                               	 
+heapIMP		retrieve	ioaIMP	
+outNum 	ioaIMP	
+outChar  stackIMP  pushNum                                	
+stackIMP  pushNum                               	 
+heapIMP		retrieve	arithIMP 	addition  stackIMP  pushNum                               	 
+stackIMP  swap
+	heapIMP		store flowIMP
+ uJumpTo 
+ 		    	 		    	 		    	
+flowIMP
+ newLabel   		    	 		    	 		   	 
+stackIMP  discard
+
+stackIMP  pushChar     	 	 
+stackIMP  pushChar  			    
+stackIMP  pushChar  		 				
+stackIMP  duplicate
+ stackIMP  pushChar  		 		  
+stackIMP  pushChar   	     
+stackIMP  pushChar  			  	 
+stackIMP  pushChar  		 				
+stackIMP  pushChar  		  		 
+stackIMP  pushChar   	     
+stackIMP  pushChar  		  	  
+stackIMP  pushChar  		  	 	
+stackIMP  pushChar  		 	   
+stackIMP  pushChar  			  		
+stackIMP  pushChar  		 	  	
+stackIMP  pushChar  		 			 
+stackIMP  pushChar  		 	  	
+stackIMP  pushChar  		  		 
+ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  flowIMP
+ uJumpTo 
+ 		    	 		    	 		  	  
+flowIMP
+ newLabel   		    	 		    	 		   		
+stackIMP  pushChar     	 	 
+stackIMP  pushChar  		   		
+stackIMP  pushChar  		    	
+stackIMP  duplicate
+ ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  flowIMP
+ endSubrtn	
+flowIMP
+ newLabel   		    	 		    	 		  	  
+stackIMP  pushChar     	 	 
+stackIMP  pushChar  		  	  
+stackIMP  pushChar  		    	
+stackIMP  duplicate
+ ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  flowIMP
+ callSubrtn 	 		    	 		    	 		   		
+stackIMP  pushChar     	 	 
+stackIMP  pushChar   	 			 
+stackIMP  pushChar  		  	 	
+stackIMP  pushChar  		 			 
+stackIMP  pushChar  		 				
+stackIMP  pushChar  	   	  
+ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  endProgram
+
+

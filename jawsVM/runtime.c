@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <math.h>
 #include "runtime.h"
 #include <stdio.h>
@@ -249,7 +250,8 @@ void jumptable_mark(Jumptable *jumptable, int index, long identifier) {
 
 int jumptable_find(Jumptable *jumptable, long identifier) {
   Label *record;
-  HASH_FIND_INT(JUMPTABLE.jumptable, &identifier, record);
+  int label = (int) identifier;
+  HASH_FIND_INT(JUMPTABLE.jumptable, &label, record);
   return record->index;
 } // end jumptable_get
 
@@ -457,27 +459,26 @@ void heap_retrieve(long noParam) { // note: doesn't use Heap structure functions
 
 void flow_mark(long parameter) {
   if (DEBUG > 0)
-    printf("New Label\n");
-  jumptable_mark(&JUMPTABLE, IPTR+1, parameter);
+    printf("Label: %lx\n", parameter);
   IPTR++;
 } // end flow_mark
 
 void flow_call(long parameter) {
   if (DEBUG > 0)
-    printf("Call Subroutine\n");
+    printf("Call Subroutine at label: 0x%lx\n", parameter);
   jumptable_call(&JUMPTABLE, IPTR+1);
   IPTR = jumptable_find(&JUMPTABLE, parameter);
 } // end flow_call
 
 void flow_jumpu(long parameter) {
   if (DEBUG > 0)
-    printf("Unconditional Jump\n");
+    printf("Unconditional Jump to label: 0x%lx\n", parameter);
   IPTR = jumptable_find(&JUMPTABLE, parameter);
 } // end flow_jumpu
 
 void flow_jumpz(long parameter) {
   if (DEBUG > 0)
-    printf("Jump if Zero\n");
+    printf("Jump if Zero to label: 0x%lx\n", parameter);
   if (STACK.types[STACK.top] != 'n')
     stackerror("Cannot do conditional jump without a number on top of the stack");
   if (STACK.stack[STACK.top] == 0)
@@ -488,7 +489,7 @@ void flow_jumpz(long parameter) {
 
 void flow_jumpn(long parameter) {
   if (DEBUG > 0)
-    printf("Jump if Negative\n");
+    printf("Jump if Negative to label: 0x%lx\n", parameter);
   if (STACK.types[STACK.top] != 'n')
     stackerror("Cannot do conditional jump without a number on top of the stack");
   if (STACK.stack[STACK.top] < 0)
@@ -499,7 +500,7 @@ void flow_jumpn(long parameter) {
 
 void flow_return(long noParam) {
   if (DEBUG > 0)
-    printf("Return from Subroutine\n");
+    printf("Return from Subroutine to instruction: %d\n", (int) JUMPTABLE.callStack.stack[JUMPTABLE.callStack.top]);
   IPTR = jumptable_return(&JUMPTABLE);
 } // end flow_return
 
@@ -557,6 +558,8 @@ void ioa_inc(long noParam) {
   } else if (IOSTREAM == 'f') {
     if (FILESTREAM == NULL)
       runtimeerror("Tried writing number to file before it was opened, or the file was not successfully opened.");
+    if (feof(FILESTREAM))
+      runtimeerror("Tried reading a character, but reached EOF.");
     input = (char) fgetc(FILESTREAM);
   } else if (IOSTREAM == 'n') {
     // TODO : save for later
@@ -587,8 +590,21 @@ void ioa_inn(long noParam) {
     if (FILESTREAM == NULL) {
       runtimeerror("Tried writing number to file before it was opened, or the file was not successfully opened.");
     } // end if (FILESTREAM...
-    if (fscanf(FILESTREAM, "%ld", &input) != 1)
-      runtimeerror("Error reading number from file -- EOL or other error");
+    if (feof(FILESTREAM))
+      runtimeerror("Tried reading a number, but reached EOF.");
+    if (fscanf(FILESTREAM, " %s", buf) != 1) // TODO: unsafe -- buffer overflow
+      runtimeerror("Error reading number from file -- nothing was scanned");
+    int length = strlen(buf);
+    for (int i=0;i<length;i++) {
+      if (buf[i] == '-' && i == 0)
+         continue;
+      if (!isdigit(buf[i])) {
+	char errormsg[36+MEM_SIZE+1] = "String read from file not a number: ";
+        strncat(errormsg, buf, MEM_SIZE);
+        runtimeerror(errormsg);
+      } // end if
+      input = strtol(buf, &extra, 10);
+    } // end for
   } else if (IOSTREAM == 'n') {
     // TODO : save for later
   } else {
@@ -604,15 +620,20 @@ void ioc_file(long noParam) {
   if (DEBUG > 0)
     printf("Stream File: ");
   char mode;
-  char path[4096];
+  char path[MEM_SIZE];
   char current;
+  int pLen = 0;
+  memset(path, 0, sizeof(path));
   // type checking is done in pop_char
   mode = (char) pop_char(&STACK);
   if ((char) pop_char(&STACK) != '{')
     runtimeerror("File path not enclosed in { } brackets");
   while (STACK.stack[STACK.top] != '}') {
+    if (pLen >= MEM_SIZE-1)
+      runtimeerror("File path is too long. Did you try to do that? R U H4X0R???");
     current = (char) pop_char(&STACK);
     strncat(path, &current, 1);
+    pLen++;
   } // end while
   if (DEBUG > 0)
     printf("%s\n", path);
@@ -626,6 +647,11 @@ void ioc_file(long noParam) {
     FILESTREAM = fopen(path, "a+");
   else
     runtimeerror("Invalid file mode on the stack");
+  if (!FILESTREAM) {
+    char errormsg[21+MEM_SIZE+1] = "Could not open file: ";
+    strncat(errormsg, path, MEM_SIZE);
+    runtimeerror(errormsg);
+  } // end if
   IPTR++;
 } // end ioc_file
 
@@ -664,7 +690,7 @@ void heaperror(const char *s) {
 } // end heaperror
 
 void runtimeerror(const char *s) {
-  printf("\nFiddlesticks! Invalid data being used for an operation. Instruction: %d -> %s\nFin line: %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
+  printf("\nFiddlesticks! Invalid data being used for an operation. Instruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
   exit(1); // might as well halt now
 } // end runtimeerror 
 

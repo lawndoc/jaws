@@ -25,6 +25,7 @@ NETCON	[0-9]{1,3}"."[0-9]{1,3}"."[0-9]{1,3}"."[0-9]{1,3}":"[0-9]{1,5}
 %%
 
 [ \t]				;
+"//".*				;
 \n				{ lineNum++; }
 peekn				{ return PEEKN; }
 peekc				{ return PEEKC; }

@@ -1,0 +1,24 @@
+header
+	 stackIMP  pushNum                               	 
+stackIMP  pushNum                               	 
+stackIMP  pushNum                               	 
+stackIMP  pushNum                               	 
+stackIMP  pushNum                               	 
+stackIMP  pushNum                               	 
+arithIMP 	modulo		arithIMP 	division	 arithIMP 	multiplication 
+arithIMP 	subtraction 	arithIMP 	addition  ioaIMP	
+outNum 	stackIMP  pushChar     	 	 
+ioaIMP	
+outChar  stackIMP  pushNum                              	  
+stackIMP  pushNum                            	 	 	
+arithIMP 	division	 ioaIMP	
+outNum 	stackIMP  pushChar     	 	 
+ioaIMP	
+outChar  stackIMP  pushNum                              	  
+stackIMP  pushNum                            	 	 	
+arithIMP 	modulo		ioaIMP	
+outNum 	stackIMP  pushChar     	 	 
+ioaIMP	
+outChar  endProgram
+
+

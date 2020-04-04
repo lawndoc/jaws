@@ -260,6 +260,7 @@ new_label:
     if (DEBUG > 1)
       cout << "new label '" << $<val>3 << "'" << endl;
     add_instruction(&PROGRAM, (char *) "flow_mark", $<val>3);
+    jumptable_mark(&JUMPTABLE, PROGRAM.size, $<val>3);
     reset_accum();
     JAWSLINE++;
   };
@@ -450,6 +451,9 @@ int main(int argc, char** argv) {
   // Set Flex to read from input file instead of defaulting to STDIN
   jawsin = infile;
 
+  // Initialize jump table to mark parsed labels
+  init_Jumptable(&JUMPTABLE, MEM_SIZE);
+
   // Parse the input and build program
   if (DEBUG > 1) {
     cout << "\nParsing Jaws program...\n" << endl;
@@ -461,7 +465,6 @@ int main(int argc, char** argv) {
   IPTR = 0;  				// set instruction pointer
   init_Stack(&STACK, MEM_SIZE);		// initialize stack
   init_Heap(&HEAP, MEM_SIZE);		// initialize heap
-  init_Jumptable(&JUMPTABLE, MEM_SIZE); // initialize jump table
   if (DEBUG > 0)
     cout << "\nExecuting Jaws program...\n" << endl;
   while (IPTR < PROGRAM.size) {		// fetch and execute instructions

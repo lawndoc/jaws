@@ -555,7 +555,7 @@ char *genUNum(char *hexNum) {
     if (binDig[i] == '1')
       strcat(BITSTR, "\t");
     else
-      strcat(BITSTR, " ");  strcat(BITSTR, "\n");
+      strcat(BITSTR, " ");
   } // end for
   return strdup(BITSTR);  //TODO: fix memory leak
 } // end genUNum
@@ -581,7 +581,7 @@ char *genUChar(char *hexChar) {
     if (binDig[i] == '1')
       strcat(BITSTR, "\t");
     else
-      strcat(BITSTR, " ");  strcat(BITSTR, "\n");
+      strcat(BITSTR, " ");
   } // end for
   strcat(BITSTR, "\n");
   return strdup(BITSTR);  //TODO: fix memory leak
@@ -611,7 +611,7 @@ char *genULabel(char *hexLabel) {
     if (binDig[i] == '1')
       strcat(BITSTR, "\t");
     else
-      strcat(BITSTR, " ");  strcat(BITSTR, "\n");
+      strcat(BITSTR, " ");
   } // end for
   strcat(BITSTR, "\n");
   return strdup(BITSTR);  //TODO: fix memory leak
