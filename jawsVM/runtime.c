@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <math.h>
 #include "runtime.h"
 #include <stdio.h>
@@ -557,6 +558,8 @@ void ioa_inc(long noParam) {
   } else if (IOSTREAM == 'f') {
     if (FILESTREAM == NULL)
       runtimeerror("Tried writing number to file before it was opened, or the file was not successfully opened.");
+    if (feof(FILESTREAM))
+      runtimeerror("Tried reading a character, but reached EOF.");
     input = (char) fgetc(FILESTREAM);
   } else if (IOSTREAM == 'n') {
     // TODO : save for later
@@ -587,8 +590,21 @@ void ioa_inn(long noParam) {
     if (FILESTREAM == NULL) {
       runtimeerror("Tried writing number to file before it was opened, or the file was not successfully opened.");
     } // end if (FILESTREAM...
-    if (fscanf(FILESTREAM, "%ld", &input) != 1)
-      runtimeerror("Error reading number from file -- EOL or other error");
+    if (feof(FILESTREAM))
+      runtimeerror("Tried reading a number, but reached EOF.");
+    if (fscanf(FILESTREAM, " %s", buf) != 1) // TODO: unsafe -- buffer overflow
+      runtimeerror("Error reading number from file -- nothing was scanned");
+    int length = strlen(buf);
+    for (int i=0;i<length;i++) {
+      if (buf[i] == '-' && i == 0)
+         continue;
+      if (!isdigit(buf[i])) {
+	char errormsg[36+MEM_SIZE+1] = "String read from file not a number: ";
+        strncat(errormsg, buf, MEM_SIZE);
+        runtimeerror(errormsg);
+      } // end if
+      input = strtol(buf, &extra, 10);
+    } // end for
   } else if (IOSTREAM == 'n') {
     // TODO : save for later
   } else {
@@ -604,15 +620,20 @@ void ioc_file(long noParam) {
   if (DEBUG > 0)
     printf("Stream File: ");
   char mode;
-  char path[4096];
+  char path[MEM_SIZE];
   char current;
+  int pLen = 0;
+  memset(path, 0, sizeof(path));
   // type checking is done in pop_char
   mode = (char) pop_char(&STACK);
   if ((char) pop_char(&STACK) != '{')
     runtimeerror("File path not enclosed in { } brackets");
   while (STACK.stack[STACK.top] != '}') {
+    if (pLen >= MEM_SIZE-1)
+      runtimeerror("File path is too long. Did you try to do that? R U H4X0R???");
     current = (char) pop_char(&STACK);
     strncat(path, &current, 1);
+    pLen++;
   } // end while
   if (DEBUG > 0)
     printf("%s\n", path);
@@ -626,6 +647,11 @@ void ioc_file(long noParam) {
     FILESTREAM = fopen(path, "a+");
   else
     runtimeerror("Invalid file mode on the stack");
+  if (!FILESTREAM) {
+    char errormsg[21+MEM_SIZE+1] = "Could not open file: ";
+    strncat(errormsg, path, MEM_SIZE);
+    runtimeerror(errormsg);
+  } // end if
   IPTR++;
 } // end ioc_file
 
