@@ -1,0 +1,53 @@
+header
+	 stackIMP  pushChar  					 	
+stackIMP  pushChar  			 	  
+stackIMP  pushChar  				   
+stackIMP  pushChar  			 	  
+stackIMP  pushChar   	 			 
+stackIMP  pushChar  			 	  
+stackIMP  pushChar  			  		
+stackIMP  pushChar  		  	 	
+stackIMP  pushChar  			 	  
+stackIMP  pushChar  				 		
+stackIMP  pushChar  			 			
+iocIMP	 streamFile  stackIMP  pushChar     	 	 
+stackIMP  pushChar     	 	 
+stackIMP  pushChar   	    	
+stackIMP  pushChar  		  	  
+stackIMP  pushChar  		 		  
+stackIMP  pushChar  			  	 
+stackIMP  pushChar  		 				
+stackIMP  pushChar  			 			
+stackIMP  pushChar   	     
+stackIMP  pushChar  		 				
+stackIMP  pushChar  		 		  
+stackIMP  duplicate
+ stackIMP  pushChar  		  	 	
+stackIMP  pushChar  	  	   
+ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  stackIMP  pushChar     	 	 
+stackIMP  pushChar     	 	 
+stackIMP  pushNum                          				 		
+ioaIMP	
+outNum 	ioaIMP	
+outChar  ioaIMP	
+outChar  stackIMP  pushChar     	 	 
+stackIMP  pushNum                          				 		
+ioaIMP	
+outNum 	ioaIMP	
+outChar  iocIMP	 streamStdIO	 endProgram
+
+
