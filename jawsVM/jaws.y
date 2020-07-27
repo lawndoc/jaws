@@ -42,11 +42,11 @@
 jaws:
   bodies last_body {
     if (DEBUG > 1)
-      cout << "done with a jaws file!" << endl;
+      cout << "\nDone building program!" << endl;
   }
   | last_body {
     if (DEBUG > 1)
-      cout << "done with a jaws file!" << endl;
+      cout << "\nDone building program!" << endl;
   };
 bodies:
   bodies body
@@ -61,20 +61,20 @@ last_body:
 header:
   extra_lines LF TAB SPACE {
     if (DEBUG > 1)
-      cout << "Started interpreting jaws code..." << endl;
+      cout << "Started interpreting Jaws code..." << endl;
     PROGRAM.headFooters++;
     JAWSLINE++;
   }
   | LF TAB SPACE {
     if (DEBUG > 1)
-      cout << "Started interpreting jaws code..." << endl;
+      cout << "Started interpreting Jaws code..." << endl;
     PROGRAM.headFooters++;
     JAWSLINE++;
   };
 footer:
   LF TAB SPACE {
     if (DEBUG > 1)
-      cout << "Paused interpreting jaws code..." << endl;
+      cout << "Paused interpreting Jaws code..." << endl;
     PROGRAM.headFooters++;
     JAWSLINE++;
   };
@@ -308,25 +308,25 @@ end_subroutine:
 output_char:
   SPACE SPACE {
     if (DEBUG > 1)
-      cout << "outputting a character to IO" << endl;
+      cout << "output a character to IO" << endl;
     add_instruction(&PROGRAM, (char *) "ioa_outc", 0);
   };
 output_int:
   SPACE TAB {
     if (DEBUG > 1)
-      cout << "outputting an integer to IO" << endl;
+      cout << "output an integer to IO" << endl;
     add_instruction(&PROGRAM, (char *) "ioa_outn", 0);
   };
 read_char:
   TAB SPACE {
     if (DEBUG > 1)
-      cout << "reading a character from IO" << endl;
+      cout << "read a character from IO" << endl;
     add_instruction(&PROGRAM, (char *) "ioa_inc", 0);
   };
 read_int:
   TAB TAB {
     if (DEBUG > 1)
-      cout << "reading an integer from IO" << endl;
+      cout << "read an integer from IO" << endl;
     add_instruction(&PROGRAM, (char *) "ioa_inn", 0);
   };
   ;
@@ -334,13 +334,13 @@ read_int:
 stream_file:
   SPACE SPACE {
     if (DEBUG > 1)
-      cout << "streaming from a file" << endl;
+      cout << "stream from a file" << endl;
     add_instruction(&PROGRAM, (char *) "ioc_file", 0);
   };
 stream_net:
   SPACE TAB ip { reset_accum(); } port {
     if (DEBUG > 1)
-      cout << "streaming from network connection IP: " << $<val>3 << " Port: " << $<val>4 << endl;
+      cout << "stream from network connection IP: " << $<val>3 << " Port: " << $<val>4 << endl;
     long netcon = $<val>3 << 32 | $<val>4; // combine into one 64 bit parameter
     add_instruction(&PROGRAM, (char *) "ioc_netcon", netcon);
     reset_accum();
@@ -349,7 +349,7 @@ stream_net:
 stream_stdio:
   TAB SPACE {
     if (DEBUG > 1)
-      cout << "streaming from standard i/o" << endl;
+      cout << "stream from standard i/o" << endl;
     add_instruction(&PROGRAM, (char *) "ioc_stdio", 0);
   };
 
@@ -455,7 +455,7 @@ int main(int argc, char** argv) {
 
   // Parse the input and build program
   if (DEBUG > 1) {
-    cout << "\nParsing Jaws program...\n" << endl;
+    cout << "\nParsing Jaws code from " << infileName << "...\n" << endl;
   } // end if
   jawsparse();
 
