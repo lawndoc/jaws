@@ -429,11 +429,10 @@ int main(int argc, char** argv) {
 
   // Make sure input file was specified
   if (!infileName) {
-    cout << "ERROR: No Fin file specified." << endl;
+    cout << "ERROR: No Jaws file specified or incorrect arguments" << endl;
     cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
     cout << "  -h : display help" << endl;
-    cout << "  -o <file> : specify outfile" << endl; 
-//    cout << "  -d : debugging mode" << endl;
+    cout << "  -d <level> : debugging level (0..2)" << endl;
     return -1;
   } // end if
 

@@ -1,11 +1,7 @@
 %{
-  #include <cstdio>
-  #include <iostream>
-  using namespace std;
-
   #include "jaws.tab.h" // to get the token types from Bison
   extern "C" int jawslex();
-
+//  extern int jawslex();
   int lineNum = 1;
 %}
 
