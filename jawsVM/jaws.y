@@ -177,7 +177,11 @@ stack_push:
     //cout << "strlen(BITSTRING) == " << strlen(BITSTRING) << endl;
     if (strlen(BITSTRING) == 8) {
       if (DEBUG > 1)
-        cout << "push " << (char)$<val>2 << " on top of the stack" << endl;
+        if ((char)$<val>2 != '\n') {
+          cout << "push " << (char)$<val>2 << " on top of the stack" << endl;
+        } else {
+          cout << "push \\n on top of the stack" << endl;
+        } // end if
       add_instruction(&PROGRAM, (char *) "stack_pushc", $<val>2);
     } else {
       if (DEBUG > 1)

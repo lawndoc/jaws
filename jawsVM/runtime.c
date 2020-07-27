@@ -277,8 +277,15 @@ void stack_push(long parameter) {
   IPTR++;
 } // end stack_pushn
 void stack_pushc(long parameter) {
-  if (DEBUG > 0)
-    printf("Stack Push: %c\n", (char) parameter);
+  if (DEBUG > 0) {
+    if ((char) parameter != '\n' && (char) parameter != '\t') {
+      printf("Stack Push: %c\n", (char) parameter);
+    } else if ((char) parameter != '\n') {
+      printf("Stack Push: \\t\n");
+    } else {
+      printf("Stack Push: \\n\n");
+    } // end if ((char)...
+  } // end if (DEBUG...
   push_char(&STACK, parameter);
   IPTR++;
 } // end stack_pushc
@@ -505,19 +512,29 @@ void flow_return(long noParam) {
 } // end flow_return
 
 void ioa_outc(long noParam) {
-  if (DEBUG > 0)
+  if (DEBUG > 0) {
     printf("Output Character: ");
+  } // end if (DEBUG...
   char output = (char) pop_char(&STACK);
   // determine I/O mode
   if (IOSTREAM == 's') {
-    printf("%c", output);
+    if (DEBUG > 0 && output == '\n') {
+      printf("\\n");
+    } else {
+      printf("%c", output);
+    } // end if (DEBUG...
     if (DEBUG > 0)
       printf("\n");
   } else if (IOSTREAM == 'f') {
     if (FILESTREAM == NULL)
       runtimeerror("Tried writing character to file before it was opened, or the file was not successfully opened.");
-    if (DEBUG > 0)
-      printf("%c\n", output);
+    if (DEBUG > 0) {
+      if (output == '\n') {
+        printf("\\n");
+      } else {
+        printf("%c\n", output);
+      } // end if (output...
+    } // end if (DEBUG...
     fprintf(FILESTREAM, "%c", output);
   } else if (IOSTREAM == 'n') {
     // TODO : save for later
