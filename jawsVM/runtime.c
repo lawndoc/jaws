@@ -520,6 +520,8 @@ void ioa_outc(long noParam) {
   if (IOSTREAM == 's') {
     if (DEBUG > 0 && output == '\n') {
       printf("\\n");
+    } else if (DEBUG > 0 && output == '\t') {
+      printf("\\t");
     } else {
       printf("%c", output);
     } // end if (DEBUG...
@@ -530,7 +532,9 @@ void ioa_outc(long noParam) {
       runtimeerror("Tried writing character to file before it was opened, or the file was not successfully opened.");
     if (DEBUG > 0) {
       if (output == '\n') {
-        printf("\\n");
+        printf("\\n\n");
+      } else if (output == '\t') {
+	printf("\\t\n");
       } else {
         printf("%c\n", output);
       } // end if (output...
@@ -583,8 +587,15 @@ void ioa_inc(long noParam) {
   } else {
     runtimeerror("Invalid IO Stream type... How did this happen?");
   } // end if (IOSTREAM...
-  if (DEBUG > 0)
-    printf("%c\n", input);
+  if (DEBUG > 0) {
+    if (input == '\n') {
+      printf("\\n\n");
+    } else if (input == '\t') {
+      printf("\\t\n");
+    } else {
+      printf("%c\n", input);
+    } // end if (input...
+  } // end if (DEBUG...
   push_char(&STACK, (long) input);
   IPTR++;
 } // end ioa_inc
