@@ -687,6 +687,9 @@ void ioc_netcon(long parameter) {
   if (DEBUG > 0)
     printf("Stream Network Connection\n");
   IOSTREAM = 'n';
+  long ip = (parameter & 0xffffffff00000000) >> 32;
+  long port = (parameter & 0x00000000ffff0000) >> 16;
+  long ops = (parameter & 0x000000000000ffff);
   // TODO : save for later
   IPTR++;
 } // end ioc_netcon
