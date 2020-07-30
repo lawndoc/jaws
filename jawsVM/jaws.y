@@ -342,10 +342,11 @@ stream_file:
     add_instruction(&PROGRAM, (char *) "ioc_file", 0);
   };
 stream_net:
-  SPACE TAB ip { reset_accum(); } port {
+  SPACE TAB ip { reset_accum(); } port { reset_accum(); } netops {
     if (DEBUG > 1)
-      cout << "stream from network connection IP: " << $<val>3 << " Port: " << $<val>4 << endl;
-    long netcon = $<val>3 << 32 | $<val>4; // combine into one 64 bit parameter
+      cout << "stream from network connection IP: " << $<val>3 << " Port: " << $<val>4 << " OpCode: " << $<val>5 << endl;
+    // combine args into one 64 bit param (ip32:port16:ops16)
+    long netcon = ($<val>3 << 32) | ($<val>4 << 16) | ($<val>5);
     add_instruction(&PROGRAM, (char *) "ioc_netcon", netcon);
     reset_accum();
     JAWSLINE++;
@@ -378,13 +379,17 @@ ip:
   octet octet octet octet {
     $<val>$ = calc_accum();
   };
-octet:
-  bit bit bit bit bit bit bit bit
-  ;
 port:
+  octet octet {
+    $<val>$ = calc_accum();
+  };
+netops:
   octet octet LF {
     $<val>$ = calc_accum();
   };
+octet:
+  bit bit bit bit bit bit bit bit
+  ;
 // done with grammar
 %%
 
