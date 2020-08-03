@@ -5,6 +5,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+// imports needed for networking
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netinet/in.h>
+
 //-------------------------------//
 // --- Variable Declarations --- //
 //-------------------------------//
@@ -13,20 +19,21 @@
 extern int DEBUG;
 
 // Declare stuff from Flex and Bison
-extern int lineNum;		// for jawserror function
+extern int lineNum;   // for jawserror function
 
 // Declare global variables
-Program PROGRAM;		// for runtime system
-int IPTR;			// for runtime system
-Stack STACK;			// for runtime system
-Heap HEAP;			// for runtime system
-Jumptable JUMPTABLE;		// for runtime system
-char IOSTREAM = 's';		// for runtime system
-FILE *FILESTREAM;		// for runtime system
-int JAWSLINE = 1;		// for calculating instruction line numbers
-char BITSTRING[65];		// for building semantic values
+Program PROGRAM;      // for runtime system
+int IPTR;             // for runtime system
+Stack STACK;          // for runtime system
+Heap HEAP;            // for runtime system
+Jumptable JUMPTABLE;  // for runtime system
+char IOSTREAM = 's';  // for runtime system
+FILE *FILESTREAM;     // for runtime system
+NetCon NETCON;        // for runtime system
+int JAWSLINE = 1;     // for calculating instruction line numbers
+char BITSTRING[65];   // for building semantic values
 long ACCUM = 0x0000000000000000;// for building semantic values
-short COUNT = 0;		// for building semantic values
+short COUNT = 0;      // for building semantic values
 
 //----------------------------------//
 // --- Data Structure Functions --- //
@@ -81,10 +88,18 @@ void init_Instr(Instr *instruction, char *name, long parameter) {
     instruction->funcPtr = &ioa_inn;
   else if (strcmp(name, "ioc_file") == 0)
     instruction->funcPtr = &ioc_file;
-  else if (strcmp(name, "ioc_netcon") == 0)
-    instruction->funcPtr = &ioc_netcon;
   else if (strcmp(name, "ioc_stdio") == 0)
     instruction->funcPtr = &ioc_stdio;
+  else if (strcmp(name, "netcon_connect") == 0)
+    instruction->funcPtr = &netcon_connect;
+  else if (strcmp(name, "netcon_close") == 0)
+    instruction->funcPtr = &netcon_close;
+  else if (strcmp(name, "netcon_send") == 0)
+    instruction->funcPtr = &netcon_send;
+  else if (strcmp(name, "netcon_recv") == 0)
+    instruction->funcPtr = &netcon_recv;
+  else
+    jawserror("Parser tried to create an instruction that doesn't exist... How did this pappen?");
   instruction->name = name;
   instruction->jawsLine = JAWSLINE;
 } // end new_instruction
@@ -244,7 +259,7 @@ void jumptable_mark(Jumptable *jumptable, int index, long identifier) {
     init_Label(record, (int) identifier, index);
     HASH_ADD_INT(JUMPTABLE.jumptable, label, record);
   } else {
-    runtimeerror("Tried to create label that already exists");
+    jawserror("Tried to create label that already exists");
   } // end if
 } // end jumptable_mark
 
@@ -263,6 +278,28 @@ int jumptable_return(Jumptable *jumptable) {
   int index = (int) pop_num(&(jumptable->callStack));
   return index;
 } // end jumptable_return
+
+
+//---Network Connection Functions---//
+void init_NetCon(NetCon *netCon, long ip, long port, long ops) {
+  int netSocket;
+  switch ((int) ops) {
+    case 1:
+      netSocket = socket(AF_INET, SOCK_STREAM, 0);
+    default:
+      jawserror("Incorrect network connection option supplied. Please see documentation.");
+  } // end switch
+  struct sockaddr_in serverAddress;
+  serverAddress.sin_family = AF_INET;
+  serverAddress.sin_port = htons((int) port);
+  serverAddress.sin_addr.s_addr = (unsigned long) ip; // safe - 2^32 max
+  int connectionStatus = connect(netSocket, (struct sockaddr *) &serverAddress, sizeof(serverAddress));
+  if (connectionStatus == -1)
+    runtimeerror("Network connection error: couldn't connect to server.");
+  netCon->socket = netSocket;
+  netCon->inBuff = (char *) malloc(8192 * sizeof(char));
+  netCon->outBuff = (char *) malloc(8192 * sizeof(char));
+} // end init_NetCon
 
 
 //---------------------------//
@@ -540,8 +577,8 @@ void ioa_outc(long noParam) {
       } // end if (output...
     } // end if (DEBUG...
     fprintf(FILESTREAM, "%c", output);
-  } else if (IOSTREAM == 'n') {
-    // TODO : save for later
+  } else if (IOSTREAM == 'n') { // TODO: remove network stream option
+    jawserror("Deprecated functionality: network stream. Please notify the developer.");
   } else {
     runtimeerror("Invalid IO Stream type... How did this happen?");
   } // end if (IOSTREAM...
@@ -562,8 +599,8 @@ void ioa_outn(long noParam) {
     if (DEBUG > 0)
       printf("%ld\n", output);
     fprintf(FILESTREAM, "%ld", output);
-  } else if (IOSTREAM == 'n') {
-    // TODO : save for later
+  } else if (IOSTREAM == 'n') { // TODO: remove network stream option
+    jawserror("Deprecated functionality: network stream. Please notify the developer.");
   } else {
     runtimeerror("Invalid IO Stream type... How did this happen?");
   } // end if (IOSTREAM...
@@ -582,8 +619,8 @@ void ioa_inc(long noParam) {
     if (feof(FILESTREAM))
       runtimeerror("Tried reading a character, but reached EOF.");
     input = (char) fgetc(FILESTREAM);
-  } else if (IOSTREAM == 'n') {
-    // TODO : save for later
+  } else if (IOSTREAM == 'n') { // TODO: remove network stream option
+    jawserror("Deprecated functionality: network stream. Please notify the developer.");
   } else {
     runtimeerror("Invalid IO Stream type... How did this happen?");
   } // end if (IOSTREAM...
@@ -633,8 +670,8 @@ void ioa_inn(long noParam) {
       } // end if
       input = strtol(buf, &extra, 10);
     } // end for
-  } else if (IOSTREAM == 'n') {
-    // TODO : save for later
+  } else if (IOSTREAM == 'n') { // TODO: remove network stream option
+    jawserror("Deprecated functionality: network stream. Please notify the developer.");
   } else {
     runtimeerror("Invalid IO Stream type... How did this happen?");
   } // end if (IOSTREAM...
@@ -643,6 +680,7 @@ void ioa_inn(long noParam) {
   push_num(&STACK, input);
   IPTR++;
 } // end ioa_inn
+
 
 void ioc_file(long noParam) {
   if (DEBUG > 0)
@@ -683,17 +721,6 @@ void ioc_file(long noParam) {
   IPTR++;
 } // end ioc_file
 
-void ioc_netcon(long parameter) {
-  if (DEBUG > 0)
-    printf("Stream Network Connection\n");
-  IOSTREAM = 'n';
-  long ip = (parameter & 0xffffffff00000000) >> 32;
-  long port = (parameter & 0x00000000ffff0000) >> 16;
-  long ops = (parameter & 0x000000000000ffff);
-  // TODO : save for later
-  IPTR++;
-} // end ioc_netcon
-
 void ioc_stdio(long noParam) {
   if (DEBUG > 0)
     printf("Stream Standard I/O\n");
@@ -701,29 +728,33 @@ void ioc_stdio(long noParam) {
   IPTR++;
 } // end ioc_stdio
 
+void netcon_connect(long parameter) { // TODO: rename & refactor
+  if (DEBUG > 0)
+    printf("Stream Network Connection\n");
+  IOSTREAM = 'n';
+  long ip = (parameter & 0xffffffff00000000) >> 32;
+  long port = (parameter & 0x00000000ffff0000) >> 16;
+  long ops = (parameter & 0x000000000000ffff);
+  init_NetCon(&NETCON, ip, port, ops);
+  IPTR++;
+} // end netcon_connect
+
+void netcon_close(long noParam) {
+  // TODO: implement
+} // end netcon_close
+
+void netcon_send(long noParam) {
+  // TODO: implement
+} // end netcon_send
+
+void netcon_recv(long noParam) {
+  // TODO: implement
+} // end netcon_recv 
+
+
 //--------------------------//
 // --- Parser Functions --- //
 //--------------------------//
-
-void jawserror(const char *s) {
-  printf("\nWhoopsie daisies! Error while parsing line %d.  Message: %s\n", lineNum, s);
-  exit(1); // might as well halt now:
-} // end jawserror
-
-void stackerror(const char *s) {
-  printf("\nOh dear! Type error on the stack.\nInstruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
-  exit(1); // might as well halt now
-} // end stackerror
-
-void heaperror(const char *s) {
-  printf("\nRats! Type error on the heap.\nInstruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
-  exit(1); // might as well halt now
-} // end heaperror
-
-void runtimeerror(const char *s) {
-  printf("\nFiddlesticks! Invalid data being used for an operation. Instruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
-  exit(1); // might as well halt now
-} // end runtimeerror 
 
 void accum_add(char bit) {
   if (COUNT == 64) {
@@ -747,3 +778,27 @@ void reset_accum() {
   ACCUM = 0x0000000000000000;
   COUNT = 0;
 } // end reset_accum
+
+//-------------------------//
+// --- Error Functions --- //
+//-------------------------//
+
+void jawserror(const char *s) {
+  printf("\nWhoopsie daisies! Error while parsing line %d.  Message: %s\n", lineNum, s);
+  exit(1); // might as well halt now:
+} // end jawserror
+
+void stackerror(const char *s) {
+  printf("\nOh dear! Type error on the stack.\nInstruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
+  exit(1); // might as well halt now
+} // end stackerror
+
+void heaperror(const char *s) {
+  printf("\nRats! Type error on the heap.\nInstruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
+  exit(1); // might as well halt now
+} // end heaperror
+
+void runtimeerror(const char *s) {
+  printf("\nFiddlesticks! Invalid data being used for an operation. Instruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
+  exit(1); // might as well halt now
+} // end runtimeerror 

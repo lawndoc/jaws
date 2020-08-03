@@ -37,6 +37,11 @@ typedef struct {
   Label *jumptable;
   Stack callStack;
 } Jumptable;
+typedef struct {
+  char *inBuff;
+  char *outBuff;
+  int socket;
+} NetCon;
 
 //----------------------------------------------//
 // --- Data Structure Function Declarations --- //
@@ -66,6 +71,8 @@ void jumptable_mark(Jumptable *jumptable, int index, long identifier);
 int jumptable_find(Jumptable *jumptable, long identifier);
 void jumptable_call(Jumptable *jumptable, int index);
 int jumptable_return(Jumptable *jumptable);
+// Network Connection Functions
+void init_NetCon(NetCon *netCon, long ip, long port, long ops);
 
 //---------------------------------------//
 // --- Runtime Function Declarations --- //
@@ -94,16 +101,23 @@ void ioa_outn(long noParam);
 void ioa_inc(long noParam);
 void ioa_inn(long noParam);
 void ioc_file(long noParam);
-void ioc_netcon(long parameter);
 void ioc_stdio(long noParam);
+void netcon_connect(long parameter); // TODO: finish
+void netcon_close(long noParam); // TODO: build
+void netcon_send(long noParam); // TODO: build
+void netcon_recv(long noParam); // TODO: build
 
-//--------------------------------------//
-// --- Parser Function Declarations --- //
-//--------------------------------------//
+//-------------------------------------//
+// --- Error Function Declarations --- //
+//-------------------------------------//
 void jawserror(const char *s);
 void stackerror(const char *s);
 void heaperror(const char *s);
 void runtimeerror(const char *s);
+
+//--------------------------------------//
+// --- Parser Function Declarations --- //
+//--------------------------------------//
 void accum_add(char bit);
 long calc_accum();
 void reset_accum();
