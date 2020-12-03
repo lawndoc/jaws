@@ -102,8 +102,8 @@ void ioa_inc(long noParam);
 void ioa_inn(long noParam);
 void ioc_file(long noParam);
 void ioc_stdio(long noParam);
-void netcon_connect(long parameter); // TODO: finish
-void netcon_close(long noParam); // TODO: build
+void netcon_connect(long parameter);
+void netcon_close(long noParam);
 void netcon_send(long noParam); // TODO: build
 void netcon_recv(long noParam); // TODO: build
 

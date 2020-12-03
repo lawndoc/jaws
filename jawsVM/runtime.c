@@ -35,6 +35,8 @@ char BITSTRING[65];   // for building semantic values
 long ACCUM = 0x0000000000000000;// for building semantic values
 short COUNT = 0;      // for building semantic values
 
+// TODO: allow more than one active filestream / network connection
+
 //----------------------------------//
 // --- Data Structure Functions --- //
 //----------------------------------//
@@ -52,7 +54,7 @@ void init_Instr(Instr *instruction, char *name, long parameter) {
     instruction->funcPtr = &stack_swap;
   else if (strcmp(name, "stack_discard") == 0)
     instruction->funcPtr = &stack_discard;
-  else if (strcmp(name, "arith_add") == 0)
+  ELSe if (strcmp(name, "arith_add") == 0)
     instruction->funcPtr = &arith_add;
   else if (strcmp(name, "arith_sub") == 0)
     instruction->funcPtr = &arith_sub;
@@ -728,7 +730,7 @@ void ioc_stdio(long noParam) {
   IPTR++;
 } // end ioc_stdio
 
-void netcon_connect(long parameter) { // TODO: rename & refactor
+void netcon_connect(long parameter) {
   if (DEBUG > 0)
     printf("Stream Network Connection\n");
   IOSTREAM = 'n';
@@ -740,15 +742,21 @@ void netcon_connect(long parameter) { // TODO: rename & refactor
 } // end netcon_connect
 
 void netcon_close(long noParam) {
-  // TODO: implement
+  close(NETCON->socket);
+  memset(NETCON->inBuff, 0, sizeof(NETCON->inBuff));
+  memset(NETCON->outBuff, 0, sizeof(NETCON->outBuff));
+  IPTR++;
 } // end netcon_close
 
 void netcon_send(long noParam) {
-  // TODO: implement
+  // TODO: account for dynamic size
+  send(NETCON->socket, NETCON->outBuff, sizeof(NETCON->outBuff), 0);
+  IPTR++;
 } // end netcon_send
 
 void netcon_recv(long noParam) {
-  // TODO: implement
+  // TODO: account for dynamic size
+  IPTR++;
 } // end netcon_recv 
 
 
