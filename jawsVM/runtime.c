@@ -301,6 +301,8 @@ void init_NetCon(NetCon *netCon, long ip, long port, long ops) {
   netCon->socket = netSocket;
   netCon->inBuff = (char *) malloc(8192 * sizeof(char));
   netCon->outBuff = (char *) malloc(8192 * sizeof(char));
+  netCon->inBuffSize = 0;
+  netCon->outBuffSize = 0;
 } // end init_NetCon
 
 
@@ -750,12 +752,15 @@ void netcon_close(long noParam) {
 
 void netcon_send(long noParam) {
   // TODO: account for dynamic size
+  // add delimiter to end of data in outBuff and ensure null bytes trail
+  // run send() calls until all data has been sent
   send(NETCON->socket, NETCON->outBuff, sizeof(NETCON->outBuff), 0);
   IPTR++;
 } // end netcon_send
 
 void netcon_recv(long noParam) {
   // TODO: account for dynamic size
+  // run recv() calls until delimiter followed by null bytes is received
   IPTR++;
 } // end netcon_recv 
 
