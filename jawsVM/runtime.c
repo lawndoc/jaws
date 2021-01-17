@@ -753,14 +753,14 @@ void netcon_close(long noParam) {
 void netcon_send(long noParam) {
   // TODO: account for dynamic size
   // add delimiter to end of data in outBuff and ensure null bytes trail
-  // run send() calls until all data has been sent
   send(NETCON->socket, NETCON->outBuff, sizeof(NETCON->outBuff), 0);
   IPTR++;
 } // end netcon_send
 
 void netcon_recv(long noParam) {
   // TODO: account for dynamic size
-  // run recv() calls until delimiter followed by null bytes is received
+  int size = (int) pop_num(&STACK);
+  recv(NETCON->socket, NETCON->inBuff, size, 0);
   IPTR++;
 } // end netcon_recv 
 
