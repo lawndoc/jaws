@@ -299,10 +299,6 @@ void init_NetCon(NetCon *netCon, long ip, long port, long ops) {
   if (connectionStatus == -1)
     runtimeerror("Network connection error: couldn't connect to server.");
   netCon->socket = netSocket;
-  netCon->inBuff = (char *) malloc(8192 * sizeof(char));
-  netCon->outBuff = (char *) malloc(8192 * sizeof(char));
-  netCon->inBuffSize = 0;
-  netCon->outBuffSize = 0;
 } // end init_NetCon
 
 
@@ -581,8 +577,6 @@ void ioa_outc(long noParam) {
       } // end if (output...
     } // end if (DEBUG...
     fprintf(FILESTREAM, "%c", output);
-  } else if (IOSTREAM == 'n') { // TODO: remove network stream option
-    jawserror("Deprecated functionality: network stream. Please notify the developer.");
   } else {
     runtimeerror("Invalid IO Stream type... How did this happen?");
   } // end if (IOSTREAM...
@@ -603,8 +597,6 @@ void ioa_outn(long noParam) {
     if (DEBUG > 0)
       printf("%ld\n", output);
     fprintf(FILESTREAM, "%ld", output);
-  } else if (IOSTREAM == 'n') { // TODO: remove network stream option
-    jawserror("Deprecated functionality: network stream. Please notify the developer.");
   } else {
     runtimeerror("Invalid IO Stream type... How did this happen?");
   } // end if (IOSTREAM...
@@ -623,8 +615,6 @@ void ioa_inc(long noParam) {
     if (feof(FILESTREAM))
       runtimeerror("Tried reading a character, but reached EOF.");
     input = (char) fgetc(FILESTREAM);
-  } else if (IOSTREAM == 'n') { // TODO: remove network stream option
-    jawserror("Deprecated functionality: network stream. Please notify the developer.");
   } else {
     runtimeerror("Invalid IO Stream type... How did this happen?");
   } // end if (IOSTREAM...
@@ -674,8 +664,6 @@ void ioa_inn(long noParam) {
       } // end if
       input = strtol(buf, &extra, 10);
     } // end for
-  } else if (IOSTREAM == 'n') { // TODO: remove network stream option
-    jawserror("Deprecated functionality: network stream. Please notify the developer.");
   } else {
     runtimeerror("Invalid IO Stream type... How did this happen?");
   } // end if (IOSTREAM...
@@ -744,23 +732,36 @@ void netcon_connect(long parameter) {
 } // end netcon_connect
 
 void netcon_close(long noParam) {
+  // TODO: validate that there is an active network connection
   close(NETCON->socket);
-  memset(NETCON->inBuff, 0, sizeof(NETCON->inBuff));
-  memset(NETCON->outBuff, 0, sizeof(NETCON->outBuff));
   IPTR++;
 } // end netcon_close
 
 void netcon_send(long noParam) {
-  // TODO: account for dynamic size
-  // add delimiter to end of data in outBuff and ensure null bytes trail
-  send(NETCON->socket, NETCON->outBuff, sizeof(NETCON->outBuff), 0);
+  // TODO: validate that there is an active network connection
+  int startAddr = (int) pop_num(&STACK);
+  if (startAddr <= 0) {
+    runtimeerror("Heap address is not a positive number");
+  } // end if
+  int size = (int) pop_num(&STACK);
+  if (size <= 0) {
+    runtimeerror("Size is not a positive number");
+  } // end if
+  send(NETCON->socket, (HEAP->heap)+startAddr, size, 0);
   IPTR++;
 } // end netcon_send
 
 void netcon_recv(long noParam) {
-  // TODO: account for dynamic size
+  // TODO: validate that there is an active network connection
+  int startAddr = (int) pop_num(&STACK);
+  if (startAddr <= 0) {
+    runtimeerror("Heap address is not a positive number");
+  } // end if
   int size = (int) pop_num(&STACK);
-  recv(NETCON->socket, NETCON->inBuff, size, 0);
+  if (size <= 0) {
+    runtimeerror("Size is not a positive number");
+  } // end if
+  recv(NETCON->socket, (HEAP->heap)+startAddr, size, 0);
   IPTR++;
 } // end netcon_recv 
 

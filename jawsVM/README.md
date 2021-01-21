@@ -2,9 +2,13 @@
 
 ![Jaws Logo](../resources/jawsLogo.png)
 
-Jaws (Just Another WhiteSpace) is an esoteric interpreted programming language based on another, called [whitespace][1], with more functionality. Jaws is an imperative, stack based language. The name Jaws is an acronym, but the word itself was also intended to hold meaning because the code, being invisible to the human eye, is like a threat hidden beneath the surface.
+Jaws (Just Another WhiteSpace) is an esoteric interpreted programming language based on another, called [whitespace][1], with more functionality. Jaws is an imperative, stack based language. The name Jaws is an acronym, but the word itself was also intended to hold meaning because the code, being invisible to the human eye, is like a threat hidden beneath the surface when used in polyglot code.
+
+To read more about Jaws and why it was created, please refer to [my blog post][2] or [my undergrad honor's thesis][3].
 
 [1]: https://en.wikipedia.org/wiki/Whitespace_(programming_language) "wikipedia"
+[2]: https://www.palehat.net/jaws-research/ "palehat.net blog"
+[3]: https://scholarworks.uni.edu/cgi/viewcontent.cgi?article=1423&context=hpt "UNI scholarworks"
 
 ## Lexical Tokens
 
@@ -44,7 +48,7 @@ The commands for each IMP are organized together. The characters for the command
 
 ### Stack Manipulation (IMP: `[Space][Space]`)
 
-Stack manipulation is the most commonly used instruction type. There are four stack instructions.
+Stack manipulation is the most commonly used instruction type. There are four stack instructions. Please read about parameters at the bottom of this document.
 
 `[Space]` (Parameter: Number) Push the number onto the stack
 
@@ -114,10 +118,38 @@ We need to be able to read and write from the disk. To do that, we will change t
 - Each mode's functionality is equivalent to C language's r+, w+, and a+ modes
 - File path is between { } brackets and popped characters are arranged left-to-right (push characters onto the stack backwards so they are popped in order)
 
-`[Space][Tab]` (Parameters: IP, Port) Change I/O stream to TCP connection at IP, Port
-
 `[Tab][Space]` Change I/O to standard in/out
+
+### Network Connection (IMP: `[Space][LF]`)
+
+Network connection instructions allow Jaws programs to communicate with other computers over the network. Network connection instructions are currently much more high level than other instructions. Network instructions are considered to be in the alpha stage of implementation. Please read 'Limitations' below for more info.
+
+`[Space][Tab]` (Parameter: NetworkConnection) Connect to another computer over the network
+
+`[Space][Space]` Close network connection
+
+`[Tab][Tab]` Read heap address and then size from the stack, and then send data to existing network connection
+
+`[Tab][Space` Read heap address and then size from the stack, and then receive data from existing network connection
 
 ### Command Parameters
 
-Each parameter type is fixed-length. A binary number pushed onto the stack is either 32 bits (int) or 8 bits (char). At runtime, the type of data pushed onto the stack depends on the size of the parameter. Type checking is done at upon I/O Action, where the data involved is explicitly declared by the language. Label parameters are 16 bits long, leaving room for 65,536 different labels. Network connection parameters are 64 bits long -- 32 bits to specify the IP address, followed by 16 bits to specify the port number, followed by 16 bits to specify control parameters (tcp/udp, etc.).
+Each parameter type is fixed-length. 
+
+**Number**
+
+A binary number pushed onto the stack is either 32 bits (int) or 8 bits (char). At runtime, the type of data pushed onto the stack depends on the size of the parameter. Type checking is done at upon I/O Action, where the data involved is explicitly declared by the language. 
+
+**Label**
+
+Label parameters are 16 bits long, leaving room for 65,536 different labels.
+
+**NetworkConnection**
+
+Network connection parameters are 64 bits long -- 32 bits to specify the IP address, followed by 16 bits to specify the port number, followed by 16 bits to specify control parameters (tcp/udp, etc.). Currently, only tcp client is supported with control parameter 0x01.
+
+## Limitations
+
+Currently, the network connection instructions are in alpha phase and have not undergone rigorous debugging or use case testing. Major changes to networking instructions may occur at any time. Suggestions for implementation from experienced compiler engineers would be welcomed. If this applies to you, please open an issue to begin discussion.
+
+Another limitation: currently, there can only be one file open and one network connection open at a time. This will be changed in a future version to allow any number of files or network connections.

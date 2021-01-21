@@ -38,10 +38,6 @@ typedef struct {
   Stack callStack;
 } Jumptable;
 typedef struct {
-  char *inBuff;
-  char *outBuff;
-  int inBuffSize;
-  int outBuffSize;
   int socket;
 } NetCon;
 
