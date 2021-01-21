@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-cd ..
-cp tests/$1 "test.jaws"
-./jaws
-rm "test.jaws"
