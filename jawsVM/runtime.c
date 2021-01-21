@@ -803,16 +803,16 @@ void jawserror(const char *s) {
 } // end jawserror
 
 void stackerror(const char *s) {
-  printf("\nOh dear! Type error on the stack.\nInstruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
+  printf("\nOh dear! Type error on the stack.\nInstruction type -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
   exit(1); // might as well halt now
 } // end stackerror
 
 void heaperror(const char *s) {
-  printf("\nRats! Type error on the heap.\nInstruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
+  printf("\nRats! Type error on the heap.\nInstruction type -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
   exit(1); // might as well halt now
 } // end heaperror
 
 void runtimeerror(const char *s) {
-  printf("\nFiddlesticks! Invalid data being used for an operation. Instruction: %d -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", IPTR+1, PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
+  printf("\nFiddlesticks! Invalid data being used for an operation. Instruction type -> %s\nJaws/Fin line: %d / %d\nMessage: %s\n", PROGRAM.instructions[IPTR].name, PROGRAM.instructions[IPTR].jawsLine, IPTR+PROGRAM.headFooters+1, s);
   exit(1); // might as well halt now
 } // end runtimeerror 
