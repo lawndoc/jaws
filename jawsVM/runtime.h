@@ -71,9 +71,6 @@ void jumptable_call(Jumptable *jumptable, int index);
 int jumptable_return(Jumptable *jumptable);
 // Network Connection Functions
 void init_NetCon(NetCon *netCon, long ip, long port, long ops);
-void net_close(NetCon *netCon);
-void net_send(NetCon *netCon, Heap *heap, int startAddr, int size);
-void net_recv(NetCon *netCon, Heap *heap, int startAddr, int size);
 
 //---------------------------------------//
 // --- Runtime Function Declarations --- //
