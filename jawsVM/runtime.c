@@ -54,7 +54,7 @@ void init_Instr(Instr *instruction, char *name, long parameter) {
     instruction->funcPtr = &stack_swap;
   else if (strcmp(name, "stack_discard") == 0)
     instruction->funcPtr = &stack_discard;
-  ELSe if (strcmp(name, "arith_add") == 0)
+  else if (strcmp(name, "arith_add") == 0)
     instruction->funcPtr = &arith_add;
   else if (strcmp(name, "arith_sub") == 0)
     instruction->funcPtr = &arith_sub;
