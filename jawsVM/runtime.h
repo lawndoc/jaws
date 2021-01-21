@@ -71,6 +71,9 @@ void jumptable_call(Jumptable *jumptable, int index);
 int jumptable_return(Jumptable *jumptable);
 // Network Connection Functions
 void init_NetCon(NetCon *netCon, long ip, long port, long ops);
+void net_close(NetCon *netCon);
+void net_send(NetCon *netCon, Heap *heap, int startAddr, int size);
+void net_recv(NetCon *netCon, Heap *heap, int startAddr, int size);
 
 //---------------------------------------//
 // --- Runtime Function Declarations --- //
@@ -102,8 +105,8 @@ void ioc_file(long noParam);
 void ioc_stdio(long noParam);
 void netcon_connect(long parameter);
 void netcon_close(long noParam);
-void netcon_send(long noParam); // TODO: build
-void netcon_recv(long noParam); // TODO: build
+void netcon_send(long noParam);
+void netcon_recv(long noParam);
 
 //-------------------------------------//
 // --- Error Function Declarations --- //

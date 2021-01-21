@@ -733,7 +733,7 @@ void netcon_connect(long parameter) {
 
 void netcon_close(long noParam) {
   // TODO: validate that there is an active network connection
-  close(NETCON->socket);
+  close(NETCON.socket);
   IPTR++;
 } // end netcon_close
 
@@ -747,7 +747,7 @@ void netcon_send(long noParam) {
   if (size <= 0) {
     runtimeerror("Size is not a positive number");
   } // end if
-  send(NETCON->socket, (HEAP->heap)+startAddr, size, 0);
+  send(NETCON.socket, (HEAP.heap)+startAddr, size, 0);
   IPTR++;
 } // end netcon_send
 
@@ -761,7 +761,7 @@ void netcon_recv(long noParam) {
   if (size <= 0) {
     runtimeerror("Size is not a positive number");
   } // end if
-  recv(NETCON->socket, (HEAP->heap)+startAddr, size, 0);
+  recv(NETCON.socket, (HEAP.heap)+startAddr, size, 0);
   IPTR++;
 } // end netcon_recv 
 
