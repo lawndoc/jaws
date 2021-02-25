@@ -289,7 +289,7 @@ void init_NetCon(NetCon *netCon, long ip, long port, long ops) {
     case 1:
       netSocket = socket(AF_INET, SOCK_STREAM, 0);
     default:
-      jawserror("Incorrect network connection option supplied. Please see documentation.");
+      runtimeerror("Incorrect network connection option supplied. Please see documentation.");
   } // end switch
   struct sockaddr_in serverAddress;
   serverAddress.sin_family = AF_INET;

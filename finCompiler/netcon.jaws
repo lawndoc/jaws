@@ -1,0 +1,29 @@
+header
+	 stackIMP  pushNum                                	
+stackIMP  pushChar  			 	  
+stackIMP  pushNum                               	 
+stackIMP  pushChar  		  	 	
+stackIMP  pushNum                               		
+stackIMP  pushChar  			  		
+stackIMP  pushNum                              	  
+stackIMP  pushChar  			 	  
+heapIMP		store heapIMP		store heapIMP		store heapIMP		store netconIMP 
+netconConnect 	 							                       	     	  		 	  	                	
+stackIMP  pushNum                                	
+stackIMP  pushNum                              	  
+netconIMP 
+netconSend		stackIMP  pushNum                              	 	
+stackIMP  pushNum                              	 	
+netconIMP 
+netconRecv	 stackIMP  pushNum                             	  	
+heapIMP		retrieve	stackIMP  pushNum                             	   
+heapIMP		retrieve	stackIMP  pushNum                              			
+heapIMP		retrieve	stackIMP  pushNum                              		 
+heapIMP		retrieve	stackIMP  pushNum                              	 	
+heapIMP		retrieve	ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  ioaIMP	
+outChar  endProgram
+
+
