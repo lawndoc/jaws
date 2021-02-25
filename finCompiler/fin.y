@@ -74,8 +74,11 @@
 %token INC
 %token INN
 %token IOC_FILE
-%token IOC_NET
 %token IOC_STD
+%token NETCON_CONN
+%token NETCON_CLOS
+%token NETCON_SEND
+%token NETCON_RECV
 %token <ival> NUM
 %token <sval> UNUM
 %token <cval> CHAR
@@ -190,6 +193,13 @@ io_control:
     fprintf(OUTFILE, "\t ");
   } io_control_command
   ;
+network_connection:
+  NETCON_IMP {
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "netconIMP";
+    fprintf(OUTFILE, " \n";
+  } netcon_command
+  ;
 // --- IMP Commands ---
 stack_command:
   stack_push
@@ -224,8 +234,13 @@ io_action_command:
   ;
 io_control_command:
   stream_file
-  | stream_net
   | stream_stdio
+  ;
+netcon_command:
+  netcon_connect
+  | netcon_close
+  | netcon_send
+  | netcon_recv
   ;
 
 // -- Command Defs --
@@ -373,16 +388,35 @@ stream_file:
       fprintf(OUTFILE, "streamFile");
     fprintf(OUTFILE, "  ");
   };
-stream_net:
-  IOC_NET netcon {
-    if (SUPPRESS == 0)
-      fprintf(OUTFILE, "streamNetCon");
-    fprintf(OUTFILE, " \t%s", $<sval>2);
-  };
 stream_stdio:
   IOC_STD {
     if (SUPPRESS == 0)
       fprintf(OUTFILE, "streamStdIO");
+    fprintf(OUTFILE, "\t ");
+  };
+// network connection
+netcon_connect:
+  NETCON_CONN netcon {
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "netconConnect");
+    fprintf(OUTFILE, " \t");
+  };
+netcon_close:
+  NETCON_CLOS {
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "netconClose");
+    fprintf(OUTFILE, "  ");
+  };
+netcon_send:
+  NETCON_SEND {
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "netconSend");
+    fprintf(OUTFILE, "\t\t");
+  };
+netcon_recv:
+  NETCON_RECV {
+    if (SUPPRESS == 0)
+      fprintf(OUTFILE, "netconRecv");
     fprintf(OUTFILE, "\t ");
   };
 
@@ -423,7 +457,7 @@ netcon:
 %%
 
 int main(int argc, char** argv) {
-  BITSTR = (char *) malloc(50); // for interpreting parameters MAX=>48+2 (\n\0)
+  BITSTR = (char *) malloc(66); // for interpreting parameters MAX=>64+2 (\n\0)
   SUBSTR = (char *) malloc(33); // for building BITSTR in genNetCon
 
   // Parse command line args
@@ -632,15 +666,19 @@ char *genNetCon(char *netcon) {
     } // end if
     i++;
   } while (netcon[i-1] != ':'); // end do-while
-  // generate port  bitstring
-  while (netcon[i] != '\0') {
+  // generate port bitstring
+  while (netcon[i] != ':') {
     strncat(port, &netcon[i], 1);
     i++;
   } // end while
   strcat(BITSTR, genPort(port));
   memset(SUBSTR, '\0', sizeof(SUBSTR));
+  i++;
+  // generate ops bitstring
+  if (strcmp(netcon+i, "tcp") == 0)
+    strcat(BITSTR, "               \t");
+  // end parameter
   strcat(BITSTR, "\n");
-
   free(octet);
   free(port);
   return strdup(BITSTR);  //TODO: fix memory leak

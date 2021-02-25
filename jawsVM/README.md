@@ -130,7 +130,7 @@ Network connection instructions allow Jaws programs to communicate with other co
 
 `[Tab][Tab]` Read heap address and then size from the stack, and then send data to existing network connection
 
-`[Tab][Space` Read heap address and then size from the stack, and then receive data from existing network connection
+`[Tab][Space]` Read heap address and then size from the stack, and then receive data from existing network connection
 
 ### Command Parameters
 
