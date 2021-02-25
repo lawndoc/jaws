@@ -1,0 +1,35 @@
+header
+stack push 1
+stack push t
+stack push 2
+stack push e
+stack push 3
+stack push s
+stack push 4
+stack push t
+heap store
+heap store
+heap store
+heap store
+netcon connect 127.0.0.1:1234:tcp
+stack push 1
+stack push 4
+netcon send
+stack push 5
+stack push 5
+netcon recv
+stack push 9
+heap retrieve
+stack push 8
+heap retrieve
+stack push 7
+heap retrieve
+stack push 6
+heap retrieve
+stack push 5
+heap retrieve
+ioa outc
+ioa outc
+ioa outc
+ioa outc
+FIN

@@ -37,6 +37,7 @@ heap				{ return HEAP_IMP; }
 flow				{ return FLOW_IMP; }
 ioa				{ return IOA_IMP; }
 ioc				{ return IOC_IMP; }
+netcon                          { return NETCON_IMP; }
 FIN				{ return END_PRGM; }
 push				{ return STACK_PUSH; }
 dup				{ return STACK_DUP; }
@@ -61,10 +62,10 @@ inc				{ return INC; }
 inn				{ return INN; }
 fileio				{ return IOC_FILE; }
 stdio				{ return IOC_STD; }
-netConnect                      { return NETCON_CONN; }
-netClose                        { return NETCON_CLOS; }
-netSend                         { return NETCON_SEND; }
-netRecv                         { return NETCON_RECV; }
+connect                         { return CONNECT; }
+close                           { return CLOSE; }
+send                            { return SEND; }
+recv                            { return RECV; }
 {DIGIT}+			{ finlval.ival = atoi(fintext);
 				  return NUM; }
 {UDIGIT}			{ finlval.sval = strdup(fintext);

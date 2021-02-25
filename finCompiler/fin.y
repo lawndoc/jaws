@@ -52,6 +52,7 @@
 %token FLOW_IMP
 %token IOA_IMP
 %token IOC_IMP
+%token NETCON_IMP
 %token STACK_PUSH
 %token STACK_DUP
 %token STACK_SWAP
@@ -75,10 +76,10 @@
 %token INN
 %token IOC_FILE
 %token IOC_STD
-%token NETCON_CONN
-%token NETCON_CLOS
-%token NETCON_SEND
-%token NETCON_RECV
+%token CONNECT
+%token CLOSE
+%token SEND
+%token RECV
 %token <ival> NUM
 %token <sval> UNUM
 %token <cval> CHAR
@@ -130,6 +131,7 @@ instruction:
   | flow_control
   | io_action
   | io_control
+  | network_connection
   | peek
   ;
 peek:
@@ -196,8 +198,8 @@ io_control:
 network_connection:
   NETCON_IMP {
     if (SUPPRESS == 0)
-      fprintf(OUTFILE, "netconIMP";
-    fprintf(OUTFILE, " \n";
+      fprintf(OUTFILE, "netconIMP");
+    fprintf(OUTFILE, " \n");
   } netcon_command
   ;
 // --- IMP Commands ---
@@ -396,25 +398,25 @@ stream_stdio:
   };
 // network connection
 netcon_connect:
-  NETCON_CONN netcon {
+  CONNECT netcon {
     if (SUPPRESS == 0)
       fprintf(OUTFILE, "netconConnect");
-    fprintf(OUTFILE, " \t");
+    fprintf(OUTFILE, " \t%s", $<sval>2);
   };
 netcon_close:
-  NETCON_CLOS {
+  CLOSE {
     if (SUPPRESS == 0)
       fprintf(OUTFILE, "netconClose");
     fprintf(OUTFILE, "  ");
   };
 netcon_send:
-  NETCON_SEND {
+  SEND {
     if (SUPPRESS == 0)
       fprintf(OUTFILE, "netconSend");
     fprintf(OUTFILE, "\t\t");
   };
 netcon_recv:
-  NETCON_RECV {
+  RECV {
     if (SUPPRESS == 0)
       fprintf(OUTFILE, "netconRecv");
     fprintf(OUTFILE, "\t ");
