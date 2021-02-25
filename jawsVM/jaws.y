@@ -360,8 +360,10 @@ stream_stdio:
 // network connection
 netcon_connect:
   SPACE TAB ip { reset_accum(); } port { reset_accum(); } netops {
-    if (DEBUG > 1)
-      cout << "network connection to IP: " << $<val>3 << " Port: " << $<val>4 << " OpCode: " << $<val>5 << endl;
+    if (DEBUG > 1) {
+      int ip = $<val>3;
+      cout << "network connection to IP: " << (ip>>24) << "." << ((ip<<8)>>24) << "." << ((ip<<16)>>24) << "." << ((ip<<24)>>24) << " Port: " << $<val>5 << " OpCode: " << $<val>7 << endl;
+    } // end if
     // combine args into one 64 bit param (ip32:port16:ops16)
     long netcon = ($<val>3 << 32) | ($<val>4 << 16) | ($<val>5);
     add_instruction(&PROGRAM, (char *) "netcon_connect", netcon);
