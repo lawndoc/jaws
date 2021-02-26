@@ -778,7 +778,7 @@ void netcon_send(long noParam) {
     printf(" of length %d starting at heap address %d\n", size, startAddr);
   // convert heap data to string
   char buffer[size];
-  for (i=startAddr; i<startAddr+size; i++) {
+  for (int i=startAddr; i<startAddr+size; i++) {
     strncpy(buffer, (char) HEAP.heap[i], 1);
   } // end for
   send(NETCON.socket, buffer, size, 0);
@@ -803,9 +803,9 @@ void netcon_recv(long noParam) {
   char buffer[size+1];
   long value;
   recv(NETCON.socket, buffer, size, 0);
-  for (i=0; i<size; i++) {
+  for (int i=0; i<size; i++) {
     value = (long) buffer[i];
-    store_char(&HEAP, value, address+i);
+    store_char(&HEAP, value, startAddr+i);
   } // end for
   IPTR++;
 } // end netcon_recv 
