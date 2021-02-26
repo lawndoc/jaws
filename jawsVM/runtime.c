@@ -462,9 +462,6 @@ void heap_store(long noParam) {
   if (topType == 'n') {
     topVal = pop_num(&STACK);
     address = pop_num(&STACK);
-  if (DEBUG > 0)
-    printf(" into address %ld\n", address);
-    store_num(&HEAP, topVal, address);
   } else if (topType == 'c') {
     topVal = pop_char(&STACK);
     address = pop_num(&STACK);
@@ -472,6 +469,9 @@ void heap_store(long noParam) {
   } else {
     stackerror("Reached unexpected type on the stack... How did this happen?");
   } // end if
+  if (DEBUG > 0)
+    printf(" into address %ld\n", address);
+    store_num(&HEAP, topVal, address);
   IPTR++;
 } // end heap_store
 
