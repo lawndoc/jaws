@@ -285,16 +285,18 @@ int jumptable_return(Jumptable *jumptable) {
 //---Network Connection Functions---//
 void init_NetCon(NetCon *netCon, long ip, long port, long ops) {
   int netSocket;
-  switch ((int) ops) {
+  int iops = (int) ops;
+  switch (iops) {
     case 1:
       netSocket = socket(AF_INET, SOCK_STREAM, 0);
+      break;
     default:
       runtimeerror("Incorrect network connection option supplied. Please see documentation.");
   } // end switch
   struct sockaddr_in serverAddress;
   serverAddress.sin_family = AF_INET;
   serverAddress.sin_port = htons((int) port);
-  serverAddress.sin_addr.s_addr = (unsigned long) ip; // safe - 2^32 max
+  serverAddress.sin_addr.s_addr = htonl((unsigned int) ip);
   int connectionStatus = connect(netSocket, (struct sockaddr *) &serverAddress, sizeof(serverAddress));
   if (connectionStatus == -1)
     runtimeerror("Network connection error: couldn't connect to server.");
@@ -444,7 +446,7 @@ void arith_mod(long noParam) {
 
 void heap_store(long noParam) {
   if (DEBUG > 0)
-    printf("Heap Store\n");
+    printf("Heap Store");
   long topVal;
   long address;
   char topType = STACK.types[STACK.top];
@@ -460,6 +462,8 @@ void heap_store(long noParam) {
   if (topType == 'n') {
     topVal = pop_num(&STACK);
     address = pop_num(&STACK);
+  if (DEBUG > 0)
+    printf(" into address %ld\n", address);
     store_num(&HEAP, topVal, address);
   } else if (topType == 'c') {
     topVal = pop_char(&STACK);
@@ -473,7 +477,7 @@ void heap_store(long noParam) {
 
 void heap_retrieve(long noParam) { // note: doesn't use Heap structure functions
   if (DEBUG > 0)
-    printf("Heap Retrieve\n");
+    printf("Heap Retrieve");
   long value;
   long address;
   char valueType;
@@ -485,6 +489,8 @@ void heap_retrieve(long noParam) { // note: doesn't use Heap structure functions
   else if (addressType != 'n')
     stackerror("Unknown type on the stack... How did this happen?");
   address = pop_num(&STACK);
+  if (DEBUG > 0)
+    printf(" from address %ld\n", address);
   if ((int)address > HEAP.capacity)
     heaperror("Heap address out of bounds");
   valueType = HEAP.types[address];
@@ -721,24 +727,39 @@ void ioc_stdio(long noParam) {
 } // end ioc_stdio
 
 void netcon_connect(long parameter) {
-  if (DEBUG > 0)
-    printf("Stream Network Connection\n");
   IOSTREAM = 'n';
   long ip = (parameter & 0xffffffff00000000) >> 32;
   long port = (parameter & 0x00000000ffff0000) >> 16;
   long ops = (parameter & 0x000000000000ffff);
+  if (DEBUG > 0) {
+    int octet1 = ((int)ip) >> 24;
+    int octet2 = ((int)ip << 8) >> 24;
+    int octet3 = ((int)ip << 16) >> 24;
+    int octet4 = ((int)ip << 24) >> 24;
+    printf("Connecting to %d.%d.%d.%d:%ld with opcode %ld...\n",
+           octet1,
+           octet2,
+           octet3,
+           octet4,
+           port,
+           ops);
+  } // end if
   init_NetCon(&NETCON, ip, port, ops);
   IPTR++;
 } // end netcon_connect
 
 void netcon_close(long noParam) {
   // TODO: validate that there is an active network connection
+  if (DEBUG > 0)
+    printf("Closing network connection");
   close(NETCON.socket);
   IPTR++;
 } // end netcon_close
 
 void netcon_send(long noParam) {
   // TODO: validate that there is an active network connection
+  if (DEBUG > 0)
+    printf("Sending data");
   int startAddr = (int) pop_num(&STACK);
   if (startAddr <= 0) {
     runtimeerror("Heap address is not a positive number");
@@ -747,12 +768,16 @@ void netcon_send(long noParam) {
   if (size <= 0) {
     runtimeerror("Size is not a positive number");
   } // end if
+  if (DEBUG > 0)
+    printf(" of length %d starting at heap address %d\n", size, startAddr);
   send(NETCON.socket, (HEAP.heap)+startAddr, size, 0);
   IPTR++;
 } // end netcon_send
 
 void netcon_recv(long noParam) {
   // TODO: validate that there is an active network connection
+  if (DEBUG > 0)
+    printf("Receiving data");
   int startAddr = (int) pop_num(&STACK);
   if (startAddr <= 0) {
     runtimeerror("Heap address is not a positive number");
@@ -761,6 +786,8 @@ void netcon_recv(long noParam) {
   if (size <= 0) {
     runtimeerror("Size is not a positive number");
   } // end if
+  if (DEBUG > 0)
+    printf(" of length %d into heap starting at address %d\n", size, startAddr);
   recv(NETCON.socket, (HEAP.heap)+startAddr, size, 0);
   IPTR++;
 } // end netcon_recv 

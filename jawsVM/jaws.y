@@ -365,7 +365,7 @@ netcon_connect:
       cout << "network connection to IP: " << (ip>>24) << "." << ((ip<<8)>>24) << "." << ((ip<<16)>>24) << "." << ((ip<<24)>>24) << " Port: " << $<val>5 << " OpCode: " << $<val>7 << endl;
     } // end if
     // combine args into one 64 bit param (ip32:port16:ops16)
-    long netcon = ($<val>3 << 32) | ($<val>4 << 16) | ($<val>5);
+    long netcon = ($<val>3 << 32) | ($<val>5 << 16) | ($<val>7);
     add_instruction(&PROGRAM, (char *) "netcon_connect", netcon);
     reset_accum();
     JAWSLINE++;
