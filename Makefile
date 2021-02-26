@@ -12,11 +12,20 @@ K := $(foreach exec,$(EXECUTABLES),\
 all: jaws fin
 	@echo "Done."
 
+windows: jaws_w fin_w
+	@echo "Done."
+
 jaws:
 	@cd jawsVM && make
 
 fin:
 	@cd finCompiler && make
+
+jaws_w:
+	@cd jawsVM && make windows
+
+fin_w:
+	@cd finCompiler && make windows
 
 install:
 	@sudo true

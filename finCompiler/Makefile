@@ -22,12 +22,17 @@ lex.yy.c: fin.l fin.tab.h
 	@flex fin.l
 
 finc: lex.yy.c fin.tab.c fin.tab.h
-	@echo "Compiling Fin parser..."
+	@echo "Compiling Fin compiler..."
 	@${CC} fin.tab.c lex.fin.c -o finc
+
+windows: fin.tab.c fin.tab.h lex.yy.c
+	@echo "Compiling Fin compiler for Windows..."
+	@x86_64-w64-mingw32-g++ fin.tab.c lex.fin.c -o finc.exe --static
 
 clean:
 	@echo "Cleaning up Fin..."
-	@rm fin.tab.c
-	@rm fin.tab.h
-	@rm lex.fin.c
-	@rm finc
+	@-rm -f fin.tab.c
+	@-rm -f fin.tab.h
+	@-rm -f lex.fin.c
+	@-rm -f finc
+	@-rm -f finc.exe

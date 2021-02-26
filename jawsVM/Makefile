@@ -27,11 +27,12 @@ jaws: lex.yy.c jaws.tab.c jaws.tab.h
 
 windows: jaws.tab.c jaws.tab.h lex.yy.c
 	@echo "Compiling Jaws virtual machine for Windows..."
-	@x86_64-w64-mingw32-g++ jaws.tab.c lex.jaws.c runtime.c -o jaws.exe --static
+	@x86_64-w64-mingw32-g++ jaws.tab.c lex.jaws.c runtime.c -o jaws.exe --static -lws2_32
 
 clean:
 	@echo "Cleaning up Jaws..."
-	@rm jaws.tab.c
-	@rm jaws.tab.h
-	@rm lex.jaws.c
-	@rm jaws
+	@-rm -f jaws.tab.c
+	@-rm -f jaws.tab.h
+	@-rm -f lex.jaws.c
+	@-rm -f jaws
+	@-rm -f jaws.exe

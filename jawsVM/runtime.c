@@ -6,10 +6,15 @@
 #include <string.h>
 
 // imports needed for networking
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <netinet/in.h>
+#if defined(_WIN32) || defined(_WIN64)
+  #include <winsock2.h>
+  #pragma comment(lib,"ws2_32.lib")  //Winsock Library
+#else
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <unistd.h>
+  typedef int SOCKET;
+#endif
 
 //-------------------------------//
 // --- Variable Declarations --- //
@@ -284,7 +289,12 @@ int jumptable_return(Jumptable *jumptable) {
 
 //---Network Connection Functions---//
 void init_NetCon(NetCon *netCon, long ip, long port, long ops) {
-  int netSocket;
+  #if defined(_WIN32) || defined(_WIN64)
+    WSADATA wsa;
+    if (WSAStartup(MAKEWORD(2,2), &wsa) != 0)
+      runtimeerror("Couldn't initialize Windows socket");
+  #endif
+  SOCKET netSocket;
   int iops = (int) ops;
   switch (iops) {
     case 1:
@@ -757,7 +767,12 @@ void netcon_close(long noParam) {
   // TODO: validate that there is an active network connection
   if (DEBUG > 0)
     printf("Closing network connection");
-  close(NETCON.socket);
+  #if defined(_WIN32) || defined(_WIN64)
+    closesocket(NETCON.socket);
+    WSACleanup();
+  #else
+    close(NETCON.socket);
+  #endif
   IPTR++;
 } // end netcon_close
 
