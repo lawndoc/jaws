@@ -2,6 +2,8 @@
 
 Jaws is an esoteric programming language that was created for research purposes. Tools for developing Jaws programs can be found in the various directories of this repository.
 
+To read more about Jaws and why it was created, please refer to my blog post or my undergrad honor's thesis.
+
 ## Install
 
 You can install all the programs by running the following command in the top level directory:
