@@ -733,7 +733,6 @@ void ioc_stdio(long noParam) {
 } // end ioc_stdio
 
 void netcon_connect(long parameter) {
-  IOSTREAM = 'n';
   long ip = (parameter & 0xffffffff00000000) >> 32;
   long port = (parameter & 0x00000000ffff0000) >> 16;
   long ops = (parameter & 0x000000000000ffff);
