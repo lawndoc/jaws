@@ -776,11 +776,11 @@ void netcon_send(long noParam) {
   if (DEBUG > 0)
     printf(" of length %d starting at heap address %d\n", size, startAddr);
   // convert heap data to string
-  char buffer[size];
+  char buffer[size+1] = {'\0'};
   char character;
   for (int i=startAddr; i<startAddr+size; i++) {
     character = (char) HEAP.heap[i];
-    strncpy(buffer, &character, 1);
+    strncat(buffer, &character, 1);
   } // end for
   send(NETCON.socket, buffer, size, 0);
   IPTR++;
