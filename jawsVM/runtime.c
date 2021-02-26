@@ -781,7 +781,7 @@ void netcon_send(long noParam) {
   char character;
   for (int i=startAddr; i<startAddr+size; i++) {
     character = (char) HEAP.heap[i];
-    strncpy(buffer, *character, 1);
+    strncpy(buffer, &character, 1);
   } // end for
   send(NETCON.socket, buffer, size, 0);
   IPTR++;
