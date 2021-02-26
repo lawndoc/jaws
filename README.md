@@ -1,8 +1,8 @@
 ![Jaws Logo](resources/jawsLogo.png)
 
-Jaws is an esoteric programming language that was created for research purposes. Tools for developing Jaws programs can be found in the various directories of this repository.
+Jaws is an invisible programming language that was created for antivirus research. Since Jaws code is composed entirely of whitespace characters, it can easily coexist with other programming languages to create [polyglot code](https://en.wikipedia.org/wiki/Polyglot_(computing)). To read more about Jaws and why it was created, please refer to [my blog post](https://www.palehat.net/jaws-research/) or [my undergrad honor's thesis](https://scholarworks.uni.edu/cgi/viewcontent.cgi?article=1423&context=hpt).
 
-To read more about Jaws and why it was created, please refer to my blog post or my undergrad honor's thesis.
+Tools for developing Jaws programs can be found in the various directories of this repository.
 
 ## Install
 
