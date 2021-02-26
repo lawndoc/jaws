@@ -19,7 +19,7 @@ CHAR	[a-zA-Z]
 UCHAR	0x[0-9a-f]{2}
 LABEL	[a-z]{1,3}
 ULABEL  0x[0-9a-f]{4}
-NETCON	[0-9]{1,3}"."[0-9]{1,3}"."[0-9]{1,3}"."[0-9]{1,3}":"[0-9]{1,5}
+NETCON	[0-9]{1,3}"."[0-9]{1,3}"."[0-9]{1,3}"."[0-9]{1,3}":"[0-9]{1,5}":"("tcp")
 
 
 %%
@@ -37,6 +37,7 @@ heap				{ return HEAP_IMP; }
 flow				{ return FLOW_IMP; }
 ioa				{ return IOA_IMP; }
 ioc				{ return IOC_IMP; }
+netcon                          { return NETCON_IMP; }
 FIN				{ return END_PRGM; }
 push				{ return STACK_PUSH; }
 dup				{ return STACK_DUP; }
@@ -60,8 +61,11 @@ outn				{ return OUTN; }
 inc				{ return INC; }
 inn				{ return INN; }
 fileio				{ return IOC_FILE; }
-netcon				{ return IOC_NET; }
 stdio				{ return IOC_STD; }
+connect                         { return CONNECT; }
+close                           { return CLOSE; }
+send                            { return SEND; }
+recv                            { return RECV; }
 {DIGIT}+			{ finlval.ival = atoi(fintext);
 				  return NUM; }
 {UDIGIT}			{ finlval.sval = strdup(fintext);
@@ -74,7 +78,8 @@ stdio				{ return IOC_STD; }
 				  return LABEL; }
 {ULABEL}			{ finlval.sval = strdup(fintext);
 				  return ULABEL; }
-{NETCON}			{ cout << "IP:Port :" << yytext << endl; }
+{NETCON}			{ finlval.sval = strdup(fintext);
+                                  return NETCON; }
 .				;
 
 %%

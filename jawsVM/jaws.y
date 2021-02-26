@@ -111,7 +111,9 @@ instruction:
   | flow_control
   | io_action
   | io_control
+  | network_connection
   ;
+
 // ---- IMP Defs ----
 stack_manipulation:
   SPACE SPACE stack_command
@@ -131,6 +133,10 @@ io_action:
 io_control:
   TAB SPACE io_control_command
   ;
+network_connection:
+  SPACE LF {JAWSLINE++;} netcon_command
+  ;
+
 // --- IMP Commands ---
 stack_command:
   stack_push
@@ -165,8 +171,13 @@ io_action_command:
   ;
 io_control_command:
   stream_file
-  | stream_net
   | stream_stdio
+  ;
+netcon_command:
+  netcon_connect
+  | netcon_close
+  | netcon_send
+  | netcon_recv
   ;
 
 // -- Command Defs --
@@ -333,7 +344,6 @@ read_int:
       cout << "read an integer from IO" << endl;
     add_instruction(&PROGRAM, (char *) "ioa_inn", 0);
   };
-  ;
 // io control
 stream_file:
   SPACE SPACE {
@@ -341,21 +351,42 @@ stream_file:
       cout << "stream from a file" << endl;
     add_instruction(&PROGRAM, (char *) "ioc_file", 0);
   };
-stream_net:
-  SPACE TAB ip { reset_accum(); } port { reset_accum(); } netops {
-    if (DEBUG > 1)
-      cout << "stream from network connection IP: " << $<val>3 << " Port: " << $<val>4 << " OpCode: " << $<val>5 << endl;
-    // combine args into one 64 bit param (ip32:port16:ops16)
-    long netcon = ($<val>3 << 32) | ($<val>4 << 16) | ($<val>5);
-    add_instruction(&PROGRAM, (char *) "ioc_netcon", netcon);
-    reset_accum();
-    JAWSLINE++;
-  };
 stream_stdio:
   TAB SPACE {
     if (DEBUG > 1)
       cout << "stream from standard i/o" << endl;
     add_instruction(&PROGRAM, (char *) "ioc_stdio", 0);
+  };
+// network connection
+netcon_connect:
+  SPACE TAB ip { reset_accum(); } port { reset_accum(); } netops {
+    if (DEBUG > 1) {
+      int ip = $<val>3;
+      cout << "network connection to IP: " << (ip>>24) << "." << ((ip<<8)>>24) << "." << ((ip<<16)>>24) << "." << ((ip<<24)>>24) << " Port: " << $<val>5 << " OpCode: " << $<val>7 << endl;
+    } // end if
+    // combine args into one 64 bit param (ip32:port16:ops16)
+    long netcon = ($<val>3 << 32) | ($<val>5 << 16) | ($<val>7);
+    add_instruction(&PROGRAM, (char *) "netcon_connect", netcon);
+    reset_accum();
+    JAWSLINE++;
+  };
+netcon_close:
+  SPACE SPACE {
+    if (DEBUG > 1)
+      cout << "close network connection" << endl;
+    add_instruction(&PROGRAM, (char *) "netcon_close", 0);
+  };
+netcon_send:
+  TAB TAB {
+    if (DEBUG > 1)
+      cout << "send data over network connection" << endl;
+    add_instruction(&PROGRAM, (char *) "netcon_send", 0);
+  };
+netcon_recv:
+  TAB SPACE {
+    if (DEBUG > 1)
+      cout << "receive data over network connection" << endl;
+    add_instruction(&PROGRAM, (char *) "netcon_recv", 0);
   };
 
 // --- Parameters ---

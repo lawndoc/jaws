@@ -132,4 +132,6 @@ While Jaws parameters are strictly represented in binary, parameters for Fin can
 
 ##### Network Connection
 
-`192.168.1.55:22` Standard 'IP:port' representation
+`192.168.1.55:22:tcp` Standard 'IP:port' representation with ':\<ops\>' on the end
+
+Currently, only 'tcp' is supported.
