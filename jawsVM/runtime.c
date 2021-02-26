@@ -237,7 +237,7 @@ void store_char(Heap *heap, long value, long address) {
   } // end if
   heap->heap[address] = value;
   heap->types[address] = 'c';
-} // end store_num
+} // end store_char
 
 
 //--- Jump Table Functions ---//
@@ -462,16 +462,18 @@ void heap_store(long noParam) {
   if (topType == 'n') {
     topVal = pop_num(&STACK);
     address = pop_num(&STACK);
+    if (DEBUG > 0)
+      printf(" into address %ld (data=%ld)\n", address, topVal);
+    store_num(&HEAP, topVal, address);
   } else if (topType == 'c') {
     topVal = pop_char(&STACK);
     address = pop_num(&STACK);
+    if (DEBUG > 0)
+      printf(" into address %ld (data=%c)\n", address, (char) topVal);
     store_char(&HEAP, topVal, address);
   } else {
     stackerror("Reached unexpected type on the stack... How did this happen?");
   } // end if
-  if (DEBUG > 0)
-    printf(" into address %ld\n", address);
-    store_num(&HEAP, topVal, address);
   IPTR++;
 } // end heap_store
 
@@ -490,7 +492,7 @@ void heap_retrieve(long noParam) { // note: doesn't use Heap structure functions
     stackerror("Unknown type on the stack... How did this happen?");
   address = pop_num(&STACK);
   if (DEBUG > 0)
-    printf(" from address %ld\n", address);
+    printf(" from address %ld", address);
   if ((int)address > HEAP.capacity)
     heaperror("Heap address out of bounds");
   valueType = HEAP.types[address];
@@ -498,8 +500,12 @@ void heap_retrieve(long noParam) { // note: doesn't use Heap structure functions
     heaperror("Invalid heap address -- no data found");
   value = HEAP.heap[address];
   if (valueType == 'n') {
+    if (DEBUG > 0)
+      printf(" (data=%ld\n", value);
     push_num(&STACK, value);
-  } else if (valueType == 'c') { 
+  } else if (valueType == 'c') {
+    if (DEBUG > 0)
+      printf(" (data=%c\n", (char) value);
     push_char(&STACK, value);
   } else { // this might happen if empty address is read and type is not '\0'
     heaperror("Found unexpected type on the heap... How did this happen?");

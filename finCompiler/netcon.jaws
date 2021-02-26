@@ -9,8 +9,8 @@ stackIMP  pushNum
 stackIMP  pushChar  			 	  
 heapIMP		store heapIMP		store heapIMP		store heapIMP		store netconIMP 
 netconConnect 	 							                       	     	  		 	  	                	
-stackIMP  pushNum                                	
 stackIMP  pushNum                              	  
+stackIMP  pushNum                                	
 netconIMP 
 netconSend		stackIMP  pushNum                              	 	
 stackIMP  pushNum                              	 	

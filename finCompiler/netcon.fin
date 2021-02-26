@@ -12,8 +12,8 @@ heap store
 heap store
 heap store
 netcon connect 127.0.0.1:1234:tcp
-stack push 1
 stack push 4
+stack push 1
 netcon send
 stack push 5
 stack push 5
