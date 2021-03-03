@@ -301,7 +301,7 @@ void init_NetCon(NetCon *netCon, long ip, long port, long ops) {
   switch (iops) {
     case 1:
       #if defined(_WIN32) || defined(_WIN64)
-        if((s = socket(AF_INET , SOCK_STREAM , 0)) == INVALID_SOCKET) {
+        if((netSocket = socket(AF_INET , SOCK_STREAM , 0)) == INVALID_SOCKET) {
           printf("Windows socket error: %d\n" , WSAGetLastError());
           runtimeerror("Couldn't create socket");
         } // end if
