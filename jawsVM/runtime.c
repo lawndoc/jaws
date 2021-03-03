@@ -289,16 +289,25 @@ int jumptable_return(Jumptable *jumptable) {
 
 //---Network Connection Functions---//
 void init_NetCon(NetCon *netCon, long ip, long port, long ops) {
+  SOCKET netSocket;
   #if defined(_WIN32) || defined(_WIN64)
     WSADATA wsa;
-    if (WSAStartup(MAKEWORD(2,2), &wsa) != 0)
+    if (WSAStartup(MAKEWORD(2,2), &wsa) != 0) {
+      printf("Windows socket error: %d\n", WSAGetLastError());
       runtimeerror("Couldn't initialize Windows socket");
+    } // end if
   #endif
-  SOCKET netSocket;
   int iops = (int) ops;
   switch (iops) {
     case 1:
-      netSocket = socket(AF_INET, SOCK_STREAM, 0);
+      #if defined(_WIN32) || defined(_WIN64)
+        if((s = socket(AF_INET , SOCK_STREAM , 0)) == INVALID_SOCKET) {
+          printf("Windows socket error: %d\n" , WSAGetLastError());
+          runtimeerror("Couldn't create socket");
+        } // end if
+      #else
+        netSocket = socket(AF_INET, SOCK_STREAM, 0);
+      #endif
       break;
     default:
       runtimeerror("Incorrect network connection option supplied. Please see documentation.");
@@ -308,7 +317,7 @@ void init_NetCon(NetCon *netCon, long ip, long port, long ops) {
   serverAddress.sin_port = htons((int) port);
   serverAddress.sin_addr.s_addr = htonl((unsigned int) ip);
   int connectionStatus = connect(netSocket, (struct sockaddr *) &serverAddress, sizeof(serverAddress));
-  if (connectionStatus == -1)
+  if (connectionStatus < 0)
     runtimeerror("Network connection error: couldn't connect to server.");
   netCon->socket = netSocket;
 } // end init_NetCon
