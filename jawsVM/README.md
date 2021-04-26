@@ -138,7 +138,7 @@ Each parameter type is fixed-length.
 
 **Number**
 
-A binary number pushed onto the stack is either 32 bits (int) or 8 bits (char). At runtime, the type of data pushed onto the stack depends on the size of the parameter. Type checking is done at upon I/O Action, where the data involved is explicitly declared by the language. 
+A binary number pushed onto the stack is either 32 bits (int) or 8 bits (char). At runtime, the type of data pushed onto the stack depends on the size of the parameter. Type checking is done upon I/O Action, where the data involved is explicitly declared by the language. 
 
 **Label**
 
@@ -146,7 +146,7 @@ Label parameters are 16 bits long, leaving room for 65,536 different labels.
 
 **NetworkConnection**
 
-Network connection parameters are 64 bits long -- 32 bits to specify the IP address, followed by 16 bits to specify the port number, followed by 16 bits to specify control parameters (tcp/udp, etc.). Currently, only tcp client is supported with control parameter 0x01.
+Network connection parameters are 64 bits long -- 32 bits to specify the IP address, followed by 16 bits to specify the port number, followed by 16 bits to specify control parameters (tcp/udp, etc.). Currently, only tcp client is supported with control parameter 0x0001.
 
 ## Limitations
 
