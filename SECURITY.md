@@ -1,11 +1,11 @@
 # Security Policy
 
-1. [Reporting security problems to doctormay6](#reporting)
+1. [Reporting security problems to lawndoc](#reporting)
 2. [Security Point of Contact](#contact)
 3. [Vulnerability Response Process](#process)
 
 <a name="reporting"></a>
-## Reporting security problems to doctormay6
+## Reporting security problems to lawndoc
 
 **DO NOT CREATE AN ISSUE** to report a security problem. Instead, please
 send an email to lawndoc[at]protonmail[.]com
