@@ -25,3 +25,25 @@ Jaws is an interpreted language, so a virtual machine has been created to run Ja
 ***Fin-to-Jaws compiler***
 
 Because Jaws instructions are entirely composed of invisible characters, a visible version of Jaws, called Fin, has been created. Fin allows you to write Jaws programs in a visible, human-debuggable fashion. Once you have written a Fin program, you can compile it to Jaws using the 'finc' compiler. The compiler source code and language specification for Fin can be found in the [finCompiler](finCompiler/) directory.
+
+## Roadmap
+
+### LLVM Target
+
+***Jaws backend***
+
+Eventually, I'd like to get Jaws to the point where it can be used as an LLVM backend target with the intention of being able to compile C to Jaws. That would make Jaws development a breeze.
+
+### Code Injection
+
+***Jaws injector***
+
+I want to create a tool that can take Jaws code and inject in into many different file types including:
+- non-whitespace controlled file formats
+  - C, Java, etc.
+  - markup files
+  - text files
+- whitespace controlled file formats
+  - Python, etc.
+- image files
+  - JPG, PNG, GIF, etc.
