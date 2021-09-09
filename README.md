@@ -38,7 +38,7 @@ Eventually, I'd like to get Jaws to the point where it can be used as an LLVM ba
 
 ***Jaws injector***
 
-I want to create a tool that can take Jaws code and inject in into many different file types including:
+I want to create a tool that can take Jaws code and inject it into many different file types including:
 - non-whitespace controlled file formats
   - C, Java, etc.
   - markup files
