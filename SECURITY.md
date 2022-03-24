@@ -8,7 +8,7 @@
 ## Reporting security problems to lawndoc
 
 **DO NOT CREATE AN ISSUE** to report a security problem. Instead, please
-send an email to lawndoc[at]protonmail[.]com
+[send me an email](mailto://lawndoc@protonmail.com)
 
 <a name="contact"></a>
 ## Security Point of Contact
