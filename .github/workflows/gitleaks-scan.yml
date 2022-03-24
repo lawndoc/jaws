@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
-    - uses: actions/checkout@v1
+      uses: actions/checkout@v1
     
     - name: Update Secret Definitions
-    - run: mkdir security && wget -P security/ https://raw.githubusercontent.com/zricethezav/gitleaks/master/config/gitleaks.toml
+      run: mkdir security && wget -P security/ https://raw.githubusercontent.com/zricethezav/gitleaks/master/config/gitleaks.toml
 
     - name: Run GitLeaks Scan
       uses: zricethezav/gitleaks-action@master
