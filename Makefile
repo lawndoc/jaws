@@ -4,7 +4,7 @@
 # make clean	# remove ALL binaries and objects
 
 # check program dependencies
-EXECUTABLES = bison flex g++
+EXECUTABLES = bison flex gcc
 K := $(foreach exec,$(EXECUTABLES),\
 	        $(if $(shell which $(exec)),some string,$(error "No $(exec) in PATH")))
 
@@ -38,6 +38,7 @@ install:
 	@sudo chown root:root /usr/local/bin/finc
 	@sudo chmod 755 /usr/local/bin/finc
 	@echo "Installing man pages..."
+	@sudo mkdir -p /usr/local/share/man/man1/
 	@sudo cp man/jaws.1 /usr/local/share/man/man1/
 	@sudo cp man/finc.1 /usr/local/share/man/man1/
 	@echo "Done."

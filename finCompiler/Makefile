@@ -3,10 +3,10 @@
 # make clean  # remove ALL binaries and objects
 
 # compiler to use
-CC = g++
+CC = gcc
 
 # check program dependencies
-EXECUTABLES = bison flex g++
+EXECUTABLES = bison flex gcc
 K := $(foreach exec,$(EXECUTABLES),\
 	        $(if $(shell which $(exec)),some string,$(error "No $(exec) in PATH")))
 

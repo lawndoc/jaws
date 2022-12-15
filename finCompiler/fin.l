@@ -1,10 +1,8 @@
 %{
-  #include <cstdio>
-  #include <iostream>
-  using namespace std;
+  #include <stdio.h>
 
   #include "fin.tab.h" // to get the token types from Bison
-  extern "C" int finlex();
+  extern int finlex();
 
   int lineNum = 1;
 %}

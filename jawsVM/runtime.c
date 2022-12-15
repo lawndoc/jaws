@@ -800,7 +800,8 @@ void netcon_send(long noParam) {
   if (DEBUG > 0)
     printf(" of length %d starting at heap address %d\n", size, startAddr);
   // convert heap data to string
-  char buffer[size+1] = {'\0'};
+  char buffer[size+1];
+  memset(buffer, '\0', size+1*sizeof(char));
   char character;
   for (int i=startAddr; i<startAddr+size; i++) {
     character = (char) HEAP.heap[i];

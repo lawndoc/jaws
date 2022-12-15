@@ -1,13 +1,11 @@
 %{
-  #include <cstdio>
-  #include <cstring>
-  #include <iostream>
-  #include <math.h>
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
   #include <unistd.h>
-  using namespace std;
 
   // Declare stuff from Flex that Bison needs to know about:
-  extern "C" int finlex();
+  extern int finlex();
   extern int finparse();
   extern FILE *finin;
   extern int lineNum;
@@ -472,10 +470,10 @@ int main(int argc, char** argv) {
     switch(opt)  
     {  
       case 'h':
-        cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
-        cout << "  -h : display help" << endl;
-        cout << "  -o <file> : specify outfile" << endl;
-        cout << "  -s : suppress output file annotation" << endl;
+        printf("Usage: %s [OPTIONS] FILE\n", argv[0]);
+        printf("  -h : display help\n");
+        printf("  -o <file> : specify outfile\n");
+        printf("  -s : suppress output file annotation\n");
         return 0;
       case 'o':
         outfileName = optarg;
@@ -485,15 +483,15 @@ int main(int argc, char** argv) {
 	printf("Suppressing output file annotation\n");
         break;
       case ':':
-        cout << "Option -" << optopt << " needs a value" << endl;
+        printf("Option -%c needs a value\n", (char)optopt);
         break;
       case '?':
         if (sizeof(opt) == 4) {
-          cout << "Unknown option '-" << (char)optopt << "'" << endl;
-          cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
-          cout << "  -h : display help" << endl;
-          cout << "  -o <file> : specify outfile" << endl; 
-          cout << "  -s : suppress output file annotation" << endl;
+          printf("Unknown option '-%c'\n", (char)optopt);
+          printf("Usage: %s [OPTIONS] FILE\n", argv[0]);
+          printf("  -h : display help\n");
+          printf("  -o <file> : specify outfile\n"); 
+          printf("  -s : suppress output file annotation\n");
           return -1;
         } // end if
         break;
@@ -504,28 +502,28 @@ int main(int argc, char** argv) {
     infileName = argv[optind];
     count++;
     if (count > 1) {
-      cout << "Extra option '" << argv[optind] << "'" << endl;
-      cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
-      cout << "  -h : display help" << endl;
-      cout << "  -o <file> : specify outfile" << endl;
-      cout << "  -s : suppress output file annotation" << endl;
+      printf("Extra option '%s'\n", argv[optind]);
+      printf("Usage: %s [OPTIONS] FILE\n", argv[0]);
+      printf("  -h : display help\n");
+      printf("  -o <file> : specify outfile\n");
+      printf("  -s : suppress output file annotation\n");
     } // end if
   } // end for
 
   // Make sure input file was specified
   if (!infileName) {
-    cout << "ERROR: No Fin file specified." << endl;
-    cout << "Usage: " << argv[0] << " [OPTIONS] FILE" << endl;
-    cout << "  -h : display help" << endl;
-    cout << "  -o <file> : specify outfile" << endl;
-    cout << "  -s : suppress output file annotation" << endl;
+    printf("ERROR: No Fin file specified.\n");
+    printf("Usage: %s [OPTIONS] FILE\n", argv[0]);
+    printf("  -h : display help\n");
+    printf("  -o <file> : specify outfile\n");
+    printf("  -s : suppress output file annotation\n");
     return -1;
   } // end if
   // Open the input file
   FILE *infile = fopen(infileName, "r");
   // Make sure it is valid
   if (!infile) {
-    cout << "I can't open " << infileName << "!" << endl;
+    printf("I can't open %s!\n", infileName);
     return -1;
   } // end if
 
@@ -533,7 +531,7 @@ int main(int argc, char** argv) {
   OUTFILE = fopen(outfileName, "w");
   // Make sure it is valid
   if (!OUTFILE) {
-    cout << "I can't open " << outfileName << "!" << endl;
+    printf("I can't open %s!\n", outfileName);
     return -1;
   } // end if
 
@@ -550,7 +548,7 @@ int main(int argc, char** argv) {
 } // end main
 
 void finerror(const char *s) {
-  cout << "Whoopsie daisies! Error while parsing line " << lineNum << ".  Message: " << s << endl;
+  printf("Whoopsie daisies! Error while parsing line %d.  Message: %s\n", lineNum, s);
   // might as well halt now:
   exit(1);
 } // end finerror

@@ -3,10 +3,10 @@
 # make clean  # remove ALL binaries and objects
 
 # compiler to use
-CC = g++
+CC = gcc
 
 # check program dependencies
-EXECUTABLES = bison flex g++
+EXECUTABLES = bison flex gcc
 K := $(foreach exec,$(EXECUTABLES),\
 	        $(if $(shell which $(exec)),some string,$(error "No $(exec) in PATH")))
 
@@ -23,7 +23,7 @@ lex.yy.c: jaws.l jaws.tab.h
 
 jaws: lex.yy.c jaws.tab.c jaws.tab.h
 	@echo "Compiling Jaws virtual machine..."
-	@${CC} jaws.tab.c lex.jaws.c runtime.c -o jaws
+	@${CC} jaws.tab.c lex.jaws.c runtime.c -o jaws -lm
 
 windows: jaws.tab.c jaws.tab.h lex.yy.c
 	@echo "Compiling Jaws virtual machine for Windows..."
