@@ -4,3 +4,6 @@ jaws.tab.c
 jaws.tab.h
 lex.jaws.c
 test.jaws
+cosmopolitan*
+ape*
+crt.o
